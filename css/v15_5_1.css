@@ -1,7 +1,17 @@
-/* BELLYMON — retrait du journal de la tour sur mobile et PC. */
+/* BELLYMON V15.11 — Journal uniquement dans la colonne droite sur PC. */
 @media (min-width:1121px){
-  .desktop-game-layout{grid-template-columns:minmax(166px,215px) minmax(0,1fr);max-width:1220px}
+  .desktop-game-layout{grid-template-columns:minmax(166px,215px) minmax(0,1fr) minmax(166px,215px);max-width:1440px}
 }
+@media (max-width:1120px){
+  .game-sidebar-right{display:none!important}
+}
+.desktop-journal-summary{background:#251c3b;border:1px solid #66528a;border-radius:10px;padding:12px 10px;margin-bottom:15px;color:#e4dff3;font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.desktop-journal-summary strong{display:block;color:#b6d8ff;font-size:12px;margin-bottom:5px}
+.desktop-journal-summary strong[hidden]{display:none}
+.desktop-journal-summary span{display:block;white-space:pre-line}
+.journal-history-heading{font-size:10px;letter-spacing:.08em;color:#b4a9c9;font-weight:850;margin:8px 0}
+.hit-pop.is-miss{color:#b9eeff;font-size:clamp(15px,2.5vw,25px);letter-spacing:.06em;text-shadow:0 2px 3px #030d20,0 0 15px #5eb7ff}
+.hit-pop.is-miss.is-stacked{top:47%}
 /* Typographie coherente des commandes principales : ni XXL, ni minuscules. */
 .action-panel .tower-actions > .btn{font-size:13px;font-weight:800;line-height:1.3;min-height:42px;padding:10px 12px}
 .action-panel .tower-actions > .tower-quit{font-size:13px;max-width:none;white-space:normal}

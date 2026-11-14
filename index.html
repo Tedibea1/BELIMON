@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#141426">
-  <title>BELLYMON · V15.10</title>
+  <title>BELLYMON · V15.11</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/v1_1.css">
   <link rel="stylesheet" href="css/v2.css">
@@ -50,7 +50,7 @@
   <div class="glow glow-a" aria-hidden="true"></div><div class="glow glow-b" aria-hidden="true"></div>
   <div id="app" class="shell">
     <header class="masthead">
-      <div class="identity"><span class="emblem" aria-hidden="true">✦</span><div><small>RPG · VERSION 15.10</small><h1>BELLYMON</h1></div></div>
+      <div class="identity"><span class="emblem" aria-hidden="true">✦</span><div><small>RPG · VERSION 15.11</small><h1>BELLYMON</h1></div></div>
       <div class="masthead-controls"><button type="button" id="openGuideBtn" class="btn subdued guide-open-btn" aria-controls="guideScreen">📖 Guide</button><button id="audioSettingsBtn" type="button" class="btn subdued audio-toggle" aria-haspopup="dialog" aria-controls="audioOverlay" aria-label="Réglages des musiques et effets sonores">🎵 Son</button>
       <div class="header-actions" id="gameHeaderActions" hidden>
         <button type="button" id="manualSaveBtn" class="btn subdued">💾 Sauver</button>
@@ -224,10 +224,20 @@
             </section>
           </div>
 
+          <aside class="game-sidebar game-sidebar-right" aria-label="Journal de la tour">
+            <div class="side-title">✧ JOURNAL</div>
+            <div class="desktop-journal-summary" role="status" aria-live="polite">
+              <strong id="desktopJournalStatus">Salle de repos · Étage 1</strong>
+              <span id="desktopJournalHint">Avance pour découvrir la prochaine salle.</span>
+            </div>
+            <div class="journal-history-heading">ÉVÉNEMENTS RÉCENTS</div>
+            <div class="log-entry"><span class="log-mark"></span><span id="logTop">Ton aventure commence dans la salle de repos.</span></div>
+            <div class="log-entry log-secondary"><span class="log-mark"></span><span id="logBottom">Explore à ton rythme.</span></div>
+          </aside>
         </div>
       </section>
     </main>
-    <footer class="footer"><span>BELLYMON · V15.10</span><span>Progression locale · export JSON</span></footer>
+    <footer class="footer"><span>BELLYMON · V15.11</span><span>Progression locale · export JSON</span></footer>
   </div>
 
   <div id="eventAnnouncement" class="event-announcement" hidden role="status" aria-live="polite" aria-label="Annonce d'événement" tabindex="-1">

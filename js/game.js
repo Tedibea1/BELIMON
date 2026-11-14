@@ -872,6 +872,12 @@
     $('eventEnemyPortrait').hidden=true;
     $('eventFrame').classList.add('event-placeholder');
   }
+  function setDesktopJournal(title,description){
+    const heading=$('desktopJournalStatus');
+    heading.textContent=title;
+    heading.hidden=!title;
+    $('desktopJournalHint').textContent=description;
+  }
   // L'effet affiché correspond au prochain tour à jouer et non au tour passé.
   function renderCombatHUD(slot){
     const tower=slot.data.tower;
@@ -934,26 +940,48 @@
     $('effectsOverlay').hidden=true;
     if(!$('combatHud').hidden)$('statusDetailsBtn').focus();
   }
+  // Le MISS apparaît sur la carte de la cible, quelle que soit la cause :
+  // échec du jet de précision, esquive normale ou intangibilité.
+  function combatMissFeedback(details){
+    return {
+      playerMiss:!!(details?.enemy?.miss || details?.enemy?.dodged),
+      enemyMiss:!!(details?.player?.miss || details?.player?.dodged)
+    };
+  }
   function playBattleFeedback(feedback){
     if(!feedback || STATE.screen!=='play'||STATE.activeTab!=='tour'||document.hidden)return;
-    const announce=(cardId,amount,heal=0)=>{
+    const announce=(cardId,amount,heal=0,miss=false)=>{
       const card=$(cardId);
       if(!card)return;
-      const hit=amount>0;
-      if(!hit && !heal)return;
-      // Si AUTO résout rapidement deux tours, ne pas laisser le minuteur
-      // de l'ancien impact supprimer la nouvelle animation.
+      const hit=amount>0,healing=!hit && heal>0;
+      if(!hit && !healing && !miss)return;
+      // AUTO : ne pas laisser l'ancien minuteur effacer le nouvel effet.
       clearTimeout(card._impactTimer);
       card.querySelectorAll('.hit-pop').forEach(node=>node.remove());
       card.classList.remove('impact-hit','impact-heal');
-      void card.offsetWidth;
-      card.classList.add(hit?'impact-hit':'impact-heal');
-      const label=mkEl('span',`hit-pop${!hit?' is-heal':''}`,hit?`−${amount}`:`+${heal}`);
-      label.setAttribute('aria-hidden','true');card.append(label);
-      card._impactTimer=setTimeout(()=>{label.remove();card.classList.remove('impact-hit','impact-heal');card._impactTimer=null;},850);
+      if(hit||healing){
+        void card.offsetWidth;
+        card.classList.add(hit?'impact-hit':'impact-heal');
+      }
+      const labels=[];
+      if(hit||healing){
+        const label=mkEl('span',`hit-pop${healing?' is-heal':''}`,hit?`−${amount}`:`+${heal}`);
+        label.setAttribute('aria-hidden','true');
+        card.append(label);labels.push(label);
+      }
+      if(miss){
+        const label=mkEl('span',`hit-pop is-miss${hit||healing?' is-stacked':''}`,'MISS');
+        label.setAttribute('aria-hidden','true');
+        card.append(label);labels.push(label);
+      }
+      card._impactTimer=setTimeout(()=>{
+        for(const label of labels)label.remove();
+        card.classList.remove('impact-hit','impact-heal');
+        card._impactTimer=null;
+      },850);
     };
-    announce('playerCombatCard',feedback.playerLost,feedback.playerHeal||0);
-    announce('enemyCombatCard',feedback.enemyLost,feedback.enemyHeal||0);
+    announce('playerCombatCard',feedback.playerLost,feedback.playerHeal||0,feedback.playerMiss);
+    announce('enemyCombatCard',feedback.enemyLost,feedback.enemyHeal||0,feedback.enemyMiss);
   }
   function renderTower(slot){
     const tower=slot.data.tower;
@@ -1024,6 +1052,13 @@
     $('eventWaiting').hidden=false;
     $('eventCardName').textContent='La tour';
     $('actionContext').textContent='Exploration';
+    const history=Array.isArray(tower.history)?tower.history:[];
+    // Évite de dupliquer la dernière action si elle est déjà affichée en résumé.
+    const latestTurn=event?.type==='combat' && event.state==='fighting' && tower.combat?.lastMessage
+      ?`Tour ${tower.combat.turn} : ${tower.combat.lastMessage}`:null;
+    const journalHistory=latestTurn && history[0]===latestTurn?history.slice(1):history;
+    $('logTop').textContent=journalHistory[0]||'Ton aventure commence dans la salle de repos.';
+    $('logBottom').textContent=journalHistory[1]||'Explore à ton rythme.';
     if(!event){
       const activeHero=slot.data.waifus.find(h=>h.id===slot.data.activeWaifuId);
       const anyAvailable=slot.data.waifus.some(h=>heroAvailable(h,tower));
@@ -1033,10 +1068,12 @@
       $('eventWaitingMessage').textContent='La tour attend ton prochain pas.';
       $('sideSituation').textContent='Une salle paisible avant la prochaine rencontre.';
       $('sideSituationChip').textContent='🏰 Salle de repos';
+      setDesktopJournal(`Salle de repos · Étage ${tower.floor}`,'Avance pour découvrir la prochaine salle.');
       
       $('advanceBtn').hidden=false;
       $('advanceBtn').disabled=STATE.actionBusy||!anyAvailable;
       if(!anyAvailable){$('sideSituation').textContent='Aucune waifu valide. Retourne à l’hôpital de l’étage 1.';
+        setDesktopJournal('🏥 Soins nécessaires','Toutes tes waifus sont KO ou hospitalisées. Retourne à l’hôpital.');
         }
     } else if(event.type==='combat'){
       const enemy=event.enemy,cls=classMap.get(enemy.classId);
@@ -1059,26 +1096,35 @@
       $('sideSituationChip').textContent=`⚔️ Combat · Rang ${enemy.rank}`;
       if(event.state==='pending'){
         $('actionContext').textContent='Choix de la combattante';
+        setDesktopJournal(`⚔️ ${cls.name} · Rang ${enemy.rank}`,heroAvailable(hero,tower)
+          ?'Choisis ta waifu avant le combat : elle compte pour la première des 3 combattantes autorisées.'
+          :'Ta waifu est blessée : choisis une combattante disponible dans ta collection.');
         
         $('startCombatBtn').hidden=false;
         $('startCombatBtn').disabled=STATE.actionBusy || !heroAvailable(hero,tower);
         $('chooseFighterBtn').hidden=false;
       }else if(event.state==='awaiting_switch'){
         $('actionContext').textContent='Relais obligatoire';
+        setDesktopJournal('💀 Waifu KO !','Choisis une autre waifu disponible pour poursuivre le combat. Le chrono est arrêté.');
         
         $('sideSituation').textContent='Ton personnage est KO. L’adversaire conserve ses PV, son énergie et ses malus.';
       }else if(event.state==='captured'){
         const captured=slot.data.waifus.find(w=>w.id===event.capturedWaifuId);
         $('actionContext').textContent='Capture réussie';
+        setDesktopJournal('🎯 CAPTURE RÉUSSIE !',captured
+          ?`${classMap.get(captured.classId).name} · Rang ${captured.rank} · ${morphName(captured.morph)} — ajoutée à ta collection !`
+          :'Une nouvelle waifu rejoint ta collection.');
         
         $('continueBtn').hidden=false;
       }else if(event.state==='won'){
         $('actionContext').textContent='Victoire';
+        setDesktopJournal('🏆 VICTOIRE !',event.reward?rewardLine(event.reward):tower.combat?.lastMessage||'Adversaire vaincue.');
         
         $('continueBtn').hidden=false;
       }else{
         $('actionContext').textContent=`Tour ${tower.combat?.turn+1||1} · ${autoEnabled?'Combat AUTO':'Combat manuel'}`;
-        // Aucun nom ni rang à gauche du compte rendu : seulement les deux actions.
+        // Pendant le duel, le panneau PC affiche le compte rendu du dernier tour.
+        setDesktopJournal('',tower.combat?.lastMessage||'À toi de jouer. La plus rapide agit en premier, sauf Défense.');
         
         $('actionPanel').classList.add('combat-mode');
         $('combatActionsGrid').hidden=false;
@@ -1095,6 +1141,10 @@
       $('sideSituation').textContent=opened?(trapped?'Un piège était caché dans ce coffre.':'Un coffre a été ouvert.'):'Impossible de savoir ce que contient ce coffre.';
       $('sideSituationChip').textContent=opened?(trapped?'☠️ Piège révélé':'🎁 Coffre ouvert'):'🎁 Coffre mystérieux';
       $('actionContext').textContent=opened?'Événement terminé':'Ouverture automatique';
+      setDesktopJournal(opened?(trapped?'☠️ Coffre piégé !':'🎁 Coffre découvert'):'🎁 Coffre trouvé',
+        opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' sur toutes tes waifus, pendant 2 étages.':'Piège déjà découvert dans une ancienne version.')
+          :event.reward?rewardLine(event.reward):'Coffre ouvert avant la V5.')
+          :'Le coffre s’ouvre automatiquement après l’annonce.');
       
       // Les coffres restent indiscernables avant ouverture ; aucun clic « Ouvrir » n’est nécessaire.
       if(opened)$('continueBtn').hidden=false;
@@ -1554,7 +1604,8 @@
       const result=COMBAT.resolveTurn(hero,event.enemy,action,data.bonuses,Math.random,{turn:data.tower.combat.turn+1,effects:data.tower.combat.effects,
         enemyAction:aiAction,trapPenalties:TRAPS.penalties(data.tower.activeTraps,data.tower.floor)});
       feedback={playerLost:Math.max(0,hero.hp-result.player.hp),enemyLost:Math.max(0,event.enemy.hp-result.enemy.hp),
-        playerHeal:Math.max(0,result.player.hp-hero.hp),enemyHeal:Math.max(0,result.enemy.hp-event.enemy.hp)};
+        playerHeal:Math.max(0,result.player.hp-hero.hp),enemyHeal:Math.max(0,result.enemy.hp-event.enemy.hp),
+        ...combatMissFeedback(result.details)};
       hero.hp=result.player.hp;hero.energy=result.player.energy;
       event.enemy.hp=result.enemy.hp;event.enemy.energy=result.enemy.energy;
       data.tower.combat.effects=result.effects;
@@ -1637,7 +1688,8 @@
         {turn:data.tower.combat.turn+1,effects:data.tower.combat.effects,enemyAction:aiAction,
           trapPenalties:TRAPS.penalties(data.tower.activeTraps,data.tower.floor)});
       feedback={playerLost:Math.max(0,player.hp-result.player.hp),enemyLost:Math.max(0,target.enemy.hp-result.enemy.hp),
-        playerHeal:Math.max(0,result.player.hp-player.hp),enemyHeal:Math.max(0,result.enemy.hp-target.enemy.hp)};
+        playerHeal:Math.max(0,result.player.hp-player.hp),enemyHeal:Math.max(0,result.enemy.hp-target.enemy.hp),
+        ...combatMissFeedback(result.details)};
       player.hp=result.player.hp;player.energy=result.player.energy;
       target.enemy.hp=result.enemy.hp;target.enemy.energy=result.enemy.energy;
       data.tower.combat.effects=result.effects;
