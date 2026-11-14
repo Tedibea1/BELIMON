@@ -103,14 +103,43 @@
     { id:'occultiste', name:'Occultiste', role:'Soutien', icon:'🔮', stats:{force:10,rapidite:30,constitution:20}, hp:100 },
     { id:'pretresse', name:'Prêtresse', role:'Healer', icon:'🌸', stats:{force:20,rapidite:20,constitution:20}, hp:130 },
     { id:'griffeuse', name:'Griffeuse', role:'DPS', icon:'🐱', stats:{force:20,rapidite:30,constitution:10}, hp:110 },
-    { id:'vampire', name:'Vampire', role:'DPS / Survie', icon:'🧛', stats:{force:20,rapidite:20,constitution:20}, hp:130, starter:false },
+    { id:'vampire', name:'Vampire', role:'DPS / Survie', icon:'🧛', stats:{force:30,rapidite:10,constitution:20}, hp:130, starter:false },
     { id:'spectre', name:'Spectre', role:'DPS / Esquive', icon:'👻', stats:{force:10,rapidite:40,constitution:10}, hp:110, starter:false },
     { id:'nemesis', name:'Némésis', role:'Tank', icon:'🪞', stats:{force:20,rapidite:10,constitution:30}, hp:160, starter:false },
     { id:'maudite', name:'Maudite', role:'Tank / Usure', icon:'🩸', stats:{force:20,rapidite:10,constitution:30}, hp:160, starter:false },
-    { id:'envouteuse', name:'Envoûteuse', role:'Polyvalente', icon:'🔮', stats:{force:20,rapidite:20,constitution:20}, hp:130, starter:false },
-    { id:'exorciste', name:'Exorciste', role:'Soutien', icon:'✨', stats:{force:20,rapidite:20,constitution:20}, hp:130, starter:false }
+    { id:'envouteuse', name:'Envoûteuse', role:'Polyvalente', icon:'🔮', stats:{force:10,rapidite:30,constitution:20}, hp:130, starter:false },
+    { id:'exorciste', name:'Exorciste', role:'Soutien', icon:'✨', stats:{force:10,rapidite:30,constitution:20}, hp:130, starter:false }
   ]);
   const classMap = new Map(HERO_CLASSES.map(item=>[item.id,item]));
+  // V15.9 : seules les trois classes historiquement 20/20/20 sont rééquilibrées.
+  // Les valeurs sauvegardées sont recalculées uniquement si elles correspondent
+  // exactement à leur ancienne progression rang + morphologie.
+  const PRE_V15_9_BASE_STATS = Object.freeze({
+    vampire:{force:20,rapidite:20,constitution:20},
+    envouteuse:{force:20,rapidite:20,constitution:20},
+    exorciste:{force:20,rapidite:20,constitution:20}
+  });
+  function migrateV15_9Stats(slot){
+    const state=slot?.data?.tower?.event?.state;
+    // Ne pas rebâtir les statistiques d'une combattante au milieu d'un duel.
+    if(state==='fighting' || state==='awaiting_switch')return false;
+    let changed=false;
+    for(const hero of slot?.data?.waifus||[]){
+      const oldBase=PRE_V15_9_BASE_STATS[hero.classId];
+      if(!oldBase || !RANKS.includes(hero.rank))continue;
+      const cls=classMap.get(hero.classId);
+      const multiplier=RANK_MULTIPLIERS[hero.rank];
+      const steps=RANKS.indexOf(hero.rank);
+      const morphBonus=MORPH_BONUSES[hero.morph]||{force:0,rapidite:0,constitution:0};
+      const keys=['force','rapidite','constitution'];
+      const oldValue=key=>round(oldBase[key]*multiplier)+steps*morphBonus[key];
+      if(!keys.every(key=>hero.stats?.[key]===oldValue(key)))continue;
+      for(const key of keys)hero.stats[key]=round(cls.stats[key]*multiplier)+steps*morphBonus[key];
+      changed=true;
+    }
+    return changed;
+  }
+
   const $ = id => document.getElementById(id);
   const clone = value => JSON.parse(JSON.stringify(value));
   const portrait = id => `assets/characters/${id}/commun/E.png`;
@@ -490,13 +519,24 @@
       storageStatus('💾 Stockage local · pense à exporter tes parties');
       if(idbError)console.info('Continuité V1–V10 : sauvegardes locales conservées.');
     }
+    // Convertir les waifus déjà capturées, sur toutes les parties existantes.
+    // Une conversion au milieu d'un duel attend sa résolution puis la prochaine sauvegarde.
+    for(const saved of [...STATE.slots.values()]){
+      const updated=clone(saved);
+      if(!migrateV15_9Stats(updated))continue;
+      updated.updatedAt=nowISO();updated.data.lastSavedAt=updated.updatedAt;
+      try{await saveSlot(updated);}
+      catch(error){console.warn('Conversion des statistiques V15.9 différée :',error);}
+    }
   }
   async function saveSlot(slot){
     if(!STATE.storage)throw Error('Stockage indisponible');
     if(!validSlot(slot))throw Error('Sauvegarde invalide');
     const original=STATE.slots.get(slot.id);
     const expected=revision(original),expectedUpdatedAt=original?.updatedAt||null;
-    const copy=clone(slot);copy.saveRevision=expected+1;
+    const copy=clone(slot);
+    migrateV15_9Stats(copy);
+    copy.saveRevision=expected+1;
     if(STATE.storage.mode==='indexeddb'){
       try{await idbGuardedPut(STATE.storage.db,copy,expected,expectedUpdatedAt);}
       catch(error){
