@@ -1,0 +1,24 @@
+/* BELLYMON V7 — Nourrissage à deux colonnes et choix des morphologies. */
+.food-option{width:100%;font-family:inherit;color:#f7f1ff;cursor:pointer;text-align:left;transition:border-color .13s,background .13s}
+.food-option.is-selected{border-color:#ffbc6b;box-shadow:inset 0 0 0 1px #b9752a;background:linear-gradient(95deg,#443029,#20253b)}
+.food-option[disabled]{opacity:.58;cursor:not-allowed}
+.food-quantity{display:flex;gap:5px;align-items:center;margin:5px 0 8px}
+.food-quantity input{min-width:0;flex:1;width:40px;padding:9px 4px;border:1px solid #49546c;border-radius:8px;background:#0f1a2c;color:#f9dba0;text-align:center;font-weight:850;font-size:16px;appearance:textfield}
+.food-quantity input::-webkit-outer-spin-button,.food-quantity input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.food-quantity button{border-radius:9px;border:1px solid #525d77;background:#27334a;color:#fff0d4;font-weight:900;font-size:20px;min-width:36px;min-height:36px;cursor:pointer}
+.food-quantity button:disabled{opacity:.4;cursor:not-allowed}
+.feed-preview{font-size:11px;line-height:1.4;color:#d5c8d7;min-height:36px;margin:5px 0 10px}
+.evolution-progress{margin-top:15px;border-top:1px solid #4f4b64;padding-top:12px}
+.evolution-progress-label{display:flex;justify-content:space-between;gap:8px;align-items:center;color:#d5d0ea;font-size:12px;font-weight:750}
+.evolution-progress-label strong{color:#f9c978}
+.evolution-meter{margin-top:9px;margin-bottom:0}
+.evolution-fill{display:block;height:100%;width:0%;border-radius:99px;background:linear-gradient(90deg,#b266ca,#ffa43c)}
+.morph-modal{width:min(710px,calc(100vw - 32px));max-height:calc(100dvh - 25px);overflow:auto;padding:18px 20px;background:linear-gradient(145deg,#24223c,#141a2a);border:1px solid #977188}
+.morph-modal .compact-footnote{margin:6px 0 16px}
+.morph-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-bottom:16px}
+.morph-choice{display:flex;flex-direction:column;align-items:center;gap:8px;padding:8px;background:#1a2739;border:1px solid #605e7d;border-radius:13px;color:#fff1e9;cursor:pointer;min-width:0}
+.morph-choice:hover,.morph-choice:focus-visible{border-color:#ffc77e;outline-offset:2px}
+.morph-choice img{width:100%;aspect-ratio:1/1;object-fit:contain;border-radius:9px;background:#0c1325}
+.morph-choice strong{font-size:13px}.morph-choice small{font-size:10px;line-height:1.35;color:#d0c5db;text-align:center}
+@media(max-width:430px){.morph-modal{padding:13px}.morph-options{gap:5px}.morph-choice{padding:5px;gap:5px}.morph-choice strong{font-size:11px}.morph-choice small{font-size:9px}.food-quantity button{min-width:30px;min-height:34px}}
+@media(max-width:335px){.morph-choice strong{font-size:10px}.morph-choice small{font-size:8px}}

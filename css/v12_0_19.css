@@ -1,0 +1,5 @@
+/* V12.0.19 — Septième commande conservant AUTO. */
+.combat-actions-grid .recovery-action{grid-column:1/-1;border-color:#63887b;background:linear-gradient(145deg,#263e44,#192e3b);min-height:39px}
+.combat-actions-grid .recovery-action:hover:not(:disabled){border-color:#96dfb0;background:linear-gradient(145deg,#31584f,#25484b)}
+.combat-actions-grid .recovery-action small{color:#b8efd7;opacity:1}
+@media(max-width:420px){.combat-actions-grid .recovery-action{padding:10px 5px}}

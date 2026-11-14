@@ -1,0 +1,19 @@
+/* V14.5 : disposition desktop/mobile stable des raccourcis et AUTO exploration. */
+.action-panel:has(#shortcutActions:not([hidden])){display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.action-panel:has(#shortcutActions:not([hidden])) .tower-actions{display:flex;flex-direction:column;align-items:stretch;width:100%;gap:10px;min-width:0}
+.action-panel:has(#shortcutActions:not([hidden])) #advanceBtn{display:block;flex:none;width:100%;max-width:none;min-width:0;font-size:14px;padding:13px 16px}
+.action-panel:has(#shortcutActions:not([hidden])) #shortcutActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%;min-width:0;flex:none}
+.action-panel:has(#shortcutActions:not([hidden])) #shortcutActions[hidden]{display:none!important}
+.action-panel:has(#shortcutActions:not([hidden])) #shortcutActions .shortcut-btn{min-width:0;max-width:none;flex:none;width:100%;white-space:normal;min-height:54px;padding:11px 10px}
+.action-panel:has(#shortcutActions:not([hidden])) #shortcutWallet{grid-column:1/-1;margin:0;text-align:left}
+.tower-auto-toggle{display:inline-flex;gap:10px;align-items:center;justify-content:center;min-width:135px}
+.tower-auto-toggle small{font-size:11px}
+.tower-auto-toggle.is-auto{background:linear-gradient(110deg,#155841,#1b3947);border-color:#34c583;color:#deffea}
+.tower-auto-toggle.is-auto small{color:#b0f5c9}
+.action-panel:has(#shortcutActions:not([hidden])) #towerAutoButton{align-self:flex-start;width:auto;padding:10px 16px}
+@media(max-width:420px){
+ .action-panel:has(#shortcutActions:not([hidden])) #shortcutActions{gap:7px}
+ .action-panel:has(#shortcutActions:not([hidden])) #shortcutActions .shortcut-btn{padding:9px 6px}
+ .action-panel:has(#shortcutActions:not([hidden])) #advanceBtn{font-size:12px}
+ .tower-auto-toggle{min-width:110px}
+}

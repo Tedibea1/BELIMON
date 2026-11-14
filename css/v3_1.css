@@ -1,0 +1,7 @@
+/* V3.1 — chronomètre et compétences spéciales, grille conservée. */
+.combat-timer{justify-self:center;padding:5px 13px;border:1px solid #67678a;border-radius:999px;background:#222b40;color:#e9eeff;font-size:14px;font-weight:900;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.combat-timer.urgent{color:#ffd2a1;border-color:#d77b4d;background:#4e2937}
+.combat-timer[hidden]{display:none!important}
+.fight-action[data-combat-action="special"]{border-color:#9c79cc;background:linear-gradient(140deg,#413454,#242642)}
+.fight-action #specialActionName{font-size:inherit;min-width:0;overflow-wrap:anywhere}
+@media(max-width:420px){.fight-action[data-combat-action="special"]{font-size:10px}.combat-timer{font-size:12px}}

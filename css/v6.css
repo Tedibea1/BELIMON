@@ -1,0 +1,16 @@
+/* V6 : capture des adversaires et sélection rapide avant combat. */
+#fighterOverlay{z-index:24}
+.fighter-modal{width:min(100%,700px);max-height:calc(100dvh - 30px);overflow-y:auto}
+.fighter-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.fighter-card{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;border-radius:13px;padding:9px 8px;border:1px solid #6c688a;background:linear-gradient(150deg,#332e4c,#181b30);color:#fff0e5;cursor:pointer}
+.fighter-card img{width:100%;aspect-ratio:1;object-fit:contain;border-radius:9px;background:#121526}
+.fighter-card strong{font-size:12px;text-align:center}
+.fighter-card small{font-size:10px;color:#cfc5d9;text-align:center}
+.fighter-card.selected{border:2px solid #ffc477;box-shadow:0 0 0 1px #eab65d55}
+.fighter-card[disabled]{opacity:.48;cursor:not-allowed}
+.fighter-card:hover:not([disabled]),.fighter-card:focus-visible{border-color:#ffdb91}
+.capture-preview{width:min(180px,70%);max-height:230px;object-fit:contain;display:block;margin:12px auto;border-radius:13px;border:1px solid #ffc87775;background:#141829}
+.capture-preview[hidden]{display:none!important}
+#chooseFighterBtn{min-width:0}
+.duplicate-number{font-size:10px;color:#ffdaa0;font-weight:800}
+@media(max-width:560px){.fighter-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.fighter-modal{padding:15px}}

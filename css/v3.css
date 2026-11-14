@@ -1,0 +1,17 @@
+/* BELLYMON — V3 : commandes réelles en grille 2 × 3. */
+.action-panel.combat-mode{display:grid;grid-template-columns:1fr;align-items:stretch;gap:10px}
+.action-panel.combat-mode .tower-actions{justify-content:flex-end}
+.combat-actions-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%}
+.combat-actions-grid[hidden]{display:none!important}
+.fight-action{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 8px;min-width:0;padding:12px 7px;background:linear-gradient(145deg,#2f344f,#1c2740);color:#f4ecff;border:1px solid #66628a;font-size:13px;font-weight:850;cursor:pointer}
+.fight-action small{font-size:10px;opacity:.77;white-space:nowrap}
+.fight-action:hover:not(:disabled){border-color:#f3b561;background:linear-gradient(145deg,#4b3b5a,#2a324d)}
+.fight-action[data-combat-action="defend"]{border-color:#537d8f}
+.fight-action:disabled{opacity:.47;cursor:not-allowed}
+.action-panel.combat-mode .action-panel-label{flex-direction:row;justify-content:space-between}
+@media(max-width:420px){
+ .combat-actions-grid{gap:5px}
+ .fight-action{font-size:11px;padding:10px 3px;gap:2px}
+ .fight-action small{font-size:9px}
+}
+@media(max-width:340px){.fight-action{font-size:10px;padding:9px 2px}}

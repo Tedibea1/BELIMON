@@ -1,0 +1,10 @@
+/* BELLYMON V12.0.5 — gestion des waifus */
+.collection-sort-note{display:block;color:#bdb7cb;font-size:11px;margin-top:3px}
+#renameHeroOverlay{z-index:31}
+.rename-hero-modal{width:min(100%,450px)}
+.rename-hero-modal h2{font-size:19px;margin:0 0 17px}
+.rename-hero-modal label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+.rename-hero-modal input{width:100%;font-size:16px}
+.rename-help{font-size:12px;line-height:1.5;margin:9px 0}
+.hero-detail-modal .detail-actions .btn{flex:0 1 auto}
+@media(max-width:500px){.hero-detail-modal .detail-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.hero-detail-modal .detail-actions .btn{min-width:0;white-space:normal;padding:10px 5px}}

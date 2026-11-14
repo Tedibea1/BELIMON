@@ -1,0 +1,53 @@
+/* V2 — tour infinie, prévisualisation des événements et annonces visuelles.
+   CSS original et indépendant de Bellyverse. */
+.event-icon-content{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:4px}
+.event-icon-content>span{font-size:clamp(55px,8vw,94px);line-height:1.2;filter:drop-shadow(0 9px 16px #060617a0)}
+.event-icon-content>p{margin:5px 0 0;color:#e6d8eb;font-size:13px;font-weight:800;text-align:center;padding:0 5px}
+.event-card #eventEnemyPortrait{display:block;object-fit:contain;max-width:100%;max-height:100%}
+.event-card #eventEnemyPortrait[hidden],.event-icon-content[hidden]{display:none!important}
+.event-card .event-placeholder{background:radial-gradient(ellipse at 50% 47%,#383049,#131c2f 78%)}
+.event-card .card-meters.waiting{padding:16px 4px 2px}
+.event-card .card-meters.waiting .idle-label{font-size:12px}
+.event-card .card-meters.waiting p{line-height:1.45}
+.event-banner{transition:background .24s ease;min-height:55px}
+.tower-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:9px}
+.tower-actions .advance-btn{min-width:140px}
+.tower-actions .tower-quit{font-size:11px;padding:11px 10px;white-space:normal;max-width:135px}
+.event-announcement{position:fixed;inset:0;z-index:35;display:grid;place-items:center;cursor:pointer;background:rgba(4,7,17,.88);backdrop-filter:blur(4px);color:#fff6e5;text-align:center;animation:ann-in .25s ease-out}
+.event-announcement[hidden]{display:none!important}
+.event-announcement-content{width:min(calc(100vw - 40px),600px);padding:38px 12px;filter:drop-shadow(0 10px 28px #e3a72e55)}
+.announcement-icon{font-size:clamp(44px,10vw,68px);line-height:1.1;margin-bottom:14px;animation:ann-pop .4s ease-out both}
+.announcement-title{font-size:clamp(43px,11vw,92px);font-weight:1000;line-height:1.08;letter-spacing:.09em;color:#ffe5b2;text-shadow:0 0 36px #c87c39a6;animation:ann-pop .5s ease-out both}
+.announcement-subtitle{font-size:clamp(14px,3vw,20px);color:#e6d1aa;letter-spacing:.055em;margin:8px 0 26px}
+.event-announcement-content>small{color:#a7aec7;font-size:10px;font-weight:800;letter-spacing:.14em}
+@keyframes ann-in{from{opacity:0}to{opacity:1}}
+@keyframes ann-pop{0%{transform:scale(.85);opacity:.3}75%{transform:scale(1.05);opacity:1}100%{transform:scale(1);opacity:1}}
+.event-result-modal{text-align:center;width:min(92vw,450px);padding:26px 26px 22px;border:1px solid #d5a558;background:linear-gradient(150deg,#22243e,#141d32 82%);box-shadow:0 20px 90px #000c}
+.event-result-modal .result-icon{font-size:66px;line-height:1.2;margin-bottom:8px}
+.event-result-modal h2{font-size:24px;color:#ffd795;margin:7px 0}
+.event-result-modal p{color:#d3d7e6;font-size:14px;line-height:1.65;margin:14px 0 22px}
+.event-result-modal .btn{font-size:14px}
+@media(max-width:720px){
+  .event-icon-content>span{font-size:clamp(40px,10vw,67px)}
+  .event-icon-content>p{font-size:11px}
+  .tower-actions{gap:6px}
+  .tower-actions .tower-quit{font-size:10px;padding:9px 9px}
+  .event-banner{min-height:54px}
+}
+@media(max-width:420px){
+  .event-icon-content>span{font-size:clamp(37px,10vw,51px)}
+  .event-icon-content>p{font-size:10px}
+  .action-panel-label{min-width:0}
+  .tower-actions .advance-btn{min-width:105px;padding:10px 8px;font-size:11px}
+  .tower-actions .tower-quit{max-width:106px;font-size:9px;padding:8px 7px}
+  .event-result-modal{padding:22px 18px}
+  .event-result-modal h2{font-size:20px}
+}
+@media (max-width:340px){
+  .tower-actions .advance-btn{min-width:93px}
+  .tower-actions .tower-quit{max-width:94px}
+  .action-panel-label strong{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .event-announcement,.announcement-title,.announcement-icon{animation:none}
+}

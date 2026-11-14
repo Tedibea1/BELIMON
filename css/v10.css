@@ -1,0 +1,8 @@
+/* BELLYMON V10 — contrôle AUTO et sélection rapide de nourriture. */
+.fight-action.auto-toggle{border-color:#687f94;background:#192b3c;transition:background .15s,border-color .15s,box-shadow .15s}
+.fight-action.auto-toggle.is-auto{color:#d9ffe8;border-color:#34c583;background:linear-gradient(115deg,#145840,#1c3846);box-shadow:inset 0 0 0 1px #37916e}
+.fight-action.auto-toggle[aria-pressed="true"] small{color:#aff2bc}
+.fight-action.auto-toggle:focus-visible,.food-quantity .food-max:focus-visible{outline:2px solid #ffc76d;outline-offset:2px}
+.food-quantity .food-max{min-width:48px;padding:0 7px;font-size:12px;letter-spacing:.04em;background:#634721;border-color:#bb8c43;color:#fff0cf}
+.food-quantity .food-max:not(:disabled):hover{background:#865c24}
+@media(max-width:430px){.food-quantity .food-max{min-width:39px;padding:0 3px;font-size:11px}}

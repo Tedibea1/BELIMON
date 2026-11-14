@@ -1,0 +1,23 @@
+/* V14.4 — Les raccourcis se trouvent dans Commandes, uniquement en salle de repos de l'étage 1. */
+.tower-actions .shortcut-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:flex-end}
+.tower-actions .shortcut-actions[hidden]{display:none!important}
+.tower-actions .shortcut-btn{display:flex;flex-direction:column;gap:5px;justify-content:center;align-items:center;min-width:178px;max-width:250px;line-height:1.24;text-align:center;padding:11px 13px;white-space:normal}
+.tower-actions .shortcut-btn .shortcut-name{font-size:12px;font-weight:750}
+.tower-actions .shortcut-btn .shortcut-cost{font-size:12px;color:#ffcb7c;font-weight:750;letter-spacing:.02em}
+.tower-actions .shortcut-btn:disabled{opacity:.57;cursor:not-allowed}
+.tower-actions .shortcut-btn:disabled .shortcut-cost{color:#d4b69b}
+.tower-actions .shortcut-wallet{flex-basis:100%;margin:0;color:#c9c2da;font-size:11px;text-align:right}
+@media(max-width:930px){
+ .action-panel:has(.shortcut-actions:not([hidden])){display:flex;flex-direction:column;align-items:stretch}
+ .action-panel:has(.shortcut-actions:not([hidden])) .tower-actions{justify-content:stretch;gap:8px}
+ .action-panel:has(.shortcut-actions:not([hidden])) .tower-actions>.advance-btn{flex:1 1 100%}
+ .tower-actions .shortcut-actions{flex:1 1 100%;justify-content:stretch}
+ .tower-actions .shortcut-btn{flex:1 1 165px;max-width:none}
+ .tower-actions .shortcut-wallet{text-align:left}
+}
+@media(max-width:420px){
+ .tower-actions .shortcut-actions{gap:7px}
+ .tower-actions .shortcut-btn{min-width:0;flex-basis:calc(50% - 4px);padding:10px 6px}
+ .tower-actions .shortcut-btn .shortcut-name{font-size:11px}
+ .tower-actions .shortcut-btn .shortcut-cost{font-size:11px}
+}

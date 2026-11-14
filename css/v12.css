@@ -1,0 +1,61 @@
+/* BELLYMON V12.0.1 — correction flash des impacts.
+   L’animation dure 420 ms mais la classe d’impact reste 850 ms :
+   forwards + opacity:0 empêchent le flash de revenir entre ces deux instants. */
+.combat-hud{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 10px;padding:2px 1px}
+.combat-hud[hidden],.combat-effect-line[hidden],.effects-panel[hidden]{display:none!important}
+.turn-indicator{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:30px;background:#342642;border:1px solid #9273ab;color:#f5dcff;font-size:12px;font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums}
+.turn-indicator.new-turn{animation:turn-pop .6s ease-out}
+.status-details-btn{background:#1c2639;border:1px solid #8a647e;border-radius:999px;padding:6px 11px;color:#e8c6e2;font-size:12px;font-weight:850;cursor:pointer;white-space:nowrap}
+.status-details-btn.has-effects{border-color:#b66b7b;background:#43233d;color:#ffdeee}
+.status-details-btn:hover{filter:brightness(1.15)}
+.combat-effect-line{display:flex;flex-wrap:wrap;gap:4px;min-height:0;margin:7px 0 0}
+.combat-effect-line .effect-chip{display:inline-flex;max-width:100%;padding:4px 6px;border-radius:7px;border:1px solid #925876;background:#45273d;color:#ffc7e2;font-size:10px;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
+.combat-effect-line .effect-chip.is-trap{background:#3d2d36;border-color:#9d6c54;color:#f3d0a9}
+.game-card{position:relative}
+.game-card.impact-hit{animation:card-hit .42s cubic-bezier(.2,.1,.25,1)}
+.game-card.impact-hit::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:rgba(250,50,79,.25);opacity:0;animation:flash-hit .42s ease-out forwards}
+.game-card.impact-heal{animation:card-heal .42s ease-out}
+.game-card.impact-heal::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:rgba(86,255,155,.18);opacity:0;animation:flash-hit .42s ease-out forwards}
+.hit-pop{position:absolute;z-index:5;left:50%;top:28%;transform:translateX(-50%);font-size:clamp(16px,2.7vw,27px);font-weight:1000;color:#ff5e77;text-shadow:0 2px 2px #000,0 3px 15px #15030d;white-space:nowrap;pointer-events:none;animation:hit-float .8s ease-out forwards}
+.hit-pop.is-heal{color:#8df0a5}.hit-pop.is-dodge{color:#afe8ff;font-size:clamp(12px,2vw,18px)}
+.effects-modal{width:min(94vw,470px);max-height:85dvh;overflow-y:auto}
+.effects-modal .effect-section{padding:10px;border:1px solid #40536b;background:#161f34;border-radius:10px;margin-top:9px}
+.effects-modal .effect-heading{font-size:12px;color:#ffd79b;font-weight:900;margin:0 0 7px}
+.effects-modal .effect-description{font-size:12px;line-height:1.45;color:#e7d6eb;padding:7px 0;border-top:1px solid #ffffff16}
+.effects-modal .effect-description:first-of-type{border-top:0}
+.effects-modal .effect-none{font-size:12px;color:#9eacc6}
+@keyframes turn-pop{0%{transform:scale(.87);background:#87562a;color:#fff}45%{transform:scale(1.07)}100%{transform:scale(1)}}
+@keyframes card-hit{0%,100%{transform:translateX(0)}16%{transform:translateX(-6px)}32%{transform:translateX(6px)}48%{transform:translateX(-4px)}67%{transform:translateX(3px)}83%{transform:translateX(-1px)}}
+@keyframes card-heal{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
+@keyframes flash-hit{0%{opacity:1}100%{opacity:0}}
+@keyframes hit-float{0%{opacity:0;transform:translate(-50%,8px) scale(.85)}20%{opacity:1;transform:translate(-50%,0) scale(1.1)}100%{opacity:0;transform:translate(-50%,-27px) scale(1)}}
+@media(max-width:420px){.combat-hud{margin-bottom:8px}.turn-indicator,.status-details-btn{font-size:10px;padding:5px 8px}.combat-effect-line .effect-chip{font-size:9px;padding:3px 5px}}
+@keyframes hit-fade{0%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.game-card.impact-hit,.game-card.impact-heal,.turn-indicator.new-turn{animation:none!important}.hit-pop{animation:hit-fade .8s linear forwards}}
+
+/* V12.0.3 : respecter le saut de ligne entre action joueuse et réponse ennemie. */
+#sessionHint{white-space:pre-line}
+
+/* V12.0.4 — Masquer les coins blancs intégrés aux PNG des illustrations.
+   Le cadre et l'image sont découpés ensemble, y compris sur les petits écrans. */
+.portrait-frame {
+  border-radius: 14%;
+  overflow: hidden;
+  isolation: isolate;
+}
+.portrait-frame > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+/* Même finition dans les vignettes et les fiches de collection. */
+.owned-card img,
+.hero-detail-left img,
+.fighter-card img,
+.relay-card img,
+.morph-choice img,
+.class-option img,
+.capture-preview {
+  border-radius: 14%;
+}

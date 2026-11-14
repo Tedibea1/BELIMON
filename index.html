@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#141426">
+  <title>BELLYMON · V15.7</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/v1_1.css">
+  <link rel="stylesheet" href="css/v2.css">
+  <link rel="stylesheet" href="css/v3.css">
+  <link rel="stylesheet" href="css/v3_1.css">
+  <link rel="stylesheet" href="css/v4.css">
+  <link rel="stylesheet" href="css/v5.css">
+  <link rel="stylesheet" href="css/v6.css">
+  <link rel="stylesheet" href="css/v7.css">
+  <link rel="stylesheet" href="css/v8.css">
+  <link rel="stylesheet" href="css/v9.css">
+  <link rel="stylesheet" href="css/v10.css">
+  <link rel="stylesheet" href="css/v11.css">
+  <link rel="stylesheet" href="css/v12.css">
+  <link rel="stylesheet" href="css/v12_0_5.css">
+  <link rel="stylesheet" href="css/v12_0_6.css">
+  <link rel="stylesheet" href="css/v12_0_7.css">
+  <link rel="stylesheet" href="css/v12_0_8.css">
+  <link rel="stylesheet" href="css/v12_0_13.css">
+  <link rel="stylesheet" href="css/v12_0_18.css">
+  <link rel="stylesheet" href="css/v12_0_19.css">
+  <link rel="stylesheet" href="css/v12_0_21.css">
+  <link rel="stylesheet" href="css/v14_4.css">
+  <link rel="stylesheet" href="css/v14_5.css">
+  <link rel="stylesheet" href="css/guide.css">
+  <link rel="stylesheet" href="css/v15_5_1.css">
+  <script defer src="js/guide.js"></script>
+  <script defer src="js/bonuses.js"></script>
+  <script defer src="js/traps.js"></script>
+  <script defer src="js/combat.js"></script>
+  <script defer src="js/hospital.js"></script>
+  <script defer src="js/shop.js"></script>
+  <script defer src="js/rewards.js"></script>
+  <script defer src="js/capture.js"></script>
+  <script defer src="js/evolution.js"></script>
+  <script defer src="js/auto.js"></script>
+  <script defer src="js/combat-ui.js"></script>
+  <script defer src="js/audio.js"></script>
+  <script defer src="js/shortcuts.js"></script>
+  <script defer src="js/game.js"></script>
+</head>
+<body>
+  <div class="glow glow-a" aria-hidden="true"></div><div class="glow glow-b" aria-hidden="true"></div>
+  <div id="app" class="shell">
+    <header class="masthead">
+      <div class="identity"><span class="emblem" aria-hidden="true">✦</span><div><small>RPG · VERSION 15.5.2</small><h1>BELLYMON</h1></div></div>
+      <div class="masthead-controls"><button type="button" id="openGuideBtn" class="btn subdued guide-open-btn" aria-controls="guideScreen">📖 Guide</button><button id="audioSettingsBtn" type="button" class="btn subdued audio-toggle" aria-haspopup="dialog" aria-controls="audioOverlay" aria-label="Réglages des musiques et effets sonores">🎵 Son</button>
+      <div class="header-actions" id="gameHeaderActions" hidden>
+        <button type="button" id="manualSaveBtn" class="btn subdued">💾 Sauver</button>
+        <button type="button" id="menuBtn" class="btn subdued">⌂ Mes parties</button>
+      </div></div>
+    </header>
+
+    <main>
+      <section id="menuScreen" class="screen" aria-label="Gestion des parties">
+        <div class="panel intro-panel"><span class="overline">VOTRE AVENTURE COMMENCE ICI</span><h2>Mes parties</h2><p>Chaque partie possède sa propre collection de waifus et sa propre progression. Reprenez une aventure ou créez-en une nouvelle.</p></div>
+        <section class="panel save-panel" aria-labelledby="savesHeading">
+          <div class="panel-heading"><h3 id="savesHeading">Sauvegardes</h3><span id="saveCount" class="pill">0 PARTIE</span></div>
+          <div id="saveList" class="save-list" aria-live="polite"></div>
+          <button type="button" id="newGameBtn" class="btn primary wide">＋ Créer une nouvelle partie</button>
+          <div class="import-actions"><button type="button" id="exportAllBtn" class="btn subdued">↧ Exporter toutes les parties</button><button type="button" id="importFileBtn" class="btn subdued">↥ Importer un fichier JSON</button><button type="button" id="pasteBtn" class="btn subdued">▤ Coller une sauvegarde</button></div>
+          <input id="importFile" type="file" accept=".json,application/json" hidden>
+          <div id="pastePanel" class="paste-panel" hidden><label for="pasteInput">Sauvegarde JSON de ce jeu</label><textarea id="pasteInput" rows="5" placeholder="Collez ici le contenu de votre fichier de sauvegarde..."></textarea><div class="row-actions"><button type="button" id="pasteCancel" class="btn subdued">Annuler</button><button type="button" id="pasteConfirm" class="btn primary">Importer</button></div></div>
+          <p id="storageStatus" class="storage-health" role="status">💾 Vérification du stockage…</p>
+          <p id="storageWarning" class="notice bad" role="alert" hidden></p>
+          <p class="hint">Les parties de FEASTBORN et Chronicles restent totalement séparées. Pensez à exporter vos sauvegardes avant de changer d’appareil ou de navigateur.</p>
+        </section>
+      </section>
+
+      <section id="createScreen" class="screen" aria-label="Créer une partie" hidden>
+        <section class="panel creation-panel">
+          <div class="panel-heading"><div><span class="overline">NOUVELLE AVENTURE</span><h2>Créer une partie</h2></div><button type="button" id="createBack" class="btn subdued">← Retour</button></div>
+          <form id="createForm" novalidate>
+            <div class="two-inputs"><label>Nom de la partie <input id="partyName" type="text" autocomplete="off" maxlength="36" required placeholder="Partie 1"></label><label>Pseudo du joueur <input id="playerName" type="text" autocomplete="off" minlength="2" maxlength="22" required placeholder="Ex. : Aventurier"></label></div>
+            <div class="picker-heading"><div><h3>Choisis ta première waifu</h3><p>Une héroïne de rang E. Sa classe restera fixe ; sa spécialisation sera choisie plus tard.</p></div><span class="pill">6 CLASSES</span></div>
+            <div id="classPicker" class="class-picker" role="radiogroup" aria-label="Classe de la première waifu"></div>
+            <p id="createError" class="notice bad" role="alert" hidden></p>
+            <button class="btn primary wide create-submit" type="submit">Commencer l'aventure →</button>
+          </form>
+        </section>
+      </section>
+
+
+      <section id="guideScreen" class="screen guide-screen" aria-label="Guide de BELLYMON" hidden>
+        <div class="guide-intro panel">
+          <div><span class="overline">ENCYCLOPÉDIE DE BELLYMON</span><h2>📖 Le Guide des waifus</h2><p>Découvre les classes, leurs styles de combat et les morphologies. Les caractéristiques sont présentées par spécialités, sans dévoiler les valeurs du jeu.</p></div>
+          <div class="guide-seal" aria-hidden="true">✦</div>
+        </div>
+        <nav class="guide-nav" aria-label="Navigation du guide">
+          <button id="guideBackBtn" class="btn guide-return" type="button">↩ Retour au jeu</button>
+          <button type="button" class="guide-tab is-selected" data-guide-tab="classes" aria-pressed="true">⚔️ Classes</button>
+          <button type="button" class="guide-tab" data-guide-tab="morphologies" aria-pressed="false">💪 Morphologies</button>
+          <button type="button" class="guide-tab" data-guide-tab="competences" aria-pressed="false">✨ Compétences</button>
+        </nav>
+        <div id="guideContent" aria-live="polite"></div>
+      </section>
+
+      <section id="playScreen" class="screen game-screen" aria-label="Partie active" hidden>
+        <div class="game-head">
+          <div class="player-welcome"><span class="overline" id="playingLabel">PARTIE</span><h2 id="playingPlayer">Aventurier</h2></div>
+          <span class="pill floor-pill">🏰 Étage <span id="floorLabel">1</span></span>
+        </div>
+        <div id="activeTrapsLine" class="active-traps-line" role="status" aria-label="Malus de pièges actifs" hidden></div>
+        <div class="desktop-game-layout">
+          <aside class="game-sidebar game-sidebar-left" aria-label="Progression de la tour">
+            <div class="side-title">✧ ASCENSION</div>
+            <div class="side-stat"><span>Étage actuel</span><strong id="sideFloor">1</strong></div>
+            <div class="side-stat"><span>Meilleur étage</span><strong id="sideRecord">1</strong></div>
+            <div class="side-divider"></div>
+            <div class="side-title">SITUATION</div>
+            <p id="sideSituation" class="side-muted">La tour est calme.</p>
+            <div id="sideSituationChip" class="side-chip">🏰 Salle de repos</div>
+          </aside>
+
+          <div class="game-center">
+            <nav class="arena-tabs" role="tablist" aria-label="Onglets du jeu">
+              <button id="tabTour" data-game-tab="tour" class="arena-tab active" role="tab" aria-selected="true" aria-controls="paneTour" type="button">🏰 Tour</button>
+              <button id="tabWaifus" data-game-tab="waifus" class="arena-tab" role="tab" aria-selected="false" aria-controls="paneWaifus" type="button">👩 Waifus</button>
+              <button id="tabBonus" data-game-tab="bonus" class="arena-tab" role="tab" aria-selected="false" aria-controls="paneBonus" type="button">🏆 Bonus</button>
+              <button id="tabBoutique" data-game-tab="boutique" class="arena-tab" role="tab" aria-selected="false" aria-controls="paneBoutique" type="button">🧪 Boutique</button>
+              <button id="tabHopital" data-game-tab="hopital" class="arena-tab" role="tab" aria-selected="false" aria-controls="paneHopital" type="button">🏥 Hôpital</button>
+            </nav>
+
+            <div id="paneTour" class="game-tab-pane" role="tabpanel" aria-labelledby="tabTour">
+              <div id="combatHud" class="combat-hud" hidden>
+                <span id="turnIndicator" class="turn-indicator">⚔️ TOUR <b id="turnNumber">1</b></span><span id="teamUsedCount" class="team-used-count" title="3 waifus maximum par combat">👩 1/3</span>
+                <button id="statusDetailsBtn" type="button" class="status-details-btn" aria-haspopup="dialog" aria-controls="effectsOverlay">☠️ Effets <b id="statusCount">0</b></button>
+              </div>
+              <div class="arena-cards">
+                <article id="playerCombatCard" class="game-card">
+                  <div class="game-card-top"><strong id="heroCardName">Épéiste</strong><span id="heroRank" class="rank-badge">E</span></div>
+                  <div class="portrait-frame"><img id="activePortrait" alt="Waifu sélectionnée de rang E"></div>
+                  <div class="card-meters">
+                    <div class="meter-caption"><span>❤️ PV</span><b id="hpText">0 / 0</b></div>
+                    <div class="meter"><span id="hpFill" class="meter-fill hp"></span></div>
+                    <div class="meter-caption"><span>⚡ Énergie</span><b id="energyText">100 / 100</b></div>
+                    <div class="meter"><span id="energyFill" class="meter-fill energy"></span></div>
+                  </div>
+                  <div id="playerEffectsLine" class="combat-effect-line" hidden></div>
+                </article>
+                <article id="enemyCombatCard" class="game-card event-card">
+                  <div class="game-card-top"><strong id="eventCardName">La tour</strong><span id="eventRank" class="rank-badge muted">—</span></div>
+                  <div class="portrait-frame event-placeholder" id="eventFrame" aria-label="Salle de repos">
+                    <img id="eventEnemyPortrait" alt="Waifu ennemie" hidden>
+                    <div id="eventIconContent" class="event-icon-content"><span id="eventIcon" aria-hidden="true">🏰</span><p id="eventIconLabel">Salle de repos</p></div>
+                  </div>
+                  <div id="eventWaiting" class="card-meters waiting"><span id="eventWaitingTitle" class="idle-label">Aucun événement</span><p id="eventWaitingMessage">La tour attend ton prochain pas.</p></div>
+                  <div id="eventCombatMeters" class="card-meters" hidden>
+                    <div class="meter-caption"><span>❤️ PV</span><b id="enemyHpText">0 / 0</b></div>
+                    <div class="meter"><span id="enemyHpFill" class="meter-fill hp"></span></div>
+                    <div class="meter-caption"><span>⚡ Énergie</span><b id="enemyEnergyText">100 / 100</b></div>
+                    <div class="meter"><span id="enemyEnergyFill" class="meter-fill energy"></span></div>
+                  </div>
+                  <div id="enemyEffectsLine" class="combat-effect-line" hidden></div>
+                </article>
+              </div>
+              <div class="event-banner" role="status" aria-live="polite" aria-label="Journal mobile de la tour">
+                <div class="mobile-journal-heading">✧ JOURNAL</div>
+                <strong id="sessionStatus">Salle de repos · Étage 1</strong><span id="sessionHint">Avance pour découvrir la prochaine salle.</span>
+                <div class="mobile-journal-history" aria-label="Événements récents">
+                  <div class="journal-history-heading">ÉVÉNEMENTS RÉCENTS</div>
+                  <div class="log-entry"><span id="mobileLogTop">Ton aventure commence dans la salle de repos.</span></div>
+                  <div class="log-entry log-secondary"><span id="mobileLogBottom">Explore à ton rythme.</span></div>
+                </div>
+              </div>
+              <div id="actionPanel" class="action-panel"><div class="action-panel-label"><strong>COMMANDES</strong><span id="actionContext">Exploration</span></div>
+                <div id="enemyThinking" class="enemy-thinking" role="status" aria-live="polite" hidden><span class="enemy-thinking-spinner" aria-hidden="true"></span><span>L’adversaire choisit son action…</span></div>
+                <div id="combatTimer" class="combat-timer" role="timer" hidden>⏱ 15 s</div>
+                <div id="combatActionsGrid" class="combat-actions-grid" aria-label="Actions de combat" hidden>
+                  <button type="button" class="btn fight-action" data-combat-action="light">⚔️ Légère <small>2 ⚡ · 3/3</small></button>
+                  <button type="button" class="btn fight-action" data-combat-action="heavy">💥 Lourde <small>3 ⚡</small></button>
+                  <button type="button" id="specialActionButton" class="btn fight-action" data-combat-action="special" title="Compétence spéciale">✨ <span id="specialActionName">Spéciale</span> <small>5 ⚡</small></button>
+                  <button type="button" class="btn fight-action" data-combat-action="defend">🛡️ Défense <small>0 ⚡</small></button>
+                  <button type="button" id="captureActionButton" class="btn fight-action" data-combat-action="capture" title="Capturer pour 2 points d’énergie">🎯 Capture <small id="captureChanceLabel">2 ⚡ · 3/3</small></button>
+                  <button type="button" id="combatAutoButton" class="btn fight-action auto-toggle" aria-pressed="false" title="Activer le combat automatique (sans capture ni changement de combattante)">🤖 AUTO <small id="combatAutoLabel">OFF</small></button>
+                </div>
+                <div class="tower-actions">
+                  <button type="button" id="advanceBtn" class="btn primary advance-btn">AVANCER →</button>
+                  <div id="shortcutActions" class="shortcut-actions" hidden>
+                    <button type="button" id="shortcutReducedBtn" class="btn subdued shortcut-btn" disabled><span class="shortcut-name">🔒 Reprendre à l’étage n−5</span><small class="shortcut-cost">Non débloqué</small></button>
+                    <button type="button" id="shortcutRecordBtn" class="btn subdued shortcut-btn" disabled><span class="shortcut-name">🔒 Reprendre à l’étage n</span><small class="shortcut-cost">Non débloqué</small></button>
+                    <p id="shortcutWallet" class="shortcut-wallet" aria-live="polite"></p>
+                  </div>
+                  <button type="button" id="openChestBtn" class="btn primary advance-btn" hidden>🎁 OUVRIR</button>
+                  <button type="button" id="startCombatBtn" class="btn primary advance-btn" hidden>⚔️ COMBATTRE</button>
+                  <button type="button" id="chooseFighterBtn" class="btn subdued" hidden>👩 Choisir waifu</button>
+                  <button type="button" id="continueBtn" class="btn primary advance-btn" hidden>CONTINUER →</button>
+                  <button type="button" id="towerAutoButton" class="btn subdued tower-auto-toggle auto-toggle" aria-pressed="false" title="AUTO : combats et progression automatique de la tour, sans capture ni achat">🤖 AUTO <small id="towerAutoLabel">OFF</small></button>
+                  <button type="button" id="quitTowerBtn" class="btn subdued tower-quit">Quitter la tour</button>
+                </div>
+              </div>
+            </div>
+
+            <section id="paneWaifus" class="game-tab-pane collection-pane" role="tabpanel" aria-labelledby="tabWaifus" hidden>
+              <div class="tab-panel-heading"><div><span class="overline">TA COLLECTION</span><h3>Mes waifus</h3><small class="collection-sort-note">Combattante active en premier · autres par rang (S → E)</small></div><span class="pill" id="collectionCount">1 WAIFU</span></div>
+              <div id="ownedGrid" class="owned-grid" aria-label="Waifus possédées"></div>
+              <p class="compact-footnote">Touchez une carte pour voir sa fiche et son illustration.</p>
+            </section>
+
+            <section id="paneBonus" class="game-tab-pane bonuses-pane" role="tabpanel" aria-labelledby="tabBonus" hidden>
+              <div class="tab-panel-heading"><div><span class="overline">AMÉLIORATIONS PERMANENTES</span><h3>Bonus du compte</h3></div></div>
+              <div id="bonusesGrid" class="bonuses-grid"></div>
+              <p class="compact-footnote">Chaque niveau obtenu dans un coffre donne +2 à toutes tes waifus, actuelles et futures. Ces points ne sont pas multipliés par le rang.</p>
+            </section>
+            <section id="paneBoutique" class="game-tab-pane shop-pane" role="tabpanel" aria-labelledby="tabBoutique" hidden>
+              <div class="tab-panel-heading"><div><span class="overline">🧪 CONSOMMABLES</span><h3>Boutique de potions</h3></div><span class="pill">3 POTIONS</span></div>
+              <div id="shopLocked" class="hospital-locked" hidden>🔒 Retourne à l’étage 1 pour accéder à la boutique.
+                <button id="shopReturn" class="btn primary" type="button">🏰 Retourner à l’étage 1</button>
+              </div>
+              <div id="shopWorking">
+                <p class="compact-footnote">Les achats se règlent en steaks OU en gigots. La nourriture dépensée ne pourra plus servir à l’évolution.</p>
+                <div id="shopWallet" class="shop-wallet" aria-label="Nourriture disponible"></div>
+                <p id="shopPurchaseNotice" class="shop-notice" role="status"></p>
+                <div id="shopOffers" class="shop-grid" aria-label="Potions en vente"></div>
+              </div>
+            </section>
+            <section id="paneHopital" class="game-tab-pane hospital-pane" role="tabpanel" aria-labelledby="tabHopital" hidden>
+              <div class="tab-panel-heading"><div><span class="overline">🏥 SOINS ET CONVALESCENCE</span><h3>Hôpital de la tour</h3></div><span id="hospitalOccupancy" class="pill">0 / 3 LITS</span></div>
+              <p class="compact-footnote">Trois lits maximum. Chaque waifu récupère tous ses PV après 18 secondes de soin. L'énergie revient à 100 après chaque combat.</p>
+              <div id="hospitalLocked" class="hospital-locked" hidden>🔒 Retourne à l’étage 1 pour accéder à l’hôpital.<button id="hospitalReturn" class="btn primary" type="button">🏰 Retourner à l’étage 1</button></div>
+              <div id="hospitalWorking" class="hospital-working">
+                <div id="hospitalBeds" class="hospital-beds" aria-label="Les trois lits de l'hôpital"></div>
+                <h4>Waifus à soigner</h4>
+                <div id="hospitalPatients" class="hospital-patients" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="game-sidebar game-sidebar-right" aria-label="Journal de la tour">
+            <div class="side-title">✧ JOURNAL</div>
+            <div class="desktop-journal-summary" role="status" aria-live="polite"><strong id="desktopJournalStatus">Salle de repos · Étage 1</strong><span id="desktopJournalHint">Avance pour découvrir la prochaine salle.</span></div>
+            <div class="journal-history-heading">ÉVÉNEMENTS RÉCENTS</div>
+            <div class="log-entry"><span class="log-mark"></span><span id="logTop">Ton aventure commence dans la salle de repos.</span></div>
+            <div class="log-entry log-secondary"><span class="log-mark"></span><span id="logBottom">Explore à ton rythme.</span></div>
+          </aside>
+        </div>
+      </section>
+    </main>
+    <footer class="footer"><span>BELLYMON · V15.7</span><span>Progression locale · export JSON</span></footer>
+  </div>
+
+  <div id="eventAnnouncement" class="event-announcement" hidden role="status" aria-live="polite" aria-label="Annonce d'événement" tabindex="-1">
+    <div class="event-announcement-content"><div id="announcementIcon" class="announcement-icon" aria-hidden="true">⚔️</div><div id="announcementTitle" class="announcement-title">COMBAT</div><p id="announcementSubtitle" class="announcement-subtitle">Rencontre dans la tour</p></div>
+  </div>
+
+  <div id="fighterOverlay" class="modal-overlay" hidden>
+    <section class="modal fighter-modal" role="dialog" aria-modal="true" aria-labelledby="fighterTitle">
+      <div class="modal-topline"><div><span class="overline">⚔️ AVANT LE COMBAT</span><h2 id="fighterTitle">Choisir ma waifu</h2></div><button type="button" id="fighterClose" class="close-cross" aria-label="Fermer le choix">×</button></div>
+      <p class="compact-footnote">Choisis ta combattante avant de lancer le combat. Elle compte comme la première des 3 waifus autorisées pour ce duel. Une waifu blessée ne peut pas être sélectionnée.</p>
+      <div id="fighterGrid" class="fighter-grid" aria-label="Combattantes disponibles"></div>
+    </section>
+  </div>
+
+  <div id="relayOverlay" class="modal-overlay" hidden>
+    <section class="modal relay-modal" role="dialog" aria-modal="true" aria-labelledby="relayTitle" aria-describedby="relaySubtitle">
+      <div class="overline">⚔️ RELAIS DE COMBAT</div>
+      <h2 id="relayTitle">Ta waifu est KO !</h2>
+      <p id="relaySubtitle">Choisis une combattante disponible pour poursuivre le combat.</p>
+      <div id="relayGrid" class="relay-grid" aria-label="Combattantes de remplacement"></div>
+      <p class="relay-help">Le combat est suspendu pendant ce choix. L’adversaire garde ses PV, son énergie et ses malus.</p>
+      <button type="button" class="btn subdued wide" id="relayQuitBtn">Quitter la tour</button>
+    </section>
+  </div>
+
+  <div id="effectsOverlay" class="modal-overlay" hidden>
+    <section class="modal effects-modal" role="dialog" aria-modal="true" aria-labelledby="effectsTitle">
+      <div class="modal-topline"><h2 id="effectsTitle">☠️ Effets en cours</h2><button id="effectsClose" type="button" class="close-cross" aria-label="Fermer les effets">×</button></div>
+      <div id="effectsContent"></div>
+    </section>
+  </div>
+
+  <div id="eventResultOverlay" class="modal-overlay" hidden>
+    <section class="modal event-result-modal" role="dialog" aria-modal="true" aria-labelledby="eventResultTitle">
+      <div id="eventResultIcon" class="result-icon" aria-hidden="true">🎁</div>
+      <h2 id="eventResultTitle">Coffre ouvert</h2>
+      <p id="eventResultText">Contenu du coffre.</p>
+      <img id="capturedPortrait" class="capture-preview" alt="Waifu capturée" hidden>
+      <div id="resultLootItems" class="loot-items" aria-label="Récompenses obtenues" hidden></div>
+      <button id="eventResultClose" class="btn primary wide" type="button">OK</button>
+    </section>
+  </div>
+
+  <div id="confirmOverlay" class="modal-overlay" hidden>
+    <section class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage"><h2 id="confirmTitle">Confirmation</h2><p id="confirmMessage"></p><div class="row-actions"><button id="confirmCancel" type="button" class="btn subdued">Annuler</button><button id="confirmAccept" type="button" class="btn danger">Supprimer</button></div></section>
+  </div>
+
+  <div id="waifuDetailOverlay" class="modal-overlay" hidden>
+    <section class="modal hero-detail-modal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <div class="modal-topline"><div><span class="overline">FICHE DE WAIFU</span><h2 id="detailTitle">Épéiste</h2></div><button type="button" class="close-cross" id="detailClose" aria-label="Fermer la fiche">×</button></div>
+      <p id="detailMeta" class="detail-meta">Rang E</p>
+      <div class="hero-detail-columns">
+        <div class="hero-detail-left"><img id="detailPortrait" alt="Illustration de la waifu"><div id="detailHealth" class="detail-health"></div><div class="stats-mini"><span>💪 Force <b id="detailForce">0</b></span><span>⚡ Rapidité <b id="detailSpeed">0</b></span><span>🛡️ Constitution <b id="detailConst">0</b></span></div><p class="detail-account-bonuses" id="detailAccountBonuses" hidden></p><p class="detail-trap-note" id="detailTrapNote" hidden></p></div>
+        <div class="hero-detail-right">
+          <div class="detail-subtitle">🍽️ NOURRITURE & 🧪 POTIONS</div>
+          <div class="food-stack" role="group" aria-label="Choisir un consommable">
+            <button type="button" id="foodSmallBtn" class="food-choice food-option is-selected" data-food-type="small" aria-pressed="true"><span>🥩 Steak · 5 pts</span><strong id="detailSmallFood">×0</strong></button>
+            <button type="button" id="foodLargeBtn" class="food-choice food-option" data-food-type="large" aria-pressed="false"><span>🍖 Gigot · 25 pts</span><strong id="detailLargeFood">×0</strong></button>
+            <button type="button" class="food-choice food-option" data-potion-type="petite" aria-pressed="false"><span>🧪 Petite potion · +30 % PV</span><strong id="detailPotionPetite">×0</strong></button>
+            <button type="button" class="food-choice food-option" data-potion-type="grande" aria-pressed="false"><span>🧴 Grande potion · +60 % PV</span><strong id="detailPotionGrande">×0</strong></button>
+            <button type="button" class="food-choice food-option" data-potion-type="supreme" aria-pressed="false"><span>💎 Potion suprême · +90 % PV</span><strong id="detailPotionSupreme">×0</strong></button>
+          </div>
+          <label id="feedQuantityLabel" class="qty-display" for="feedQuantity">Quantité</label>
+          <div id="feedQuantityControls" class="food-quantity"><button type="button" id="feedMinus" aria-label="Retirer un aliment">−</button><input id="feedQuantity" type="number" value="1" min="1" step="1" inputmode="numeric" aria-label="Quantité à donner"><button type="button" id="feedPlus" aria-label="Ajouter un aliment">+</button><button type="button" id="feedMax" class="food-max" aria-label="Sélectionner tous les aliments disponibles">MAX</button></div>
+          <p id="feedPreview" class="feed-preview" aria-live="polite">Sélectionne une nourriture.</p>
+          <button id="feedConfirm" class="btn primary wide" type="button">🍽️ Nourrir</button>
+        </div>
+      </div>
+      <div class="evolution-progress"><div class="evolution-progress-label"><span>🧬 Évolution</span><strong id="detailEvolutionText">0 / 100</strong></div><div class="meter evolution-meter"><span id="detailEvolutionFill" class="meter-fill evolution-fill"></span></div></div>
+      <div class="detail-actions"><button type="button" class="btn primary" id="detailView">👁 Voir en grand</button><button type="button" class="btn subdued" id="detailSelect">✓ Sélectionner</button><button type="button" class="btn subdued" id="detailRename">✏️ Renommer</button><button type="button" class="btn danger" id="detailDelete">🗑️ Supprimer</button></div>
+    </section>
+  </div>
+  <div id="renameHeroOverlay" class="modal-overlay" hidden>
+    <section class="modal rename-hero-modal" role="dialog" aria-modal="true" aria-labelledby="renameHeroTitle">
+      <h2 id="renameHeroTitle">✏️ Renommer cette waifu</h2>
+      <form id="renameHeroForm">
+        <label for="renameHeroInput">Nouveau nom</label>
+        <input id="renameHeroInput" name="nickname" type="text" maxlength="24" autocomplete="off" required aria-label="Nom de la waifu">
+        <p class="rename-help">Les noms identiques sont autorisés. Sa classe et ses statistiques ne changent pas.</p>
+        <div class="row-actions"><button type="button" id="renameHeroCancel" class="btn subdued">Annuler</button><button type="submit" id="renameHeroSave" class="btn primary">Enregistrer</button></div>
+      </form>
+    </section>
+  </div>
+  <div id="morphOverlay" class="modal-overlay" hidden>
+    <section class="modal morph-modal" role="dialog" aria-modal="true" aria-labelledby="morphTitle" aria-describedby="morphDesc">
+      <div class="modal-topline"><div><span class="overline">ÉVOLUTION E → D</span><h2 id="morphTitle">Choisis sa morphologie</h2></div><button type="button" id="morphClose" class="close-cross" aria-label="Annuler l'évolution">×</button></div>
+      <p id="morphDesc" class="compact-footnote">Ce choix est définitif pour cette waifu. Les aliments ne sont consommés qu'après ton choix.</p>
+      <div class="morph-options" role="group" aria-label="Spécialisation de la waifu">
+        <button type="button" class="morph-choice" data-choose-morph="musclee"><img id="morphMuscleeImage" alt="Aperçu de la branche musclée"><strong>💪 Musclée</strong><small>Très forte, bonne résistance, mais lente.</small></button>
+        <button type="button" class="morph-choice" data-choose-morph="obese"><img id="morphObeseImage" alt="Aperçu de la branche obèse"><strong>🍖 Obèse</strong><small>Très résistante, forte, mais lente.</small></button>
+        <button type="button" class="morph-choice" data-choose-morph="chetive"><img id="morphChetiveImage" alt="Aperçu de la branche chétive"><strong>🦴 Chétive</strong><small>Très rapide, assez forte, mais fragile.</small></button>
+      </div>
+      <button type="button" id="morphCancel" class="btn subdued wide">Annuler sans nourrir</button>
+    </section>
+  </div>
+  <div id="portraitOverlay" class="portrait-overlay" hidden role="dialog" aria-modal="true" aria-label="Illustration agrandie">
+    <button type="button" id="portraitClose" class="portrait-close" aria-label="Fermer l'image">×</button>
+    <img id="largePortrait" src="" alt="Illustration de la waifu en grand">
+  </div>
+  <div id="audioOverlay" class="modal-overlay" hidden>
+    <section class="modal audio-modal" role="dialog" aria-modal="true" aria-labelledby="audioTitle">
+      <div class="modal-topline"><div><span class="overline">AMBIANCE DE BELLYMON</span><h2 id="audioTitle">🎵 Sons et musiques</h2></div><button id="audioClose" class="close-cross" type="button" aria-label="Fermer les réglages audio">×</button></div>
+      <p class="audio-intro">Deux musiques originales : exploration et combat. Les réglages restent sur cet appareil.</p>
+      <div class="audio-setting"><label class="audio-switch"><input id="musicEnabled" type="checkbox" checked> <strong>🎶 Musique d'ambiance</strong></label><label for="musicVolume">Volume <output id="musicVolumeValue" for="musicVolume">35 %</output></label><input id="musicVolume" type="range" min="0" max="100" step="5" value="35"></div>
+      <div class="audio-setting"><label class="audio-switch"><input id="sfxEnabled" type="checkbox" checked> <strong>💥 Effets sonores</strong></label><label for="sfxVolume">Volume <output id="sfxVolumeValue" for="sfxVolume">55 %</output></label><input id="sfxVolume" type="range" min="0" max="100" step="5" value="55"></div>
+      <p class="audio-note">🔈 La musique tente de démarrer dès l’ouverture. Certains navigateurs ne l’autorisent qu’après le premier clic ou toucher, sans bouton particulier. Musique en pause quand l’onglet est masqué.</p>
+      <button id="audioPreviewBtn" type="button" class="btn subdued">▶ Tester les sons</button><button id="audioDoneBtn" type="button" class="btn primary">Terminé</button>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

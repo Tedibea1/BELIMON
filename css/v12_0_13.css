@@ -1,0 +1,8 @@
+/* BELLYMON V12.0.14 — attente adverse pendant le chrono commun, non suspendu. */
+.enemy-thinking[hidden]{display:none!important}
+.enemy-thinking{display:flex;gap:9px;justify-content:center;align-items:center;min-height:29px;width:100%;color:#ffd6a1;font-weight:700;font-size:12px;letter-spacing:.01em;text-align:center}
+.enemy-thinking-spinner{display:inline-block;flex:0 0 auto;width:17px;height:17px;border:2px solid rgba(255,197,102,.25);border-top-color:#ffb64d;border-radius:50%;animation:enemy-thinking-spin .65s linear infinite}
+@keyframes enemy-thinking-spin{to{transform:rotate(360deg)}}
+.action-panel.enemy-is-thinking .combat-timer{opacity:1;box-shadow:0 0 0 1px rgba(255,182,77,.22)}
+.action-panel.enemy-is-thinking .combat-actions-grid{opacity:.55}
+@media(prefers-reduced-motion:reduce){.enemy-thinking-spinner{animation-duration:2s}}

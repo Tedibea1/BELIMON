@@ -1,0 +1,6 @@
+/* BELLYMON V9 — malus visibles seulement lorsqu'ils sont actifs. */
+.active-traps-line{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:-5px 0 13px;padding:0 2px}
+.active-traps-line[hidden]{display:none}
+.trap-status-chip{display:inline-flex;align-items:center;border:1px solid rgba(248,133,129,.40);border-radius:22px;background:rgba(85,25,52,.44);color:#ffced3;padding:5px 9px;font-size:11px;line-height:1.35;font-weight:700}
+@media(max-width:540px){.active-traps-line{gap:4px;margin:-2px 0 9px}.trap-status-chip{font-size:10px;padding:4px 7px}}
+.detail-trap-note{margin:5px 0 2px;color:#ffb7c0;font-size:10px;font-weight:700;line-height:1.45}

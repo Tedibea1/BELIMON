@@ -1,0 +1,3 @@
+/* BELLYMON V11 : affichage discret de l’état des sauvegardes. */
+.storage-health{color:#9faec6;font-size:.76rem;margin:10px 0 4px;line-height:1.4}
+#exportAllBtn:disabled{opacity:.48;cursor:not-allowed}

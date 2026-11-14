@@ -1,0 +1,64 @@
+/* BELLYMON V15.5.2 : guide en jeu, onglets & fiches rang E. */
+.masthead-controls{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+.guide-open-btn{border-color:#9d7a59;background:linear-gradient(145deg,#51334d,#332841);color:#ffe7c7}
+.guide-screen{max-width:1020px;margin-inline:auto}
+.guide-intro{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:24px 30px;margin-bottom:15px;min-height:140px;background:radial-gradient(circle at right,#67426a66,transparent 58%),linear-gradient(125deg,#312540,#201f38)}
+.guide-intro h2{font-size:clamp(24px,4vw,34px);margin:6px 0 9px}
+.guide-intro p{max-width:660px;color:#c8bfda;font-size:13px;margin:0;line-height:1.6}
+.guide-seal{width:87px;height:87px;flex:none;display:grid;place-items:center;border:2px solid #e4b474;border-radius:30px;transform:rotate(9deg);font-size:60px;color:#ffd7a2;background:#ffffff0b;text-shadow:0 0 20px #ffc86b80}
+.guide-nav{display:flex;flex-wrap:wrap;gap:9px;align-items:stretch;margin:15px 0 20px;padding:8px;border-radius:14px;border:1px solid #595071;background:#211e36}
+.guide-nav button{border-radius:9px;padding:11px 15px;font-size:13px;font-weight:800;color:#cec6de;border:1px solid #4e4767;background:#302b44;white-space:normal}
+.guide-nav button:hover{filter:brightness(1.18)}
+.guide-nav .guide-return{margin-right:auto;color:#ffe3b7;border-color:#8b6b53;background:#49394a}
+.guide-nav .guide-tab.is-selected{color:#33221b;background:linear-gradient(180deg,#ffcf80,#efa74d);border-color:#ffe5a6}
+.guide-section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 2px 17px}
+.guide-section-head h3{font-size:25px;margin:2px 0 4px}
+.guide-section-head p{color:#bcb4ce;font-size:13px;margin:0;max-width:580px}
+.guide-classes-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,.94fr);gap:15px;align-items:start}
+.guide-class-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.guide-class-card{padding:8px 6px 10px;min-width:0;text-align:center;display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:start;border:1px solid #5b516b;border-radius:13px;color:#f9f4ff;background:linear-gradient(180deg,#28243d,#1b1d33);transition:border-color .15s,transform .15s}
+.guide-class-card:hover{border-color:#e7ad71;transform:translateY(-2px)}
+.guide-class-card.is-active{border:2px solid #ffc373;padding:7px 5px 9px;background:linear-gradient(180deg,#48334d,#242139);box-shadow:inset 0 0 0 1px #ffca7c30,0 0 20px #dd9a5820}
+.guide-class-card img{display:block;aspect-ratio:1;object-fit:contain;width:100%;border-radius:8px;border:1px solid #4b435e;background:#151629}
+.guide-class-card strong{font-size:12px;margin-top:5px;line-height:1.35;overflow-wrap:anywhere}
+.guide-class-card small{font-size:10px;color:#bdafca;line-height:1.35}
+.guide-class-detail{position:sticky;top:16px;padding:17px}
+.guide-detail-heading{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.guide-rank-label{font-size:12px;font-weight:900;background:linear-gradient(135deg,#f5c678,#de9756);color:#281d22;border-radius:7px;padding:3px 12px}
+.guide-feature{display:grid;grid-template-columns:minmax(110px,44%) 1fr;gap:14px;align-items:center;margin-top:10px}
+.guide-feature-img{width:100%;aspect-ratio:1;object-fit:contain;border:1px solid #65516b;border-radius:12px;background:#161729}
+.guide-feature h3{font-size:22px;margin:0 0 5px;line-height:1.15;overflow-wrap:anywhere}
+.guide-type{font-size:11px;display:inline-block;border:1px solid #a07b81;background:#543a52;color:#ffdecc;border-radius:15px;padding:3px 9px;font-weight:800}
+.guide-feature p{font-size:12px;color:#cbbfd5;line-height:1.5;margin:9px 0 0}
+.guide-class-detail h4,.guide-morph-card h4{font-size:15px;margin:16px 0 8px}
+.guide-stat-table{display:grid;gap:7px}
+/* Statistiques : libellé et quatre losanges forment un ensemble compact et centré. */
+.guide-stat-row{display:grid;grid-template-columns:90px 94px;justify-content:center;align-items:center;border-radius:9px;border:1px solid #4e425d;background:#1a1a30;padding:9px 10px;column-gap:16px;min-width:0}
+.guide-stat-row .guide-stat-label{font-size:12px;color:#eee0ed;font-weight:700;text-align:right}
+.guide-stat-diamonds{display:flex;align-items:center;justify-content:flex-start;gap:5px;white-space:nowrap}
+.guide-stat-diamonds .guide-diamond{font-size:20px;line-height:1;font-weight:700;width:19px;text-align:center}
+.guide-stat-diamonds .guide-diamond.is-filled{color:#ffd18a;text-shadow:0 0 9px #f5bb6a50}
+.guide-stat-diamonds .guide-diamond.is-empty{color:#8b7a97}
+.guide-skill-feature{margin-top:17px;border:1px solid #956b6b;background:linear-gradient(135deg,#463249,#282338);border-radius:12px;padding:14px}
+.guide-skill-feature h4{font-size:18px;margin:5px 0 6px;color:#ffe7c2}
+.guide-skill-feature p{font-size:12px;color:#e3d9e8;margin:0;line-height:1.6}
+.guide-discretion{color:#a8a0ba;font-size:11px;line-height:1.55;margin:13px 2px 1px}
+.guide-morph-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.guide-morph-card{padding:18px;min-width:0}
+.guide-morph-icon{width:60px;height:60px;display:grid;place-items:center;background:#47344f;border:1px solid #936780;border-radius:18px;font-size:33px;margin-bottom:13px}
+.guide-morph-card h3{font-size:23px;margin:4px 0 18px}
+.guide-morph-card p{font-size:13px;color:#c9c0d6;line-height:1.65;min-height:90px}
+.guide-lesson{margin-top:15px}
+.guide-lesson h4{color:#f9ce92;margin:0 0 10px}
+.guide-lesson p{font-size:13px;color:#cfc5d9;line-height:1.7;margin:7px 0}
+.guide-skills-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.guide-skill-card{display:flex;align-items:flex-start;gap:14px;padding:16px;min-width:0}
+.guide-skill-icon{display:grid;place-items:center;flex:none;width:52px;height:52px;background:#45314d;border:1px solid #936c85;border-radius:15px;font-size:27px}
+.guide-skill-body{min-width:0}
+.guide-class-name{font-size:11px;letter-spacing:.06em;color:#c9b4d5;text-transform:uppercase;font-weight:800}
+.guide-skill-body h4{font-size:17px;line-height:1.25;color:#ffe2b3;margin:4px 0 6px}
+.guide-skill-kind{display:inline-block;color:#ddc9e7;border:1px solid #64506d;border-radius:13px;padding:2px 9px;font-size:10px}
+.guide-skill-body p{font-size:12px;line-height:1.65;color:#d3cadb;margin:10px 0 1px}
+@media(max-width:770px){.guide-classes-layout{grid-template-columns:1fr}.guide-class-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.guide-class-detail{position:static}.guide-feature{grid-template-columns:150px 1fr}.guide-morph-grid{grid-template-columns:1fr}.guide-morph-card p{min-height:0}}
+@media(max-width:580px){.guide-intro{padding:17px;min-height:0}.guide-seal{display:none}.guide-nav{gap:6px}.guide-nav button{font-size:11px;padding:9px 8px;flex:1 1 auto}.guide-nav .guide-return{flex:1 1 100%}.guide-class-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.guide-class-card strong{font-size:11px}.guide-class-card small{font-size:9px}.guide-skills-grid{grid-template-columns:1fr}.guide-feature{grid-template-columns:minmax(90px,40%) 1fr;gap:10px}.guide-feature h3{font-size:19px}.guide-section-head h3{font-size:21px}}
+@media(max-width:360px){.guide-class-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-class-detail{padding:12px}.guide-feature{grid-template-columns:1fr}.guide-feature-img{max-width:180px;justify-self:center}}

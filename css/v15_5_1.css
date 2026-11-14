@@ -1,0 +1,46 @@
+/* BELLYMON V15.5.1 — un seul journal visible par format, informations synchronisées. */
+/* Le compte rendu mobile garde sa position dynamique avant/apres les commandes,
+   mais le bandeau est reserve aux ecrans compacts. */
+@media (min-width:1121px){
+  .game-center .event-banner{display:none!important}
+}
+/* Sur PC, le journal lateral montre le meme resume detaille que le bandeau mobile. */
+.desktop-journal-summary{background:#251c3b;border:1px solid #66528a;border-radius:10px;padding:12px 10px;margin-bottom:15px;color:#e4dff3;font-size:12px;line-height:1.55;overflow-wrap:anywhere}
+.desktop-journal-summary strong{display:block;color:#b6d8ff;font-size:12px;margin-bottom:5px}
+.desktop-journal-summary strong[hidden]{display:none}
+.desktop-journal-summary span{display:block;white-space:pre-line}
+.journal-history-heading{font-size:10px;letter-spacing:.08em;color:#b4a9c9;font-weight:850;margin:8px 0}
+.mobile-journal-heading,.mobile-journal-history{display:none}
+@media (max-width:1120px){
+  /* Le journal de droite est cache par le CSS historique a ce format. */
+  .game-center .event-banner{flex-direction:column;align-items:stretch;gap:6px}
+  .game-center .event-banner > strong:not([hidden]){display:block}
+  .mobile-journal-heading{display:block;font-size:11px;letter-spacing:.12em;color:#eacba5;font-weight:900}
+  .mobile-journal-history{display:block;border-top:1px solid #ffffff27;margin-top:7px;padding-top:7px}
+  .mobile-journal-history .log-entry{font-size:11px;margin:6px 0;padding:8px 9px;overflow-wrap:anywhere}
+  .mobile-journal-history .log-secondary{margin-bottom:0}
+}
+/* Typographie coherente des commandes principales : ni XXL, ni minuscules. */
+.action-panel .tower-actions > .btn{font-size:13px;font-weight:800;line-height:1.3;min-height:42px;padding:10px 12px}
+.action-panel .tower-actions > .tower-quit{font-size:13px;max-width:none;white-space:normal}
+.action-panel .tower-actions > .advance-btn{font-size:13px}
+.action-panel .tower-actions > .tower-auto-toggle{font-size:13px}
+.action-panel .combat-actions-grid .fight-action{font-size:13px;line-height:1.3}
+/* Les montants d'energie restent volontairement en corps secondaire. */
+.action-panel .combat-actions-grid .fight-action small,.action-panel .tower-actions > .tower-auto-toggle small{font-size:10px}
+@media (max-width:720px){
+  .action-panel .tower-actions > .btn,
+  .action-panel .tower-actions > .tower-quit,
+  .action-panel .tower-actions > .advance-btn,
+  .action-panel .tower-actions > .tower-auto-toggle,
+  .action-panel .combat-actions-grid .fight-action{font-size:12px}
+  .action-panel .tower-actions > .btn{min-height:38px;padding:9px 8px}
+  .action-panel .combat-actions-grid .fight-action small{font-size:9px}
+}
+@media (max-width:340px){
+  .action-panel .tower-actions > .btn,
+  .action-panel .tower-actions > .tower-quit,
+  .action-panel .tower-actions > .advance-btn,
+  .action-panel .tower-actions > .tower-auto-toggle,
+  .action-panel .combat-actions-grid .fight-action{font-size:11px}
+}

@@ -1,0 +1,9 @@
+/* BELLYMON V5 — recompenses sous forme de cartes dans la popup centrale. */
+.loot-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:10px;margin:16px 0 22px}
+.loot-items[hidden]{display:none!important}
+.loot-item{background:linear-gradient(145deg,#2b314a,#171d30);border:1px solid #93704f;border-radius:14px;padding:15px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;box-shadow:inset 0 0 14px #080d2338}
+.loot-icon{font-size:42px;line-height:1.2}
+.loot-title{color:#fff4df;font-size:12px;text-align:center;line-height:1.2}
+.loot-quantity{color:#ffd086;font-size:13px;font-weight:900;text-align:center}
+.event-result-modal .loot-items{margin-top:12px}
+@media(max-width:380px){.loot-items{grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px}.loot-icon{font-size:37px}.loot-item{padding:11px 6px}}

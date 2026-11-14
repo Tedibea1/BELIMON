@@ -1,0 +1,5 @@
+/* BELLYMON V8 — bonus de compte lisibles, sans surcharger le jeu. */
+.detail-account-bonuses{margin:8px 0 2px;color:#e4c997;font-weight:650;font-size:10px;line-height:1.45}
+.bonus-tile{position:relative}
+.bonus-value{font-variant-numeric:tabular-nums}
+@media(max-width:420px){.detail-account-bonuses{font-size:9px}}
