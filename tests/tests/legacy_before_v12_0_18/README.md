@@ -1,0 +1,1 @@
+Tests conservés pour les versions anciennes de BELLYMON. Leurs attentes (coûts d'énergie, ordre des attaques, coefficients) ne correspondent plus à la V12.0.18. Ne pas les exécuter contre la version courante. Les règles nouvelles sont couvertes par ../v12_0_18_rules.test.js et ../v12_0_18_browser.py.

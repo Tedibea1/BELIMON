@@ -1,0 +1,96 @@
+{
+  "format": "tour-des-waifus-v1",
+  "version": 1,
+  "id": "demo-pieges-v9-20261110",
+  "label": "Démo pièges BELLYMON V9",
+  "createdAt": "2026-11-10T13:06:45.925538Z",
+  "updatedAt": "2026-11-10T13:06:45.925538Z",
+  "data": {
+    "profile": {
+      "pseudo": "Démo Bonus"
+    },
+    "waifus": [
+      {
+        "id": "demo-hero-1",
+        "classId": "epeiste",
+        "rank": "E",
+        "morph": null,
+        "evolutionPoints": 90,
+        "stats": {
+          "force": 20,
+          "rapidite": 7,
+          "constitution": 14
+        },
+        "maxHp": 82,
+        "hp": 82,
+        "energy": 100,
+        "injuredUntil": 0
+      },
+      {
+        "id": "demo-hero-2",
+        "classId": "griffeuse",
+        "rank": "D",
+        "morph": "chetive",
+        "evolutionPoints": 175,
+        "stats": {
+          "force": 20,
+          "rapidite": 31,
+          "constitution": 10
+        },
+        "maxHp": 90,
+        "hp": 90,
+        "energy": 100,
+        "injuredUntil": 0
+      },
+      {
+        "id": "demo-hero-3",
+        "classId": "pretresse",
+        "rank": "C",
+        "morph": "obese",
+        "evolutionPoints": 250,
+        "stats": {
+          "force": 28,
+          "rapidite": 24,
+          "constitution": 32
+        },
+        "maxHp": 130,
+        "hp": 130,
+        "energy": 100,
+        "injuredUntil": 0
+      }
+    ],
+    "activeWaifuId": "demo-hero-1",
+    "food": {
+      "small": 180,
+      "large": 120
+    },
+    "bonuses": {
+      "force": 4,
+      "rapidite": 2,
+      "constitution": 3
+    },
+    "tower": {
+      "floor": 1,
+      "room": "rest",
+      "record": 1,
+      "event": null,
+      "combat": null,
+      "activeTraps": [
+        {
+          "type": "force",
+          "expiresAtFloor": 3
+        },
+        {
+          "type": "all",
+          "expiresAtFloor": 3
+        }
+      ],
+      "history": [
+        "Démo V9 : malus Force −20 % et Toutes stats −10 % actifs pendant les étages 1 et 2.",
+        "Les bonus permanents de Force, Rapidité et Constitution restent intacts."
+      ]
+    },
+    "createdAt": "2026-11-10T13:06:45.925538Z",
+    "lastSavedAt": "2026-11-10T13:06:45.925538Z"
+  }
+}

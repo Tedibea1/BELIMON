@@ -1,0 +1,38 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const ctx={window:{},console,Math,Date};vm.createContext(ctx);
+for(const f of ['bonuses.js','combat.js','auto.js','capture.js'])vm.runInContext(fs.readFileSync(path.join(__dirname,'../js',f),'utf8'),ctx);
+const C=ctx.window.TDWCombat,A=ctx.window.BellymonAuto;
+const make=(id='pretresse',energy=0)=>({classId:id,energy,hp:200,maxHp:200,stats:{force:35,rapidite:20,constitution:15}});
+const rng=()=>.5;let tests=0;
+const check=(condition,message)=>{assert.ok(condition,message);tests++};
+check(C.RECOVERY_COOLDOWN_TURNS===5,'five full rounds of cooldown');
+let p=make(),e=make(),fx=C.normalizeEffects();
+check(C.canRecover(p,1,fx.player),'initial recovery allowed');
+let s=C.resolveTurn(p,e,'recover',{},rng,{turn:1,effects:fx,enemyAction:'recover'});
+check(s.player.energy===67&&s.enemy.energy===67,'both recover exactly 67');
+check(s.effects.player.recoverReadyTurn===7 && s.effects.enemy.recoverReadyTurn===7,'next use on turn 7');
+check(!C.canRecover(make('pretresse',0),2,s.effects.player),'no recovery even at zero energy');
+for(let turn=2;turn<=6;turn++){
+  check(C.recoveryTurnsRemaining(turn,s.effects.player)===7-turn,'countdown correct turn '+turn);
+  check(!C.canRecover(s.player,turn,s.effects.player),'locked turn '+turn);
+  const beforeP=s.player.energy,beforeE=s.enemy.energy;
+  check(A.chooseAction(make('pretresse',0),s.enemy,turn,s.effects,rng)==='defend','AUTO defends at zero EN turn '+turn);
+  check(C.chooseEnemyAction(0,rng,make('pretresse',0),turn,s.effects.enemy)==='defend','AI defends at zero EN turn '+turn);
+  assert.throws(()=>C.resolveTurn(s.player,s.enemy,'recover',{},rng,{turn,effects:s.effects,enemyAction:'defend'}),/non disponible/);
+  s=C.resolveTurn(s.player,s.enemy,'defend',{},rng,{turn,effects:s.effects,enemyAction:'recover'});
+  check(s.aiAction!=='recover','forced invalid enemy recovery rejected '+turn);
+  check(s.player.energy===beforeP && s.enemy.energy<=beforeE,'no recovery energy granted '+turn);
+}
+check(C.canRecover(s.player,7,s.effects.player),'recovery allowed exactly turn 7');
+s=C.resolveTurn(s.player,s.enemy,'recover',{},rng,{turn:7,effects:s.effects,enemyAction:'recover'});
+check(s.player.energy===100 && s.enemy.energy>=0 && s.enemy.energy<=100,'recovery caps at 100');
+check(s.effects.player.recoverReadyTurn===13,'second cycle cooldown');
+check(!C.canRecover(make('pretresse',100),13,s.effects.player),'cannot recover at full energy');
+const reloaded=C.normalizeEffects(JSON.parse(JSON.stringify(s.effects)),8);
+check(reloaded.player.recoverReadyTurn===13,'saved / reloaded cooldown preserved');
+check(C.canRecover(make('pretresse',0),8,C.normalizeEffects({player:{},enemy:{}},8).player),'V14 saves without cooldown stay compatible');
+let low=make('pretresse',0),foe=make('pretresse',0);let y=C.resolveTurn(low,foe,'recover',{},rng,{turn:1,enemyAction:'recover'});
+low={...y.player,energy:2};foe={...y.enemy,energy:0};
+let fail=ctx.window.BellymonCapture.attempt(low,foe,{},()=>.99,{turn:2,effects:y.effects,enemyAction:'recover'});
+check(fail.success===false && fail.aiAction==='defend' && fail.enemy.energy===0,'capture failure respects enemy recovery cooldown');
+console.log(`V14.1 RECOVERY : ${tests} validations passées`);

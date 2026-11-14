@@ -1,0 +1,86 @@
+{
+  "format": "tour-des-waifus-v1",
+  "version": 1,
+  "id": "demo-relai-v4-e5bb202bd23a41be801850f519bfcf0e",
+  "label": "DÉMO V4 · Relais",
+  "createdAt": "2026-11-10T12:18:34.681560Z",
+  "updatedAt": "2026-11-10T12:18:34.681560Z",
+  "data": {
+    "profile": {
+      "pseudo": "Démonstration"
+    },
+    "waifus": [
+      {
+        "id": "demo-hero-1",
+        "classId": "epeiste",
+        "rank": "E",
+        "morph": null,
+        "evolutionPoints": 0,
+        "stats": {
+          "force": 20,
+          "rapidite": 7,
+          "constitution": 14
+        },
+        "maxHp": 82,
+        "hp": 9,
+        "energy": 100,
+        "injuredUntil": 0
+      },
+      {
+        "id": "demo-hero-2",
+        "classId": "griffeuse",
+        "rank": "E",
+        "morph": null,
+        "evolutionPoints": 0,
+        "stats": {
+          "force": 14,
+          "rapidite": 20,
+          "constitution": 7
+        },
+        "maxHp": 75,
+        "hp": 12,
+        "energy": 100,
+        "injuredUntil": 0
+      },
+      {
+        "id": "demo-hero-3",
+        "classId": "pretresse",
+        "rank": "E",
+        "morph": null,
+        "evolutionPoints": 0,
+        "stats": {
+          "force": 14,
+          "rapidite": 14,
+          "constitution": 14
+        },
+        "maxHp": 88,
+        "hp": 15,
+        "energy": 100,
+        "injuredUntil": 0
+      }
+    ],
+    "activeWaifuId": "demo-hero-1",
+    "food": {
+      "small": 0,
+      "large": 0
+    },
+    "bonuses": {
+      "force": 0,
+      "rapidite": 0,
+      "constitution": 0
+    },
+    "tower": {
+      "floor": 1,
+      "room": "rest",
+      "record": 1,
+      "event": null,
+      "combat": null,
+      "activeTraps": [],
+      "history": [
+        "Partie de test V4 : trois waifus pour essayer les relais KO."
+      ]
+    },
+    "createdAt": "2026-11-10T12:18:34.681560Z",
+    "lastSavedAt": "2026-11-10T12:18:34.681560Z"
+  }
+}

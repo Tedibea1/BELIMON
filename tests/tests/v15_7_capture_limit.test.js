@@ -1,0 +1,11 @@
+const fs=require('node:fs'),assert=require('node:assert/strict');
+const game=fs.readFileSync(__dirname+'/../js/game.js','utf8');
+const html=fs.readFileSync(__dirname+'/../index.html','utf8');
+assert.match(game,/target\.captureAttempts=\(target\.captureAttempts\?\?0\)\+1/);
+assert.match(game,/if\(\(target\.captureAttempts\?\?0\)>=3\)throw Error/);
+assert.match(game,/CAPTURE\.canAttempt\(hero,event\?\.enemy\) && \(event\?\.captureAttempts\?\?0\)<3/);
+assert.match(game,/CAPTURE\.canAttempt\(hero,slot\.data\.tower\.event\.enemy\) && \(slot\.data\.tower\.event\.captureAttempts\?\?0\)<3/);
+assert.match(game,/event\.captureAttempts!==undefined && \(!n\(event\.captureAttempts\)\|\|event\.captureAttempts>3\)/);
+assert.match(game,/capturesLeft=Math\.max\(0,3-\(event\?\.captureAttempts\?\?0\)\)/);
+assert.match(html,/V15\.7/);
+console.log('V15.7 capture limit: 7 checks passed');

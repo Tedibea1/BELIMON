@@ -1,0 +1,86 @@
+{
+  "format": "tour-des-waifus-v1",
+  "version": 1,
+  "id": "demo-evolution-v7-20261110",
+  "label": "DÉMO V7 · Évolutions",
+  "createdAt": "2026-11-10T13:06:45.925538Z",
+  "updatedAt": "2026-11-10T13:06:45.925538Z",
+  "data": {
+    "profile": {
+      "pseudo": "Découverte"
+    },
+    "waifus": [
+      {
+        "id": "demo-hero-1",
+        "classId": "epeiste",
+        "rank": "E",
+        "morph": null,
+        "evolutionPoints": 90,
+        "stats": {
+          "force": 20,
+          "rapidite": 7,
+          "constitution": 14
+        },
+        "maxHp": 82,
+        "hp": 82,
+        "energy": 100,
+        "injuredUntil": 0
+      },
+      {
+        "id": "demo-hero-2",
+        "classId": "griffeuse",
+        "rank": "D",
+        "morph": "chetive",
+        "evolutionPoints": 175,
+        "stats": {
+          "force": 20,
+          "rapidite": 31,
+          "constitution": 10
+        },
+        "maxHp": 90,
+        "hp": 90,
+        "energy": 100,
+        "injuredUntil": 0
+      },
+      {
+        "id": "demo-hero-3",
+        "classId": "pretresse",
+        "rank": "C",
+        "morph": "obese",
+        "evolutionPoints": 250,
+        "stats": {
+          "force": 28,
+          "rapidite": 24,
+          "constitution": 32
+        },
+        "maxHp": 130,
+        "hp": 130,
+        "energy": 100,
+        "injuredUntil": 0
+      }
+    ],
+    "activeWaifuId": "demo-hero-1",
+    "food": {
+      "small": 180,
+      "large": 120
+    },
+    "bonuses": {
+      "force": 0,
+      "rapidite": 0,
+      "constitution": 0
+    },
+    "tower": {
+      "floor": 1,
+      "room": "rest",
+      "record": 1,
+      "event": null,
+      "combat": null,
+      "activeTraps": [],
+      "history": [
+        "Partie de démonstration V7 : teste les gigots et les trois branches de morphologie."
+      ]
+    },
+    "createdAt": "2026-11-10T13:06:45.925538Z",
+    "lastSavedAt": "2026-11-10T13:06:45.925538Z"
+  }
+}
