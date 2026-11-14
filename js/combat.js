@@ -20,11 +20,11 @@
     archere_arcanique:{name:'Flèche du cataclysme',description:'Force ×2 · attaque magique pouvant infliger un critique.'},
     occultiste:{name:'Malédiction abyssale',description:'Force ×1 · −2 % aux 3 stats par seconde active jusqu’à −50 %. Dure 5 tours ; relançable sans cooldown ni cumul.'},
     pretresse:{name:'Bénédiction vitale',description:'Soigne 40 % des PV maximum, sans ressusciter.'},
-    griffeuse:{name:'Griffes fatales',description:'Force ×1,5,0 · test de RAP façon Assassinat (100 % si RAP ≥ 2× celle de la cible, 50 % à RAP égale), puis esquive normale ; critique ×2 garanti si elle touche.'},
-    vampire:{name:'Vampirisation',description:'Force ×1,5,0 · soigne 35 % des dégâts réellement infligés.'},
+    griffeuse:{name:'Griffes fatales',description:'Force ×1,5 · test de RAP façon Assassinat (100 % si RAP ≥ 2× celle de la cible, 50 % à RAP égale), puis esquive normale ; critique ×2 garanti si elle touche.'},
+    vampire:{name:'Vampirisation',description:'Force ×1,5 · soigne 35 % des dégâts réellement infligés.'},
     spectre:{name:'Frappe spectrale',description:'Force ×1,3 · intangible pendant 2 tours (activation comprise) ; indisponible au tour suivant.'},
     nemesis:{name:'Miroir magique',description:'Renvoie 40 % des dégâts reçus pendant 5 tours (activation comprise), sans cumul.'},
-    maudite:{name:'Malédiction du sang',description:'Force ×0,5,0 · si l’attaque touche, l’ennemi perd 10 % de ses PV max à chaque attaque offensive durant les 3 tours suivant le lancement, sans cumul.'},
+    maudite:{name:'Malédiction du sang',description:'Force ×0,5 · si l’attaque touche, l’ennemi perd 10 % de ses PV max à chaque attaque offensive durant les 3 tours suivant le lancement, sans cumul.'},
     envouteuse:{name:'Vol de puissance',description:'Force ×1,0 · si l’attaque touche, vole jusqu’à 20 points de Force ennemie durant les 3 tours suivant le lancement, sans cumul.'},
     exorciste:{name:'Purification',description:'Dissipe les malus et protège des nouveaux malus pendant 5 tours (activation comprise).'}
   });
