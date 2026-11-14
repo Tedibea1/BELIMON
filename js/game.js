@@ -832,27 +832,6 @@
     $('eventEnemyPortrait').hidden=true;
     $('eventFrame').classList.add('event-placeholder');
   }
-  function setBanner(title,description){
-    $('sessionStatus').textContent=title;
-    $('sessionStatus').hidden=!title;
-    $('sessionHint').textContent=description;
-    // V15.5.1 : le journal lateral PC et le journal sous les commandes
-    // ont le meme compte rendu, quel que soit le format de l'ecran.
-    $('desktopJournalStatus').textContent=title;
-    $('desktopJournalStatus').hidden=!title;
-    $('desktopJournalHint').textContent=description;
-    const banner=$('sessionHint').parentElement;
-    banner.classList.toggle('is-combat-summary',!title);
-    // Le compte-rendu du tour vient APRES les commandes pendant le combat.
-    // Pour les autres états (repos, coffre, victoire, remplacement), on
-    // conserve l'emplacement historique du bandeau avant les commandes.
-    const actions=$('actionPanel');
-    if(!title){
-      if(banner.previousElementSibling!==actions)actions.after(banner);
-    }else if(banner.nextElementSibling!==actions){
-      actions.before(banner);
-    }
-  }
   // L'effet affiché correspond au prochain tour à jouer et non au tour passé.
   function renderCombatHUD(slot){
     const tower=slot.data.tower;
@@ -1005,18 +984,6 @@
     $('eventWaiting').hidden=false;
     $('eventCardName').textContent='La tour';
     $('actionContext').textContent='Exploration';
-    const history=Array.isArray(tower.history)?tower.history:[];
-    // Le dernier resultat de combat est deja affiche integralement dans le resume.
-    // Ne pas le repeter juste en dessous dans la liste des evenements recents.
-    const latestTurn=tower.event?.type==='combat' && tower.event.state==='fighting' && tower.combat?.lastMessage
-      ?`Tour ${tower.combat.turn} : ${tower.combat.lastMessage}`:null;
-    const journalHistory=latestTurn && history[0]===latestTurn?history.slice(1):history;
-    const latest=journalHistory[0]||'Ton aventure commence dans la salle de repos.';
-    const previous=journalHistory[1]||'Explore à ton rythme.';
-    $('logTop').textContent=latest;
-    $('logBottom').textContent=previous;
-    $('mobileLogTop').textContent=latest;
-    $('mobileLogBottom').textContent=previous;
     if(!event){
       const activeHero=slot.data.waifus.find(h=>h.id===slot.data.activeWaifuId);
       const anyAvailable=slot.data.waifus.some(h=>heroAvailable(h,tower));
@@ -1026,11 +993,11 @@
       $('eventWaitingMessage').textContent='La tour attend ton prochain pas.';
       $('sideSituation').textContent='Une salle paisible avant la prochaine rencontre.';
       $('sideSituationChip').textContent='🏰 Salle de repos';
-      setBanner(`Salle de repos · Étage ${tower.floor}`,'Avance pour découvrir la seconde salle de cet étage.');
+      
       $('advanceBtn').hidden=false;
       $('advanceBtn').disabled=STATE.actionBusy||!anyAvailable;
       if(!anyAvailable){$('sideSituation').textContent='Aucune waifu valide. Retourne à l’hôpital de l’étage 1.';
-        setBanner('🏥 Soins nécessaires','Toutes tes waifus sont KO ou hospitalisées. Soigne-les à l’étage 1 avant de reprendre.');}
+        }
     } else if(event.type==='combat'){
       const enemy=event.enemy,cls=classMap.get(enemy.classId);
       $('eventCardName').textContent=cls.name;
@@ -1052,31 +1019,27 @@
       $('sideSituationChip').textContent=`⚔️ Combat · Rang ${enemy.rank}`;
       if(event.state==='pending'){
         $('actionContext').textContent='Choix de la combattante';
-        setBanner(`⚔️ ${cls.name} · Rang ${enemy.rank}`,heroAvailable(hero,tower)
-          ?'Choisis ta waifu avant le combat : elle compte pour la première des 3 combattantes autorisées.'
-          :'Ta waifu est blessée : choisis une combattante disponible dans Collection.');
+        
         $('startCombatBtn').hidden=false;
         $('startCombatBtn').disabled=STATE.actionBusy || !heroAvailable(hero,tower);
         $('chooseFighterBtn').hidden=false;
       }else if(event.state==='awaiting_switch'){
         $('actionContext').textContent='Relais obligatoire';
-        setBanner('💀 Waifu KO !','Choisis une autre waifu disponible pour poursuivre le combat. Le chrono est arrêté.');
+        
         $('sideSituation').textContent='Ton personnage est KO. L’adversaire conserve ses PV, son énergie et ses malus.';
       }else if(event.state==='captured'){
         const captured=slot.data.waifus.find(w=>w.id===event.capturedWaifuId);
         $('actionContext').textContent='Capture réussie';
-        setBanner('🎯 CAPTURE RÉUSSIE !',captured
-          ?`${classMap.get(captured.classId).name} · Rang ${captured.rank} · ${morphName(captured.morph)} — ajoutée à ta collection !`
-          :'Une nouvelle waifu rejoint ta collection.');
+        
         $('continueBtn').hidden=false;
       }else if(event.state==='won'){
         $('actionContext').textContent='Victoire';
-        setBanner('🏆 VICTOIRE !',event.reward?rewardLine(event.reward):tower.combat?.lastMessage||'Adversaire vaincue.');
+        
         $('continueBtn').hidden=false;
       }else{
         $('actionContext').textContent=`Tour ${tower.combat?.turn+1||1} · ${autoEnabled?'Combat AUTO':'Combat manuel'}`;
         // Aucun nom ni rang à gauche du compte rendu : seulement les deux actions.
-        setBanner('',tower.combat?.lastMessage||'À toi de jouer. La plus rapide agit en premier, sauf Défense.');
+        
         $('actionPanel').classList.add('combat-mode');
         $('combatActionsGrid').hidden=false;
         $('combatTimer').hidden=autoEnabled;
@@ -1092,7 +1055,7 @@
       $('sideSituation').textContent=opened?(trapped?'Un piège était caché dans ce coffre.':'Un coffre a été ouvert.'):'Impossible de savoir ce que contient ce coffre.';
       $('sideSituationChip').textContent=opened?(trapped?'☠️ Piège révélé':'🎁 Coffre ouvert'):'🎁 Coffre mystérieux';
       $('actionContext').textContent=opened?'Événement terminé':'Ouverture automatique';
-      setBanner(opened?(trapped?'☠️ Coffre piégé !':'🎁 Coffre découvert'):'🎁 Coffre trouvé',opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' sur toutes tes waifus, pendant 2 étages.':'Piège déjà découvert dans une ancienne version.'):event.reward?rewardLine(event.reward):'Coffre ouvert avant la V5.'):'Le coffre s’ouvre automatiquement après l’annonce.');
+      
       // Les coffres restent indiscernables avant ouverture ; aucun clic « Ouvrir » n’est nécessaire.
       if(opened)$('continueBtn').hidden=false;
     }
