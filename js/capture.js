@@ -1,4 +1,4 @@
-/* BELLYMON V15.12 — Capture manuelle en combat, seuils rééquilibrés.
+/* BELLYMON V15.13 — Capture manuelle en combat, seuils rééquilibrés.
    Capture : 2 EN, aucun butin. Sur échec, l'ennemie joue son tour normalement.
    Seuils appliqués au pourcentage entier arrondi au supérieur, afin de couvrir
    précisément toutes les valeurs de PV sans zone intermédiaire.
@@ -11,8 +11,8 @@
   function chance(enemy){
     if(!enemy || !Number.isFinite(enemy.maxHp) || enemy.maxHp<=0 || !Number.isFinite(enemy.hp) || enemy.hp<=0)return 0;
     const percent=Math.min(100,Math.ceil(100*enemy.hp/enemy.maxHp));
-    if(percent<=10)return 90;
-    if(percent<=30)return 75;
+    if(percent<=10)return 85;
+    if(percent<=30)return 55;
     if(percent<=50)return 30;
     if(percent<=75)return 15;
     return 5;
