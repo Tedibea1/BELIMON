@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'../..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 const game=fs.readFileSync(path.join(root,'js/game.js'),'utf8');
 const button=action=>{
- const match=html.match(new RegExp('<button[^>]*data-combat-action="'+action+'"[^>]*>([^<]*(?:<[^>]+>[^<]*)*)<\\/button>'));
+ const match=html.match(new RegExp('<button(?=[^>]*data-combat-action="'+action+'")[^>]*>[\\s\\S]*?<\\/button>'));
  assert.ok(match,'Bouton '+action+' introuvable');
  return match[0];
 };
