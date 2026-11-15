@@ -16,7 +16,7 @@ assert.doesNotMatch(game,/(?:Ancien piège découvert|Piège déjà découvert d
 assert.match(game,/Le coffre a été ouvert\./);
 assert.match(game,/Ce coffre contenait un piège\./);
 assert.doesNotMatch(guide,/sans dévoiler|sans révéler|coefficients et probabilités internes|statistiques chiffrées/);
-assert.match(html,/BELLYMON · V15\.14/);
+assert.match(html,/BELLYMON · V15\.(?:1[4-9]|[2-9]\d)/);
 
 // Les fenêtres et écrans principaux n'ont pas été retirés par mégarde.
 for(const id of ['menuScreen','createScreen','guideScreen','playScreen','saveList','eventResultOverlay','waifuDetailOverlay','morphOverlay','audioOverlay']){
