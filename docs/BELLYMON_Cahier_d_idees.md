@@ -1,8 +1,8 @@
 # BELLYMON — Cahier d'idées
 
 **Créé le :** 10 novembre 2026  
-**Mis à jour le :** 11 novembre 2026  
-**État :** dix idées suivies : idées 002 et 006 mises en œuvre ; huit pistes encore non implémentées. Les idées 008 et 009 sont des propositions de contenu et de création de partie, non approuvées pour codage ; indicateur de décision adverse réalisé en V12.0.13  
+**Mis à jour le :** 15 novembre 2026  
+**État :** onze idées suivies, dont les idées 002, 006 et 007 mises en œuvre. L'idée 011 comprend un classement des futures compétences proposé le 15 novembre 2026 ; ce classement n'est pas une autorisation de codage.  
 **Version du jeu au moment de la création :** V12.0.6
 
 ---
@@ -269,10 +269,56 @@ Le joueur **ne rejette pas les personnages recyclés ou hybrides**. Il veut savo
 
 **Précautions d’équilibrage avant toute implémentation :** distinguer bonus passif et action active ; définir coût en énergie, coût en PV, durée, cumul et fin des effets, esquives garanties ou probabilistes, risque des immunités longues, soin après KO, effets de silence, précision, éléments et statut dans la formule de combat actuelle. Les futures combinaisons ne doivent pas permettre des boucles de soins ou de protection infinies. **On ne touche pas aux mécaniques validées du jeu avant de les finir et de les tester.**
 
+
+### Priorités du joueur pour les futures compétences — 15 novembre 2026
+
+**Objet :** classer les pistes pour de futurs personnages en privilégiant leur **identité de gameplay en 1v1**, sans les attribuer ni les coder pour l'instant. Les douze personnages déjà jouables et leurs sorts ne sont pas concernés. Ce classement complète la banque des 30 propositions ; il ne remplace pas ses descriptions initiales.
+
+#### Les meilleures — priorité dans cet ordre précis
+
+| # | Compétence | Raison de la priorité |
+|---:|---|---|
+| 1 | **Silence** | Anti-spéciale : empêche l'adversaire d'utiliser sa compétence et pose le dilemme « attaquer ou neutraliser la spéciale ? ». |
+| 2 | **Clone d'ombre** | Anti-burst, « fausse mort » : le coup qui aurait dû tuer touche le clone à la place ; mécanique à préciser. |
+| 3 | **Résurrection** | Second souffle : revient une seule fois par combat après une situation fatale ; conditions à définir. |
+| 4 | **Dernier souffle** | **Berserker** : plus il est blessé, plus ses dégâts augmentent ; inverse de la logique de soin du Vampire. |
+| 5 | **Frénésie** | **Ramp DPS** : chaque attaque réussie augmente les dégâts suivants, encourageant des séries de coups qui touchent. |
+| 6 | **Exécution** | **Finisher** : attaque plus forte à mesure que l'adversaire perd ses PV. |
+| 7 | **Pacte interdit** | **PV → énergie** : se blesse pour alimenter ses compétences, au prix d'un risque. |
+
+#### Les correctes — possibles mais moins mémorables
+
+| Compétence | Appréciation |
+|---|---|
+| **Sacrifice sanglant** | Burst au prix de PV ; intéressant mais proche d'autres effets de sacrifice. |
+| **Contre-attaque** | Riposte active, différente du Miroir magique qui renvoie une fraction des dégâts. |
+| **Désorientation** | Malus de précision spécifique. |
+| **Gel** | Malus de Rapidité spécifique. |
+| **Forteresse** | Défense accrue contre baisse de puissance offensive. |
+| **Parade parfaite** | Anti-DPS : bloquer et récupérer éventuellement de l'énergie. |
+| **Prémonition** | Anticipation d'un gros coup, plutôt proche de la protection du Clone d'ombre. |
+| **Marque du chasseur** | Intérêt surtout si plusieurs personnages profitent de la marque ; **à reconsidérer en 1v1**, même avec les remplaçantes actuelles. |
+
+#### Les faibles — à écarter en priorité des nouvelles créations
+
+| Compétence | Appréciation |
+|---|---|
+| **Brûlure + Empoisonnement** | Deux DoT très semblables : en conserver au maximum un seul. |
+| **Surpuissance** | Bonus temporaire de dégâts trop générique pour caractériser une héroïne. |
+| **Accélération** | Simple bonus temporaire de vitesse, sans identité forte. |
+| **Régénération** | Sustain passif moins intéressant que la Vampirisation ou le soin de la Prêtresse. |
+| **Barrière magique** | Bouclier jugé trop générique. |
+| **Double frappe** | Deux coups moins forts, pas assez d'identité. |
+| **Purification** | Peu attractive comme **nouvelle capacité isolée** face à la prévention des malus. **Cela ne signifie pas supprimer le pouvoir actuel de l'Exorciste**, qui dissipe les malus et protège aussi des suivants. |
+| **Surcharge énergétique** | Trop proche d'une grosse attaque ordinaire, avec seulement un coût énergétique accru. |
+
+**À débattre avant tout codage :** les coûts d'énergie/PV, les probabilités, les durées et plafonds, la gestion des KO, des relais 1v1 et de l'IA/AUTO. Aucun chiffre n'est approuvé ; ces appréciations ne valent ni validation de nouveaux personnages, ni remplacement de sorts existants. Le choix de la qualité des personnages (idée 010) demeure indépendant.
+
 **Statut :** bibliothèque de **propositions**, zéro compétence ajoutée au jeu ; affectation aux waifus et fusions à travailler plus tard, après stabilisation du gameplay.
 
 ## Notes de suivi
 
+- **15 novembre 2026 :** l'idée 011 inclut désormais une liste priorisée pour de futures compétences : Silence, Clone d'ombre, Résurrection, Dernier souffle, Frénésie, Exécution, Pacte interdit. Autres propositions classées en « correctes » et « faibles », sans codage ni changement des héroïnes existantes.
 - **Onze idées consignées :** 001 phase 2 avec enchaînements propres à chaque classe ; 002 Malédiction abyssale (réalisée) ; 003 choix waifus/husbandos ; 004 hypothèse Constitution et PV ; 005 cooldowns éventuels ; 006 initiative selon Rapidité (réalisée en V12.0.18) ; 007 boutique exclusivement de trois potions (réalisée en V12.0.21, prix et soins approuvés le 11/11/2026) ; 008 au moins 18 personnages, dont des variantes/recyclages assumés des six classes, avec débat sur le nombre de spéciales (à concevoir) ; 009 trois ou six starters (à décider) ; 010 trois qualités à 1/2/3 spéciales et concepts Sorcières à clones, Assassine furtive, Mage mobile, Vampire classique capturable (à concevoir, après stabilisation du jeu) ; 011 banque de 30 compétences spéciales proposées, sans attribution ni codage.
 - **Implémenté depuis les premières notes :** depuis V12.0.18, la waifu la plus rapide agit d'abord (égalité départagée aléatoirement), et Défense est prioritaire ; l'Hôpital à trois lits a aussi été ajouté. Depuis V12.0.19, l'action Récupération d'énergie existe. Les anciennes observations de l'idée 006 décrivaient une version antérieure du jeu, et non le fonctionnement actuel.
 - **Le Siphon d'énergie a été renommé « Absorption » en V12.0.17**, et son drainage actuel est **−3 EN/seconde** pour quatre tours. Les coûts actuels des attaques légères, lourdes et spéciales sont respectivement 15, 15 et 20 EN.
