@@ -5,9 +5,9 @@
 (() => {
   'use strict';
   const CHARACTER_GUIDE = Object.freeze({
-    epeiste:{flavour:'Combattante offensive à l’épée, solide au corps à corps.',skill:'Punition frénétique',kind:'Attaque et affaiblissement',description:'Frappe son adversaire à l’épée et affaiblit durablement sa Constitution.'},
+    epeiste:{flavour:'Combattante offensive à l’épée, solide au corps à corps.',skill:'Frappe dévastatrice',kind:'Attaque puissante',description:'Assène un puissant coup d’épée pouvant infliger un critique.'},
     bagarreuse:{flavour:'Protectrice robuste, faite pour encaisser et épuiser ses ennemis.',skill:'Absorption',kind:'Attaque et épuisement',description:'Porte un coup qui draine progressivement l’énergie adverse pendant plusieurs tours.'},
-    archere_arcanique:{flavour:'Spécialiste des dégâts magiques, très offensive mais fragile.',skill:'Flèche du cataclysme',kind:'Attaque magique',description:'Décoche une flèche de magie dévastatrice capable de porter un coup critique.'},
+    archere_arcanique:{flavour:'Spécialiste des dégâts magiques, très offensive mais fragile.',skill:'Flèche perforante',kind:'Attaque et affaiblissement',description:'Décoche une flèche magique qui transperce les défenses et affaiblit durablement la Constitution adverse.'},
     occultiste:{flavour:'Experte des malédictions qui fragilisent progressivement la cible.',skill:'Malédiction abyssale',kind:'Attaque et malédiction',description:'Frappe sa cible puis affaiblit progressivement sa Force, sa Rapidité et sa Constitution.'},
     pretresse:{flavour:'Soigneuse équilibrée, précieuse pour prolonger les combats.',skill:'Bénédiction vitale',kind:'Soin',description:'Restaure une part importante de ses propres points de vie. Ne permet pas de ressusciter.'},
     griffeuse:{flavour:'Combattante aux griffes, rapide et redoutable lorsqu’elle réussit sa frappe.',skill:'Griffes fatales',kind:'Attaque critique',description:'Tente une attaque dont la réussite dépend de sa Rapidité face à celle de sa cible. Si elle touche, son coup est critique.'},

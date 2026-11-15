@@ -15,9 +15,9 @@
     idle:{label:'Temps écoulé',power:0,accuracy:100}
   });
   const SPECIALS=Object.freeze({
-    epeiste:{name:'Punition frénétique',description:'Force ×1,7 · −15 % Constitution ennemie jusqu’à la fin du combat.'},
+    epeiste:{name:'Frappe dévastatrice',description:'Force ×2 · frappe à l’épée pouvant infliger un critique.'},
     bagarreuse:{name:'Absorption',description:'Force ×0,5 · retire 3 énergies par seconde pendant 4 tours (relançable, sans cumul).'},
-    archere_arcanique:{name:'Flèche du cataclysme',description:'Force ×2 · attaque magique pouvant infliger un critique.'},
+    archere_arcanique:{name:'Flèche perforante',description:'Force ×1,7 · −15 % Constitution ennemie jusqu’à la fin du combat.'},
     occultiste:{name:'Malédiction abyssale',description:'Force ×1 · −2 % aux 3 stats par seconde active jusqu’à −50 %. Dure 5 tours ; relançable sans cooldown ni cumul.'},
     pretresse:{name:'Bénédiction vitale',description:'Soigne 40 % des PV maximum, sans ressusciter.'},
     griffeuse:{name:'Griffes fatales',description:'Force ×1,5 · test de RAP façon Assassinat (100 % si RAP ≥ 2× celle de la cible, 50 % à RAP égale), puis esquive normale ; critique ×2 garanti si elle touche.'},
@@ -323,7 +323,7 @@
       }
       let power=null,forcedCrit=false;
       if(action==='special'){
-        power={epeiste:1.7,bagarreuse:0.5,archere_arcanique:2.0,occultiste:1.0,griffeuse:1.5,vampire:1.5,spectre:1.3,maudite:0.5,envouteuse:1.0}[attacker.classId];
+        power={epeiste:2.0,bagarreuse:0.5,archere_arcanique:1.7,occultiste:1.0,griffeuse:1.5,vampire:1.5,spectre:1.3,maudite:0.5,envouteuse:1.0}[attacker.classId];
         forcedCrit=attacker.classId==='griffeuse';
       }
       const result=strike(attacker,defender,action,aStats,dStats,defends,rng,power,forcedCrit,2,
@@ -366,7 +366,7 @@
             report.push(`${amount} FOR transférée(s) : actif pendant les 3 prochains tours, sans cumul.`);
             break;
           }
-          case 'epeiste':if(!isPurified(targetEffect,turn)){targetEffect.swordCons=true;report.push('Constitution adverse −15 % jusqu’à la fin du combat.');}else report.push('Malus bloqué par Purification.');break;
+          case 'archere_arcanique':if(!isPurified(targetEffect,turn)){targetEffect.swordCons=true;report.push('Constitution adverse −15 % jusqu’à la fin du combat.');}else report.push('Malus bloqué par Purification.');break;
           case 'bagarreuse':if(!isPurified(targetEffect,turn)){targetEffect.siphon={expiresTurn:turn+3,nextTickAt:0};report.push('Absorption active pendant 4 tours : −3 EN/s.');}else report.push('Absorption bloquée par Purification.');break;
           case 'occultiste':{
             if(isPurified(targetEffect,turn)){report.push('Malédiction bloquée par Purification.');break;}

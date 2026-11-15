@@ -9,7 +9,7 @@
    const sides={player:[],enemy:[]};
    for(const key of ['player','enemy']){
      const fx=effects[key];
-     if(fx.swordCons) sides[key].push({icon:'🛡️',label:'CONS −15 %',detail:'Punition frénétique : Constitution −15 % jusqu’à la fin du combat.',kind:'debuff'});
+     if(fx.swordCons) sides[key].push({icon:'🛡️',label:'CONS −15 %',detail:'Flèche perforante : Constitution −15 % jusqu’à la fin du combat.',kind:'debuff'});
      if(fx.curse && nextTurn<=fx.curse.expiresTurn){
        const remaining=fx.curse.expiresTurn-nextTurn+1;
        const percent=fx.curse.percent;
