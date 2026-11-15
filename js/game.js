@@ -948,6 +948,7 @@
       enemyMiss:!!(details?.player?.miss || details?.player?.dodged)
     };
   }
+  const FLOATING_TEXT_MS = 1800; // Durée réelle de chaque dégât, soin ou MISS, même pendant AUTO.
   function playBattleFeedback(feedback){
     if(!feedback || STATE.screen!=='play'||STATE.activeTab!=='tour'||document.hidden)return;
     const announce=(cardId,amount,heal=0,miss=false)=>{
@@ -955,9 +956,9 @@
       if(!card)return;
       const hit=amount>0,healing=!hit && heal>0;
       if(!hit && !healing && !miss)return;
-      // AUTO : ne pas laisser l'ancien minuteur effacer le nouvel effet.
+      // Les impacts physiques peuvent se relancer, mais chaque texte flottant
+      // conserve sa propre durée, même lorsqu'AUTO lance un nouveau tour.
       clearTimeout(card._impactTimer);
-      card.querySelectorAll('.hit-pop').forEach(node=>node.remove());
       card.classList.remove('impact-hit','impact-heal');
       if(hit||healing){
         void card.offsetWidth;
@@ -974,8 +975,8 @@
         label.setAttribute('aria-hidden','true');
         card.append(label);labels.push(label);
       }
+      for(const label of labels)setTimeout(()=>label.remove(),FLOATING_TEXT_MS);
       card._impactTimer=setTimeout(()=>{
-        for(const label of labels)label.remove();
         card.classList.remove('impact-hit','impact-heal');
         card._impactTimer=null;
       },850);
