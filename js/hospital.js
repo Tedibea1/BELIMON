@@ -1,7 +1,15 @@
-/* BELLYMON V12.0.18 — Hôpital : 3 places, soin réel de 18 s et blessures persistantes. */
+/* BELLYMON V15.17 — Hôpital : 3 lits, soins proportionnels aux PV manquants (18 s maximum). */
 (()=>{
   'use strict';
   const CAPACITY=3,HEAL_MS=18000;
+  // Temps de soin linéaire : 100 % de PV manquants = 18 s, 25 % = 4,5 s.
+  // Une admission déjà enregistrée conserve son échéance, même après mise à jour.
+  function healDurationMs(hero){
+    const max=Number(hero?.maxHp),current=Number(hero?.hp);
+    if(!Number.isFinite(max)||max<=0||!Number.isFinite(current))return HEAL_MS;
+    const missing=Math.max(0,Math.min(1,(max-current)/max));
+    return missing===0?0:Math.max(1,Math.round(HEAL_MS*missing));
+  }
   function ensure(data,now=Date.now()){
     if(!data.hospital || !Array.isArray(data.hospital.slots)){
       // Conversion douce des anciennes convalescences : 3 premières places reprises.
@@ -33,7 +41,7 @@
     if(h.hp>=h.maxHp)throw Error('Cette waifu possède déjà tous ses PV.');
     if(data.hospital.slots.some(x=>x.heroId===heroId))throw Error('Cette waifu est déjà hospitalisée.');
     if(data.hospital.slots.length>=CAPACITY)throw Error('Les trois lits sont occupés.');
-    const readyAt=now+HEAL_MS;
+    const readyAt=now+healDurationMs(h);
     data.hospital.slots.push({heroId,readyAt});h.injuredUntil=readyAt;
     return readyAt;
   }
@@ -41,5 +49,5 @@
     ensure(data);
     data.hospital.slots=data.hospital.slots.filter(b=>b.heroId!==heroId);
   }
-  window.BellymonHospital=Object.freeze({CAPACITY,HEAL_MS,ensure,complete,start,remove});
+  window.BellymonHospital=Object.freeze({CAPACITY,HEAL_MS,healDurationMs,ensure,complete,start,remove});
 })();

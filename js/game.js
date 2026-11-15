@@ -836,6 +836,8 @@
       const row=mkEl('div','hospital-patient');
       const photo=mkEl('img');photo.src=heroPortrait(hero);photo.alt=heroName(hero);
       const name=mkEl('div','hospital-patient-text');name.append(mkEl('b','',`${heroName(hero)} · ${hero.rank}`),makeHpBar(hero));
+      const seconds=(HOSPITAL.healDurationMs(hero)/1000).toLocaleString('fr-FR',{maximumFractionDigits:1});
+      name.append(mkEl('small','',`⏳ ${seconds} s de soin`));
       const btn=mkEl('button','btn primary hospital-admit','🏥 Soigner');btn.type='button';
       btn.dataset.hospitalAdmit=hero.id;btn.disabled=data.hospital.slots.length>=HOSPITAL.CAPACITY || STATE.actionBusy || ['fighting','awaiting_switch'].includes(data.tower.event?.state);
       row.append(photo,name,btn);patients.append(row);
@@ -847,7 +849,12 @@
     if(slot.data.tower.floor!==1){showToast('🔒 Retourne à l’étage 1 pour accéder à l’hôpital.');return;}
     try{HOSPITAL.start(clone(slot.data),heroId);}catch(err){showToast('⚠ '+err.message);return;}
     const ok=await commitBattle(data=>{HOSPITAL.start(data,heroId);});
-    if(ok){AUDIO.playEffect('heal');showToast('🏥 Soins commencés : 18 secondes.');}
+    if(ok){
+      AUDIO.playEffect('heal');
+      const hero=slot.data.waifus.find(h=>h.id===heroId);
+      const seconds=(HOSPITAL.healDurationMs(hero)/1000).toLocaleString('fr-FR',{maximumFractionDigits:1});
+      showToast(`🏥 Soins commencés : ${seconds} secondes.`);
+    }
   }
   function renderBonuses(slot){
     const bonuses=$('bonusesGrid');bonuses.replaceChildren();
