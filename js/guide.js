@@ -50,17 +50,17 @@
           <div class="guide-feature"><img src="${portrait(cl.id)}" alt="${safe(cl.name)} — illustration de rang E" class="guide-feature-img"><div><h3>${safe(cl.icon)} ${safe(cl.name)}</h3><span class="guide-type">${safe(cl.role)}</span><p>${safe(d.flavour)}</p></div></div>
           <h4>Spécialités</h4>${specTable(cl.stats)}
           <div class="guide-skill-feature"><span class="overline">✨ COMPÉTENCE SPÉCIALE</span><h4>${safe(specialName(cl.id))}</h4><p>${safe(d.description)}</p></div>
-          <p class="guide-discretion">Les losanges indiquent les spécialités de la classe, pas ses statistiques chiffrées.</p>
+          <p class="guide-discretion">Plus il y a de losanges remplis, plus la classe se distingue dans cette statistique.</p>
         </article>
       </div>`;
   }
   function renderMorphs(){
     return `<div class="guide-section-head"><div><span class="overline">CHOISIR SON ÉVOLUTION</span><h3>Les morphologies</h3><p>Une morphologie oriente la progression de chaque waifu, indépendamment de sa classe et de son sort spécial.</p></div></div>
       <div class="guide-morph-grid">${MORPHS.map(m=>`<article class="guide-morph-card panel"><div class="guide-morph-icon" aria-hidden="true">${m.icon}</div><div class="overline">${safe(m.headline)}</div><h3>${safe(m.name)}</h3>${specTable(morphProfile(m.id))}<p>${safe(m.description)}</p></article>`).join('')}</div>
-      <div class="guide-lesson panel"><h4>💡 Comment lire les losanges ?</h4><p>Plus une statistique possède de <strong>losanges remplis ◆</strong>, plus la classe ou la morphologie la favorise. Les <strong>losanges vides ◇</strong> montrent les niveaux restants. Ces symboles sont de simples repères, sans révéler les valeurs réelles.</p><p>Le rang E est commun à toutes les branches. La morphologie se choisit lors de l’évolution vers le rang D ; la classe et sa compétence spéciale restent les mêmes.</p></div>`;
+      <div class="guide-lesson panel"><h4>💡 Comment lire les losanges ?</h4><p>Plus une statistique possède de <strong>losanges remplis ◆</strong>, plus la classe ou la morphologie la favorise. Les <strong>losanges vides ◇</strong> complètent la jauge. Compare-les pour repérer les points forts de chaque morphologie.</p><p>Le rang E est commun à toutes les branches. La morphologie se choisit lors de l’évolution vers le rang D ; la classe et sa compétence spéciale restent les mêmes.</p></div>`;
   }
   function renderSkills(){
-    return `<div class="guide-section-head"><div><span class="overline">L'ARSENAL DES WAIFUS</span><h3>Les compétences spéciales</h3><p>Chaque classe possède un pouvoir unique. Découvre ce qu'il fait, sans dévoiler les coefficients et probabilités internes.</p></div><span class="pill">${classes.length} SORTS</span></div>
+    return `<div class="guide-section-head"><div><span class="overline">L'ARSENAL DES WAIFUS</span><h3>Les compétences spéciales</h3><p>Chaque classe possède un pouvoir unique. Découvre ses effets pour choisir la bonne combattante.</p></div><span class="pill">${classes.length} SORTS</span></div>
       <div class="guide-skills-grid">${classes.map(c=>{
         const d=CHARACTER_GUIDE[c.id];
         return `<article class="guide-skill-card panel"><div class="guide-skill-icon" aria-hidden="true">${safe(c.icon)}</div><div class="guide-skill-body"><span class="guide-class-name">${safe(c.name)}</span><h4>${safe(specialName(c.id))}</h4><span class="guide-skill-kind">${safe(d.kind)}</span><p>${safe(d.description)}</p></div></article>`;

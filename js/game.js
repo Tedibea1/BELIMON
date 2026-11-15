@@ -1137,13 +1137,13 @@
       setEventIcon(opened?(trapped?'💀':'🎁'):'🎁',opened?(trapped?'Piège découvert':'Coffre ouvert'):'Coffre mystérieux');
       $('eventFrame').setAttribute('aria-label',opened?(trapped?'Coffre piégé révélé':'Coffre ouvert'):'Coffre mystérieux');
       $('eventWaitingTitle').textContent=opened?(trapped?'Piège !':'Coffre ouvert'):'Un coffre !';
-      $('eventWaitingMessage').textContent=opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' · 2 étages.':'Ancien piège découvert.'):event.reward?rewardLine(event.reward):'Coffre ouvert avant la V5.'):'Son contenu est inconnu...';
+      $('eventWaitingMessage').textContent=opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' · 2 étages.':'Piège découvert.'):event.reward?rewardLine(event.reward):'Le coffre a été ouvert.'):'Son contenu est inconnu...';
       $('sideSituation').textContent=opened?(trapped?'Un piège était caché dans ce coffre.':'Un coffre a été ouvert.'):'Impossible de savoir ce que contient ce coffre.';
       $('sideSituationChip').textContent=opened?(trapped?'☠️ Piège révélé':'🎁 Coffre ouvert'):'🎁 Coffre mystérieux';
       $('actionContext').textContent=opened?'Événement terminé':'Ouverture automatique';
       setDesktopJournal(opened?(trapped?'☠️ Coffre piégé !':'🎁 Coffre découvert'):'🎁 Coffre trouvé',
-        opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' sur toutes tes waifus, pendant 2 étages.':'Piège déjà découvert dans une ancienne version.')
-          :event.reward?rewardLine(event.reward):'Coffre ouvert avant la V5.')
+        opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' sur toutes tes waifus, pendant 2 étages.':'Ce coffre contenait un piège.')
+          :event.reward?rewardLine(event.reward):'Le coffre a été ouvert.')
           :'Le coffre s’ouvre automatiquement après l’annonce.');
       
       // Les coffres restent indiscernables avant ouverture ; aucun clic « Ouvrir » n’est nécessaire.
