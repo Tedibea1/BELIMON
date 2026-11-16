@@ -8,6 +8,7 @@ on:
       - "js/audio.js"
       - "js/game.js"
       - "assets/audio/preparation.mp3"
+      - "assets/audio/sfx/combat_encounter.mp3"
       - "tests/tests/music_transitions.test.cjs"
   workflow_dispatch:
 
