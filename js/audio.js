@@ -80,44 +80,88 @@
       if(audio.error)console.warn('BELLYMON audio : impossible de lire',audio.currentSrc||audio.src);
     });
   }
-  function cancelFade(){if(fadeHandle){cancelAnimationFrame(fadeHandle);fadeHandle=0;}}
+  function cancelFade(){if(fadeHandle){cancelAnimationFrame(fadeHandle);fadeHandle=0;}transition=null;}
   function stopMusic(){
     cancelFade();
     for(const track of Object.values(music)){track.pause();track.volume=0;}
     playing=null;
   }
   function targetVolume(){return settings.music?(scene==='combat'?settings.combatVolume:settings.musicVolume)/100:0;}
-  // Fondu croisé sur 1,5 seconde entre exploration, préparation et combat.
-  // Chaque fondu part du volume ACTUEL des trois pistes : une interruption
-  // rapide ne doit ni couper la musique, ni laisser une piste orpheline audible.
+  // Fondu SEQUENTIEL (pas de crossfade) :
+  // 1. la piste sortante descend a zero et s'arrete ;
+  // 2. seulement ensuite, la nouvelle piste demarre et monte.
+  // Chaque etape dure 750 ms ; aucun chevauchement audible n'est autorise.
+  const FADE_OUT_MS=750;
+  const FADE_IN_MS=750;
+  let transition=null;
+
+  function animateVolume(track,from,goal,duration,target,onFinished){
+    const state={track,target};
+    transition=state;
+    const startedAt=performance.now();
+    const step=now=>{
+      if(transition!==state)return;
+      const t=Math.min(1,Math.max(0,(now-startedAt)/duration));
+      const endVolume=goal==='scene'?targetVolume():goal;
+      track.volume=Math.max(0,Math.min(1,from+(endVolume-from)*t));
+      if(t<1){
+        fadeHandle=requestAnimationFrame(step);
+      }else{
+        fadeHandle=0;
+        transition=null;
+        if(onFinished)onFinished();
+      }
+    };
+    fadeHandle=requestAnimationFrame(step);
+  }
+
   function syncMusic(){
     const desired=(hidden||!settings.music||!targetVolume())?null:music[scene];
     if(!desired){stopMusic();return;}
+    // Les mises a jour d'interface/volume ne relancent jamais un fondu en cours.
+    if(transition?.target===desired)return;
+    const wasTransitioning=Boolean(transition);
+    cancelFade();
+
+    // Protection : en aucun cas deux pistes ne doivent jouer simultanement.
+    for(const track of Object.values(music)){
+      if(track!==playing){track.pause();track.volume=0;}
+    }
+
+    function fadeInNext(){
+      const next=(hidden||!settings.music||!targetVolume())?null:music[scene];
+      if(!next){stopMusic();return;}
+      playing=next;
+      next.volume=0;
+      if(next.ended)next.currentTime=0;
+      // La nouvelle musique n'est lancee qu'une fois l'ancienne arretee.
+      next.play().catch(()=>{ /* Autorisation differee au premier geste. */ });
+      animateVolume(next,0,'scene',FADE_IN_MS,next);
+    }
+
     if(playing===desired){
-      // Les rendus répétés ne doivent jamais remettre le fondu à zéro.
-      if(!fadeHandle)desired.volume=targetVolume();
-      if(desired.paused)desired.play().catch(()=>{ /* Autorisation différée au premier geste. */ });
+      if(playing.paused)playing.play().catch(()=>{});
+      if(wasTransitioning){
+        // Retour rapide vers la piste qui etait en train de s'eteindre.
+        animateVolume(playing,playing.volume,'scene',FADE_IN_MS,desired);
+      }else{
+        playing.volume=targetVolume();
+      }
       return;
     }
-    cancelFade();
-    const initialVolumes=new Map(Object.values(music).map(track=>[track,track.volume]));
-    playing=desired;
-    if(desired.ended)desired.currentTime=0;
-    desired.play().catch(()=>{ /* Autorisation différée au premier geste. */ });
-    const startedAt=performance.now();
-    const fadeMs=1500;
-    const step=now=>{
-      const progress=Math.min(1,Math.max(0,(now-startedAt)/fadeMs));
-      for(const track of Object.values(music)){
-        const from=initialVolumes.get(track)||0;
-        const to=track===desired?targetVolume():0;
-        track.volume=Math.max(0,Math.min(1,from+(to-from)*progress));
-        if(progress>=1 && track!==desired){track.pause();track.volume=0;}
-      }
-      if(progress<1)fadeHandle=requestAnimationFrame(step);
-      else fadeHandle=0;
-    };
-    fadeHandle=requestAnimationFrame(step);
+
+    if(playing && !playing.paused && playing.volume>0){
+      const outgoing=playing;
+      animateVolume(outgoing,outgoing.volume,0,FADE_OUT_MS,desired,()=>{
+        outgoing.pause();
+        outgoing.volume=0;
+        playing=null;
+        fadeInNext();
+      });
+      return;
+    }
+    if(playing){playing.pause();playing.volume=0;playing=null;}
+    fadeInNext();
   }
   function setScene(name){
     const wanted=['exploration','preparation','combat'].includes(name)?name:'exploration';
