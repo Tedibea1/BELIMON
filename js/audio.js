@@ -40,10 +40,9 @@
   // V16.1.3 : neuf vrais enregistrements sélectionnés par le joueur, hors connexion.
   const burps=Array.from({length:9},(_,i)=>new Audio(`assets/audio/burps/rot_${String(i+1).padStart(2,'0')}.mp3`));
   burps.forEach(sound=>{sound.preload='auto';});
-  // V16.1.7 : les trois jingles et le suspense de rencontre fournis par le joueur.
+  // V16.1.7 : jingles des coffres, victoires et pièges.
   // Lecture locale, pas de nouveau tirage de loot ; toutes les règles restent inchangées.
   const resultSounds={
-    encounter:new Audio('assets/audio/sfx/combat_encounter.mp3'),
     chest:new Audio('assets/audio/sfx/chest_treasure.mp3'),
     victory:new Audio('assets/audio/sfx/victory_fanfare.mp3'),
     trap:new Audio('assets/audio/sfx/trap_evil_laugh.mp3')
@@ -124,10 +123,6 @@
     const wanted=['exploration','preparation','combat'].includes(name)?name:'exploration';
     if(scene===wanted)return;
     scene=wanted;
-    // L'annonce de rencontre ne doit pas masquer la musique du duel.
-    if(scene==='combat' && activeResultSound===resultSounds.encounter){
-      activeResultSound.pause();activeResultSound=null;
-    }
     syncMusic();
   }
   // Tente la lecture immédiatement, même sans interaction.
