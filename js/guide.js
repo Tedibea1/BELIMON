@@ -15,7 +15,7 @@
     spectre:{flavour:'Combattante insaisissable qui privilégie la Rapidité et les ouvertures.',skill:'Frappe spectrale',kind:'Attaque et protection',description:'Frappe sa cible et devient brièvement intangible. Pendant cet état, elle ne peut pas être touchée par les attaques adverses.'},
     nemesis:{flavour:'Défenseuse qui transforme les attaques reçues en représailles.',skill:'Miroir magique',kind:'Protection et riposte',description:'Active un miroir protecteur qui renvoie une partie des dégâts subis pendant plusieurs tours.'},
     maudite:{flavour:'Combattante résistante qui punit les ennemis trop agressifs.',skill:'Malédiction du sang',kind:'Attaque et malédiction',description:'Projette son sang maudit : même si le coup est esquivé, la malédiction s’applique. L’ennemi perd de la vie chaque fois qu’il attaque pendant les tours suivants. Purification peut la bloquer.'},
-    envouteuse:{flavour:'Sorcière polyvalente qui retourne la puissance ennemie à son avantage.',skill:'Vol de puissance',kind:'Attaque et affaiblissement',description:'Lance une attaque magique. Si elle touche, elle dérobe temporairement de la Force à son adversaire pour se renforcer.'},
+    envouteuse:{flavour:'Sorcière polyvalente qui retourne la puissance ennemie à son avantage.',skill:'Vol de puissance',kind:'Attaque et affaiblissement',description:'Lance une attaque magique. Si elle touche, elle dérobe une part de la Force adverse pour renforcer temporairement la sienne.'},
     exorciste:{flavour:'Spécialiste de la purification et de la défense contre les malus.',skill:'Purification',kind:'Protection',description:'Dissipe ses effets négatifs et se protège contre les nouveaux malus pendant plusieurs tours.'}
   });
   const MORPHS=Object.freeze([

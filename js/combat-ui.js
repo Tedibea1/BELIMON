@@ -27,8 +27,8 @@
      addTimed('intangible','👻','Intangible','Frappe spectrale : esquive garantie contre les attaques.', 'buff');
      addTimed('mirror','🪞','Miroir 40 %','Miroir magique : renvoie 40 % des dégâts réellement reçus.', 'buff');
      addTimed('bloodCurse','🩸','Sang maudit','Malédiction du sang : malus impossible à esquiver, sauf avec Purification. Chaque attaque offensive coûte 10 % des PV max à son auteur.', 'debuff');
-     addTimed('powerGain','🔮',`FOR +${fx.powerGain?.amount||0}`,'Vol de puissance : Force augmentée temporairement.', 'buff');
-     addTimed('powerLoss','🔻',`FOR −${fx.powerLoss?.amount||0}`,'Vol de puissance : Force réduite temporairement.', 'debuff');
+     addTimed('powerGain','🔮',`FOR +${fx.powerGain?.amount||0}`,'Vol de puissance : transfert de 20 % de la Force ennemie au lancement, actif temporairement.', 'buff');
+     addTimed('powerLoss','🔻',`FOR −${fx.powerLoss?.amount||0}`,'Vol de puissance : 20 % de la Force prélevés au lancement, temporairement.', 'debuff');
      addTimed('purification','✨','Purifié','Purification : protection contre les nouveaux malus.', 'buff');
    }
    const activeTraps=T.normalize(traps,floor).map(trap=>{

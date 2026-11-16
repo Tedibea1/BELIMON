@@ -25,7 +25,7 @@
     spectre:{name:'Frappe spectrale',description:'Force ×1,3 · intangible pendant 2 tours (activation comprise) ; indisponible au tour suivant.'},
     nemesis:{name:'Miroir magique',description:'Renvoie 40 % des dégâts reçus pendant 5 tours (activation comprise), sans cumul.'},
     maudite:{name:'Malédiction du sang',description:'Force ×0,5 · malus impossible à esquiver (sauf Purification) : l’ennemi perd 10 % de ses PV max à chaque attaque offensive durant les 3 tours suivant le lancement, sans cumul.'},
-    envouteuse:{name:'Vol de puissance',description:'Force ×1,0 · si l’attaque touche, vole jusqu’à 20 points de Force ennemie durant les 3 tours suivant le lancement, sans cumul.'},
+    envouteuse:{name:'Vol de puissance',description:'Force ×1,0 · si l’attaque touche, vole 20 % de la Force ennemie durant les 3 tours suivant le lancement, sans cumul.'},
     exorciste:{name:'Purification',description:'Dissipe les malus et protège des nouveaux malus pendant 5 tours (activation comprise).'}
   });
   const BONUSES=window.BellymonBonuses;
@@ -359,14 +359,14 @@
           }
           case 'envouteuse':{
             if(isPurified(targetEffect,turn)){report.push('Vol de puissance bloqué par Purification.');break;}
-            // Un transfert fixe de 20 FOR MAX, sans empilement ; la Force
+            // Transfert de 20 % de la Force effective, sans empilement ; la Force
             // disponible est calculée sans le transfert temporaire précédent.
             const unaffected=combatStats(defender,target==='player'?bonuses:{},
               {...penaltyFor(targetEffect,turn),forceFlat:0},target==='player'?trapPenalties:{});
-            const amount=Math.min(20,Math.max(0,unaffected.force));
+            const amount=Math.max(0,Math.round(unaffected.force*0.20));
             attackerEffect.powerGain={startTurn:turn+1,expiresTurn:turn+3,amount};
             targetEffect.powerLoss={startTurn:turn+1,expiresTurn:turn+3,amount};
-            report.push(`${amount} FOR transférée(s) : actif pendant les 3 prochains tours, sans cumul.`);
+            report.push(`${amount} FOR transférée(s) (20 % de la Force adverse) : actif pendant les 3 prochains tours, sans cumul.`);
             break;
           }
           case 'archere_arcanique':if(!isPurified(targetEffect,turn)){targetEffect.swordCons=true;report.push('Constitution adverse −15 % jusqu’à la fin du combat.');}else report.push('Malus bloqué par Purification.');break;
