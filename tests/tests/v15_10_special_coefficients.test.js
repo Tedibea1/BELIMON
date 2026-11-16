@@ -10,7 +10,7 @@ for(const [id,mult] of cases){
  const s=C.resolveTurn(hero(id),hero('pretresse',{force:30,rapidite:0}),'special',{},()=>.99,{turn:1,enemyAction:'light'});
  const damage=Math.round(100*mult)*(id==='griffeuse'?2:1);
  eq(s.details.player.damage,damage,id+' player damage');
- eq(C.SPECIALS[id].description.startsWith('Force ×'+(Number.isInteger(mult)?String(mult):String(mult).replace('.',','))+' ·'),true,id+' description');
+ eq(C.SPECIALS[id].description.startsWith('Force ×'+(id==='envouteuse'?'1,0':Number.isInteger(mult)?String(mult):String(mult).replace('.',','))+' ·'),true,id+' description');
  eq(s.player.energy,95,id+' player energy');
  const e=C.resolveTurn(hero('pretresse',{force:0,rapidite:0}),hero(id),'defend',{},()=>.99,{turn:1,enemyAction:'special'});
  eq(e.details.enemy.damage,Math.round(damage/2),id+' enemy damage');
@@ -23,7 +23,7 @@ for(const [id,mult] of cases){
  if(id==='occultiste')eq(s.effects.enemy.curse.expiresTurn,5,'curse preserved');
  if(id==='spectre')eq(s.effects.player.intangible.expiresTurn,2,'intangibility preserved');
  if(id==='maudite')eq(s.effects.enemy.bloodCurse.startTurn,2,'blood curse preserved');
- if(id==='envouteuse')eq(s.effects.enemy.powerLoss.amount,20,'force steal preserved');
+ if(id==='envouteuse')eq(s.effects.enemy.powerLoss.amount,6,'20% force steal (30 FOR) preserved');
 }
 eq(C.COST.special,5,'special cost unchanged');
 eq(C.ACTIONS.heavy.power,1.5,'heavy unchanged');

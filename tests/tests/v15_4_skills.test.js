@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const ctx={window:{},console,Math,Date};vm.createContext(ctx);
 for(const file of ['bonuses.js','traps.js','combat.js','combat-ui.js','auto.js'])
- vm.runInContext(fs.readFileSync(path.join(__dirname,'../js',file),'utf8'),ctx,{filename:file});
+ vm.runInContext(fs.readFileSync(path.join(__dirname,'../../js',file),'utf8'),ctx,{filename:file});
 const C=ctx.window.TDWCombat,UI=ctx.window.BellymonCombatUI,AUTO=ctx.window.BellymonAuto;
 let checks=0;
 const eq=(a,b,why)=>{assert.equal(a,b,why);checks++;};
@@ -12,11 +12,11 @@ const turn=(s,t,a,b,rand=()=>.99,bonuses={})=>C.resolveTurn(s.player,s.enemy,a,b
 const start=(p,e)=>({player:p,enemy:e,effects:C.normalizeEffects()});
 // Les quatre textes, paramètres et sorts ordinaires conservent leur identité.
 for(const id of ['maudite','envouteuse']){
- yes(C.SPECIALS[id].description.includes('×1,0'),id+' puissance ×1');
+ yes(C.SPECIALS[id].description.includes(id==='maudite'?'×0,5':'×1,0'),id+' coefficient actuel');
  yes(C.SPECIALS[id].description.includes('3 tours'),id+' durée 3 tours');
 }
 for(const id of ['nemesis','exorciste'])yes(C.SPECIALS[id].description.includes('5 tours'),id+' durée 5 tours');
-eq(C.COST.special,20,'coût 20 EN');
+eq(C.COST.special,5,'coût 5 EN');
 eq(C.ACTIONS.heavy.power,1.5,'lourde ×1.5 inchangée');
 eq(C.combatChances({rapidite:20}).critical,10,'critique RAP/2');
 eq(C.combatChances({rapidite:20}).dodge,10,'esquive RAP/2');
@@ -24,9 +24,9 @@ eq(C.combatChances({rapidite:20}).dodge,10,'esquive RAP/2');
 {
  let s=start(ch('maudite',{force:100,rapidite:80}),ch('epeiste',{force:0,rapidite:10,constitution:0}));
  s=turn(s,1,'special','light');
- eq(s.details.player.damage,100,'Maudite dégâts directs Force ×1');
+ eq(s.details.player.damage,50,'Maudite dégâts directs Force ×0,5');
  eq(s.details.player.critical,false,'Maudite peut ne pas critiquer');
- eq(s.enemy.hp,1900,'seulement les dégâts directs au tour 1');
+ eq(s.enemy.hp,1950,'seulement les dégâts directs au tour 1');
  eq(s.effects.enemy.bloodCurse.startTurn,2,'curse commence T+1');
  eq(s.effects.enemy.bloodCurse.expiresTurn,4,'curse finit T+3');
  const badge=UI.describe({turn:1,effects:s.effects},1,[]).sides.enemy;
@@ -44,7 +44,7 @@ eq(C.combatChances({rapidite:20}).dodge,10,'esquive RAP/2');
  let s=start(ch('maudite',{force:30,rapidite:200}),ch('epeiste',{force:0,rapidite:0,constitution:0}));
  s=turn(s,1,'special','defend',()=>.01);
  eq(s.details.player.critical,true,'critique ordinaire Maudite');
- eq(s.details.player.damage,30,'30 ×2 critique ×0.5 défense');
+ eq(s.details.player.damage,15,'30 ×0,5 ×2 critique ×0,5 défense');
  eq(s.effects.enemy.bloodCurse.startTurn,2,'critique applique curse');
 }
 // V15.18 : Maudite applique le sang maudit même sur une esquive ; l’Envoûteuse exige toujours une touche.
@@ -78,12 +78,12 @@ for(const id of ['maudite','envouteuse']){
  s=turn(s,3,'defend','defend'); eq(s.enemy.hp,startHp-30,'défense sans punition');
  s=turn(s,4,'defend','light'); eq(s.enemy.hp,startHp-60,'punition active T4');
 }
-// Vol de puissance : dégâts directs, transfert fixe et 3 tours à compter du lendemain.
+// V15.19 : Vol de puissance transfère 20 % de Force pendant les 3 tours suivants.
 for(const force of [0,1,7,19,20,21,60,600]){
  let s=start(ch('envouteuse',{rapidite:80,force:30}),ch('epeiste',{rapidite:1,force}));
- s=turn(s,1,'special','defend'); const amount=Math.min(force,20);
+ s=turn(s,1,'special','defend'); const amount=Math.round(force*.20);
  eq(s.details.player.damage>0,true,'Vol fait des dégâts');
- eq(s.effects.player.powerGain.amount,amount,'vol plafonné 20 et à la Force disponible');
+ eq(s.effects.player.powerGain.amount,amount,'vol de 20 % de Force');
  eq(s.effects.enemy.powerLoss.amount,amount,'perte symétrique');
  eq(s.effects.player.powerGain.startTurn,2,'début T2');
  eq(s.effects.enemy.powerLoss.expiresTurn,4,'fin T4');
@@ -110,13 +110,13 @@ for(const id of ['maudite','envouteuse']){
   eq(s.effects.player.powerGain.startTurn,3,'renouvellement envouteuse T+1');
   eq(s.effects.player.powerGain.expiresTurn,5,'renouvellement envouteuse fin T+3');
  }
- eq(s.player.energy,60,'deux sorts coûtent 40 EN');
+ eq(s.player.energy,90,'deux sorts coûtent 10 EN');
 }
 // Les bonus de collection sont comptabilisés pour les joueurs, pas pour les PNJ.
 {
  let s=start(ch('envouteuse',{rapidite:100,force:10}),ch('epeiste',{rapidite:10,force:17}));
  s=turn(s,1,'special','defend',()=>.99,{force:5});
- eq(s.effects.player.powerGain.amount,17,'max vol selon force adverse réelle');
+ eq(s.effects.player.powerGain.amount,3,'20 % de la Force adverse réelle');
  const baseline=turn(start(ch('envouteuse',{rapidite:100,force:10}),ch('epeiste',{rapidite:10,force:17})),1,'special','defend',()=>.99);
  eq(s.details.player.damage>baseline.details.player.damage,true,'bonus de collection des dégâts');
 }
