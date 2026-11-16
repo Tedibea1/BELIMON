@@ -626,7 +626,7 @@
     const slot=STATE.slots.get(STATE.currentId);
     const ev=(STATE.screen==='play' || (STATE.screen==='guide'&&STATE.guideReturnScreen==='play'))?slot?.data.tower.event:null;
     AUDIO.setScene(ev?.type==='combat' && ['fighting','awaiting_switch'].includes(ev.state)
-      ?'combat':'exploration');
+      ?'combat':ev?.type==='combat' && ev.state==='pending'?'preparation':'exploration');
   }
   function paintAudioSettings(){
     const config=AUDIO.getSettings();
