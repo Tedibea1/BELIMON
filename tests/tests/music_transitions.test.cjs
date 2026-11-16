@@ -8,6 +8,9 @@ const vm=require('node:vm');
 const audioCode=fs.readFileSync('js/audio.js','utf8');
 const gameCode=fs.readFileSync('js/game.js','utf8');
 assert.match(gameCode,/ev\.state==='pending'\?'preparation':'exploration'/);
+assert.doesNotMatch(audioCode,/combat_encounter|shouldPlayEncounterSting|resultSounds\.encounter/,'Encounter sting must be fully removed from the audio engine');
+assert.doesNotMatch(gameCode,/shouldPlayEncounterSting|playEffect\(['"]encounter['"]\)/,'Encounter sting must never trigger in the game');
+assert.ok(!fs.existsSync('assets/audio/sfx/combat_encounter.mp3'),'Encounter sting MP3 should not ship');
 assert.match(gameCode,/\['fighting','awaiting_switch'\]\.includes\(ev\.state\)/);
 assert.ok(fs.statSync('assets/audio/preparation.mp3').size>100000,'Missing preparation MP3');
 
