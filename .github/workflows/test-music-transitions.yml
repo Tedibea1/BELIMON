@@ -13,6 +13,8 @@ on:
       - "assets/audio/sfx/combat_encounter.mp3"
       - "tests/tests/music_transitions.test.cjs"
       - "tests/tests/branding.test.cjs"
+      - "js/shortcuts.js"
+      - "tests/tests/shortcuts_linear.test.cjs"
   workflow_dispatch:
 
 permissions:
@@ -28,7 +30,10 @@ jobs:
         run: |
           node --check js/audio.js
           node --check js/game.js
+          node --check js/shortcuts.js
       - name: Soundtrack transitions
         run: node tests/tests/music_transitions.test.cjs
       - name: BELIMON branding and save migration compatibility
         run: node tests/tests/branding.test.cjs
+      - name: Linear tower shortcut costs and safe payments
+        run: node tests/tests/shortcuts_linear.test.cjs

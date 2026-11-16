@@ -1,18 +1,16 @@
-/* BELLYMON V15.3 — raccourcis payants rééquilibrés.
-   Prix d'un étage n = max(1, arrondi(n² / 12)) steaks.
-   Progression quadratique moins chère que l'ancien prix exponentiel :
-   n=15 : 19 ; n=30 : 75 ; n=60 : 300 ; n=100 : 833 ; n=226 : 4256.
-   Reprise n−5 : 50 % du prix de l’étage n−5, arrondi au pair en cas de .5.
-   Module autonome : transactions atomiques par le contrôleur, sans butin/soin gratuit.
+/* BELIMON V16.2 — raccourcis payants à prix linéaire.
+   Reprise au record n : n steaks, soit 1 steak par étage ciblé.
+   Reprise à n−5 : 50 % de (n−5) steaks, arrondi au pair en cas de .5.
+   Exemples : record 100 => 100 steaks ; retour étage 95 => 48 steaks.
+   Les destinations restent limitées au record déjà atteint.
+   Module autonome : transactions atomiques, sans butin/soin gratuit.
 */
 (() => {
   'use strict';
   const price = floor => {
     if(!Number.isSafeInteger(floor)||floor<2)return null;
-    // Le coût reste raisonnable en début de tour et monte avec la distance évitée.
-    const raw=(floor*floor)/12;
-    if(!Number.isFinite(raw)||raw>Number.MAX_SAFE_INTEGER)return null;
-    return Math.max(1,Math.round(raw));
+    // Prix de reprise = étage ciblé, sans multiplicateur ni formule quadratique.
+    return floor;
   };
   const halfEven = value => {
     const base=Math.floor(value/2);

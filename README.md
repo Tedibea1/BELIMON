@@ -6,6 +6,8 @@ RPG fantasy jouable dans un navigateur : collection de waifus, exploration d'une
 
 **Version actuelle : V16.2.**
 
+**Raccourcis de la tour :** le retour au record coûte désormais un nombre de steaks égal à l’étage ciblé (étage 100 = 100 steaks). Le retour cinq étages avant le record coûte la moitié du numéro de cet étage, avec arrondi au pair (record 100 → étage 95 pour 48 steaks). Ces raccourcis restent réservés aux étages déjà atteints ; les sauvegardes existantes sont conservées.
+
 ## Jouer
 
 [Jouer à BELIMON](https://tedibea1.github.io/BELIMON/)
