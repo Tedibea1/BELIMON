@@ -8,9 +8,11 @@ RPG fantasy jouable dans un navigateur : collection de waifus, exploration d'une
 
 ## Jouer
 
-[Ouvrir BELIMON dans le navigateur](https://tedibea1.github.io/BELLYMON/)
+[Jouer à BELIMON](https://tedibea1.github.io/BELIMON/)
 
-L'adresse reste pour le moment celle du dépôt historique « BELLYMON » pour ne pas perturber les favoris, les liens existants et le déploiement.
+[Dépôt officiel BELIMON sur GitHub](https://github.com/Tedibea1/BELIMON)
+
+L'ancien nom du dépôt était « BELLYMON ». Les liens de l'ancien dépôt GitHub sont normalement redirigés, mais le jeu utilise désormais l'adresse officielle BELIMON.
 
 ## Compatibilité
 

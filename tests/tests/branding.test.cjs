@@ -25,4 +25,7 @@ assert.match(audio,/window\.BellymonAudio/);
 assert.match(audio,/const FADE_OUT_MS=750/);
 assert.match(audio,/const FADE_IN_MS=750/);
 assert.match(readme,/^# BELIMON/);
+assert.match(readme,/https:\/\/tedibea1\.github\.io\/BELIMON\//,'Current GitHub Pages link');
+assert.match(readme,/https:\/\/github\.com\/Tedibea1\/BELIMON/,'Canonical repository link');
+assert.doesNotMatch(readme,/https:\/\/tedibea1\.github\.io\/BELLYMON\//,'Old Pages URL must not be promoted');
 console.log('PASS: BELIMON branding and backward-compatible saves, exports, audio settings and APIs.');

@@ -1,4 +1,4 @@
-name: Build BELLYMON preparation theme
+name: Build BELIMON preparation theme
 
 on:
   push:
@@ -39,6 +39,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add assets/audio/preparation.mp3
           if ! git diff --cached --quiet; then
-            git commit -m "Add original BELLYMON preparation theme MP3"
+            git commit -m "Add original BELIMON preparation theme MP3"
             git push
           fi
