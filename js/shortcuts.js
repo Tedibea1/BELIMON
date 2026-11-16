@@ -1,15 +1,13 @@
-/* BELIMON V16.2 — raccourcis payants à prix linéaire.
-   Reprise au record n : n steaks, soit 1 steak par étage ciblé.
-   Reprise à n−5 : 50 % de (n−5) steaks, arrondi au pair en cas de .5.
-   Exemples : record 100 => 100 steaks ; retour étage 95 => 48 steaks.
-   Les destinations restent limitées au record déjà atteint.
-   Module autonome : transactions atomiques, sans butin/soin gratuit.
+/* BELIMON V16.2 — raccourcis payants : tarif linéaire validé.
+   Retour au record n : n steaks.
+   Retour à l'étage n−5 : 50 % de (n−5) steaks, arrondi au pair pour .5.
+   Les raccourcis ne donnent ni butin ni soin ; sauvegardes inchangées.
 */
 (() => {
   'use strict';
   const price = floor => {
     if(!Number.isSafeInteger(floor)||floor<2)return null;
-    // Prix de reprise = étage ciblé, sans multiplicateur ni formule quadratique.
+    // Un steak par étage déjà atteint ; aucun prix quadratique.
     return floor;
   };
   const halfEven = value => {

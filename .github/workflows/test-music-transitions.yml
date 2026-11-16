@@ -1,4 +1,4 @@
-name: Test BELIMON music transitions
+name: Test BELIMON music and gameplay regressions
 
 on:
   push:
@@ -13,6 +13,9 @@ on:
       - "assets/audio/sfx/combat_encounter.mp3"
       - "tests/tests/music_transitions.test.cjs"
       - "tests/tests/branding.test.cjs"
+      - "js/shortcuts.js"
+      - "tests/tests/v15_3_shortcuts.test.js"
+      - "tests/tests/v14_4_shortcuts.test.js"
       - "js/shortcuts.js"
       - "tests/tests/shortcuts_linear.test.cjs"
   workflow_dispatch:
@@ -35,5 +38,10 @@ jobs:
         run: node tests/tests/music_transitions.test.cjs
       - name: BELIMON branding and save migration compatibility
         run: node tests/tests/branding.test.cjs
+      - name: Linear steak prices and shortcut safety
+        run: |
+          node --check js/shortcuts.js
+          node tests/tests/v15_3_shortcuts.test.js
+          node tests/tests/v14_4_shortcuts.test.js
       - name: Linear tower shortcut costs and safe payments
         run: node tests/tests/shortcuts_linear.test.cjs
