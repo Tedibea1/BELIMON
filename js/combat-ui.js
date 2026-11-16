@@ -31,9 +31,9 @@
      addTimed('powerLoss','🔻',`FOR −${fx.powerLoss?.amount||0}`,'Vol de puissance : 20 % de la Force prélevés au lancement, temporairement.', 'debuff');
      addTimed('purification','✨','Purifié','Purification : protection contre les nouveaux malus.', 'buff');
    }
-   const activeTraps=T.normalize(traps,floor).map(trap=>{
+   const activeTraps=T.normalize(traps,floor).filter(trap=>trap.startsAtFloor===undefined || floor>=trap.startsAtFloor).map(trap=>{
      const type=T.TYPES[trap.type],remaining=T.remaining(trap,floor);
-     return {icon:type.icon,label:`${type.description} · ${remaining} ét.`,detail:`Piège de la tour : ${type.description} sur toutes tes waifus (hors bonus permanents). ${remaining} étage${remaining>1?'s':''} restant${remaining>1?'s':''}, étage actuel compris.`,kind:'trap'};
+     return {icon:type.icon,label:`${type.description} · ${remaining} ét.`,detail:`Piège de la tour : ${type.description} sur toutes tes waifus (hors bonus permanents). ${remaining} étage${remaining>1?'s':''} encore affecté${remaining>1?'s':''}, étage actuel compris.`,kind:'trap'};
    });
    return {sides,traps:activeTraps, count:sides.player.length+sides.enemy.length+activeTraps.length,turn:nextTurn};
  }

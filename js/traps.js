@@ -1,7 +1,8 @@
-/* BELLYMON V9 — Coffres piégés : effets temporaires de deux étages.
+/* BELLYMON V16.1.7 — Coffres piégés : deux étages APRÈS la découverte.
    Les malus touchent uniquement les statistiques PERSONNELLES ; les bonus
    permanents du compte ne sont jamais réduits par un piège.
    Une occurrence du même type rafraîchit son échéance sans s'empiler.
+   Les anciens pièges sauvegardés sans startsAtFloor conservent leur calendrier historique.
 */
 (() => {
   'use strict';
@@ -14,14 +15,19 @@
   const KEYS=Object.freeze(['force','rapidite','constitution','all']);
   const EMPTY=()=>({force:0,rapidite:0,constitution:0});
   const validFloor=f=>Number.isSafeInteger(f)&&f>=1;
-  function isEntry(e){return !!e && typeof e==='object' && !Array.isArray(e) && KEYS.includes(e.type) && validFloor(e.expiresAtFloor);}
+  function isEntry(e){return !!e && typeof e==='object' && !Array.isArray(e) && KEYS.includes(e.type) && validFloor(e.expiresAtFloor) &&
+    (e.startsAtFloor===undefined || (validFloor(e.startsAtFloor) && e.startsAtFloor<e.expiresAtFloor));}
   function normalize(entries,floor){
     if(!Array.isArray(entries) || !validFloor(floor))return [];
     const result=new Map();
     for(const e of entries){
       if(!isEntry(e) || e.expiresAtFloor<=floor)continue;
       const old=result.get(e.type);
-      if(!old || e.expiresAtFloor>old.expiresAtFloor)result.set(e.type,{type:e.type,expiresAtFloor:e.expiresAtFloor});
+      if(!old || e.expiresAtFloor>old.expiresAtFloor){
+        const entry={type:e.type,expiresAtFloor:e.expiresAtFloor};
+        if(e.startsAtFloor!==undefined)entry.startsAtFloor=e.startsAtFloor;
+        result.set(e.type,entry);
+      }
     }
     return [...result.values()].sort((a,b)=>KEYS.indexOf(a.type)-KEYS.indexOf(b.type));
   }
@@ -33,11 +39,14 @@
   function apply(tower,type){
     if(!tower || !validFloor(tower.floor) || !Object.hasOwn(TYPES,type))throw Error('Piège invalide');
     const old=normalize(tower.activeTraps,tower.floor);
-    const expiry=tower.floor+2;
+    // Le coffre ne consomme plus un étage de malus : départ au N+1, fin au N+3 exclu.
+    const start=tower.floor+1,expiry=tower.floor+3;
     if(!Number.isSafeInteger(expiry))throw Error('Étage trop élevé');
     const previous=old.find(e=>e.type===type);
     const kept=old.filter(e=>e.type!==type);
-    tower.activeTraps=normalize([...kept,{type,expiresAtFloor:Math.max(expiry,previous?.expiresAtFloor||0)}],tower.floor);
+    const refreshed=previous && previous.expiresAtFloor>expiry
+      ?previous:{type,startsAtFloor:start,expiresAtFloor:expiry};
+    tower.activeTraps=normalize([...kept,refreshed],tower.floor);
     return tower.activeTraps;
   }
   function advance(tower){
@@ -48,12 +57,14 @@
   function penalties(entries,floor){
     const total=EMPTY();
     for(const trap of normalize(entries,floor)){
+      if(trap.startsAtFloor!==undefined && floor<trap.startsAtFloor)continue;
       const p=TYPES[trap.type].penalty;
       for(const key of ['force','rapidite','constitution'])total[key]+=p[key];
     }
     for(const key of ['force','rapidite','constitution'])total[key]=Math.min(1,total[key]);
     return total;
   }
-  function remaining(trap,floor){return validFloor(floor)&&isEntry(trap)?Math.max(0,trap.expiresAtFloor-floor):0;}
+  function remaining(trap,floor){return validFloor(floor)&&isEntry(trap)?
+    Math.max(0,trap.expiresAtFloor-Math.max(floor,trap.startsAtFloor??floor)):0;}
   window.BellymonTraps=Object.freeze({TYPES,KEYS,isEntry,normalize,select,apply,advance,penalties,remaining});
 })();

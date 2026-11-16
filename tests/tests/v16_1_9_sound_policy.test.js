@@ -1,0 +1,34 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');const path=require('node:path');const vm=require('node:vm');
+const root=path.join(__dirname,'../..');
+const game=fs.readFileSync(path.join(root,'js/game.js'),'utf8');
+const motion=fs.readFileSync(path.join(root,'js/v16-motion.js'),'utf8');
+const audio=fs.readFileSync(path.join(root,'js/audio.js'),'utf8');
+const source=game.match(/function shouldPlayEncounterSting\(slot\)\{[\s\S]*?\n  \}/);
+assert.ok(source,'encounter rank policy defined');
+const RANKS=['E','D','C','B','A','S'];
+const rankedHeroes=hs=>[...hs].sort((a,b)=>RANKS.indexOf(b.rank)-RANKS.indexOf(a.rank));
+const should=vm.runInNewContext(`(${source[0]})`,{RANKS,rankedHeroes,heroAvailable:h=>!!h && h.hp>0});
+const mk=(enemyRank,activeRank,reserves=[])=>{
+ const hero={id:'active',rank:activeRank,hp:50};
+ return {data:{tower:{event:{type:'combat',enemy:{rank:enemyRank}}},activeWaifuId:'active',waifus:[hero,...reserves]}};
+};
+assert.equal(should(mk('E','E')),true,'equal E rank gets sting');
+assert.equal(should(mk('D','D')),true,'equal D rank gets sting');
+assert.equal(should(mk('S','A')),true,'higher-rank opponent gets sting');
+assert.equal(should(mk('E','D')),false,'low-rank opponent silent');
+assert.equal(should(mk('B','S')),false,'S hero versus B opponent silent');
+const absent=mk('E','E',[{id:'backup',rank:'D',hp:40}]);absent.data.waifus[0].hp=0;
+assert.equal(should(absent),false,'if active unavailable, highest available reserve determines rank');
+absent.data.waifus[1].rank='E';assert.equal(should(absent),true,'equal reserve rank gets warning');
+absent.data.waifus[1].hp=0;assert.equal(should(absent),false,'no available hero: no warning');
+assert.equal(should(null),false,'no save: no warning');
+assert.match(game,/if\(title==='COMBAT' && shouldPlayEncounterSting\(STATE\.slots\.get\(STATE\.currentId\)\)\)AUDIO\.playEffect\('encounter'\)/,
+  'sound gate applied only to combat announcement');
+for(const effect of ['chestSpin','trapSpin'])assert.ok(audio.includes(effect+':()=>tone('),`${effect} short synthetic tone`);
+assert.match(motion,/if\(isChest\|\|kind==='trap'\)playSpinTicks\(kind,duration,token\);/,'spin ticks for both wheels');
+assert.match(motion,/if\(token!==resultToken\|\|!resultBusy\|\|!ready\(\)\)return;/,'ticks cancel on skip/off');
+assert.ok(motion.includes("if(isChest)window.BellymonAudio?.playEffect('chest')"),'chest jingle remains at reveal');
+assert.ok(motion.includes("if(kind==='trap')window.BellymonAudio?.playEffect('trap')"),'evil laugh remains at reveal');
+console.log('PASS V16.1.9: rank-gated encounter and both timed synthetic roulette effects');

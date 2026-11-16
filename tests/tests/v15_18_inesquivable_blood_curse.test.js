@@ -109,5 +109,5 @@ eq(C.COST.special,5,'coût 5 énergie inchangé');
 const guide=fs.readFileSync(path.join(root,'js/guide.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 yes(guide.includes('même si le coup est esquivé'),'Guide annonce la règle');
-yes(index.includes('BELLYMON · V15.18')&&index.includes('RPG · VERSION 15.18'),'version affichée');
+yes(index.includes('BELLYMON · V16.0 LAB')&&index.includes('RPG · VERSION 16.0 TEST'),'version affichée');
 console.log('BELLYMON V15.18 : '+checks+' tests ciblés réussis.');

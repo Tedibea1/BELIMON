@@ -1,0 +1,2 @@
+BELLYMON V16.2 — version stable validée par le créateur le 16 novembre 2026.
+Basée sur V16.1.10 TEST, contenu du jeu identique hors numéro affiché.

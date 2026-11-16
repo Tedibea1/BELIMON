@@ -17,7 +17,7 @@ for(const force of [0,1,4,5,7,19,20,21,49,50,60,100,200,500,600]){
  eq(s.effects.enemy.powerLoss.amount,v,'loss 20% of '+force);
  eq(C.penaltyFor(s.effects.player,1).forceFlat,0,'no gain on cast');
  eq(C.penaltyFor(s.effects.player,2).forceFlat,v,'gain next turn');
- eq(C.penaltyFor(s.effects.enemy,2).forceFlat,-v,'loss next turn');
+ eq(C.penaltyFor(s.effects.enemy,2).forceFlat,(v===0?0:-v),'loss next turn');
  eq(s.player.energy,95,'unchanged energy price');
 }
 {
@@ -52,5 +52,5 @@ for(const force of [0,1,4,5,7,19,20,21,49,50,60,100,200,500,600]){
  eq(effects.sides.enemy.some(x=>x.label.includes('FOR −30')),true,'UI real loss');
 }
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-eq(html.includes('V15.19')&&html.includes('VERSION 15.19'),true,'version display');
+eq(html.includes('V16.1.6 LAB')&&html.includes('VERSION 16.1.6 TEST'),true,'version display');
 console.log('BELLYMON V15.19 : '+n+' contrôles réussis');

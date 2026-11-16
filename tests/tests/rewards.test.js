@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const context={window:{}};
-vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../js/rewards.js'),'utf8'),context);
+vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../../js/rewards.js'),'utf8'),context);
 const R=context.window.BellymonRewards;
 let count=0;
 function test(name,fn){fn();count++;console.log('PASS',name);}

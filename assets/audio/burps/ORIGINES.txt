@@ -1,0 +1,19 @@
+Fichiers MP3 fournis par le joueur ; copie intégrale non modifiée depuis ROTS.zip.
+rot_01.mp3 ← alex_jauk-funny-burp-sound-effect-440267.mp3
+SHA256: db9c976a0d996ba30d8137620819e8880edadf0f8c29fead23e411667499c805
+rot_02.mp3 ← freesound_community-belchy-burp-3-44983.mp3
+SHA256: 76d854ba7832adf4645c996a1a3f98ec0ce85416ab1f72ab7587d26f665c9bd2
+rot_03.mp3 ← freesound_community-burp-37726.mp3
+SHA256: df40ec0f7f5ca93c634e58c0661b29efb57c95190bed0873e3b34d15412058cf
+rot_04.mp3 ← freesound_community-burp-44802.mp3
+SHA256: 75f2013992100fcac2c0ebcd700b90025c4a7c0d26a7e5c2e8d6b5c01eee43e9
+rot_05.mp3 ← freesound_community-burp41-83613.mp3
+SHA256: e3d056af6badc643d1317f545c2553b30ead369b662e86a13f0f6536e5c6db43
+rot_06.mp3 ← freesound_community-burp42-103583.mp3
+SHA256: 435b82c86da5a184eec6913f1c0469e1ad1b10ac2a8f7304e0795e217892624e
+rot_07.mp3 ← freesound_community-burp43-103582.mp3
+SHA256: 4756a830dc361d1d193d6ad0897d7e1b0acd0a97ca628a281c28bd0c040fd387
+rot_08.mp3 ← freesound_community-fast-burp-106002.mp3
+SHA256: f9fd19711cb63f8d3de5a18436456d4280e3a687337b7c05d345a717dfe004f8
+rot_09.mp3 ← freesound_community-wet-belch-38617.mp3
+SHA256: 9c8799e683cbc2eea71a120639adb08ab2da298585ceb4d397476799a2ceac4d

@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
-const c={window:{},Math};vm.createContext(c);vm.runInContext(fs.readFileSync(__dirname+'/../js/evolution.js','utf8'),c);
+const c={window:{},Math};vm.createContext(c);vm.runInContext(fs.readFileSync(__dirname+'/../../js/evolution.js','utf8'),c);
 const E=c.window.BellymonEvolution;
 let checks=0;
 const eq=(a,b,label)=>{assert.deepEqual(JSON.parse(JSON.stringify(a)),b,label);checks++;};

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#141426">
-  <title>BELLYMON · V15.19</title>
+  <title>BELLYMON · V16.2</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/v1_1.css">
   <link rel="stylesheet" href="css/v2.css">
@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="css/v14_5.css">
   <link rel="stylesheet" href="css/guide.css">
   <link rel="stylesheet" href="css/v15_5_1.css">
+  <link rel="stylesheet" href="css/v16.css">
   <script defer src="js/guide.js"></script>
   <script defer src="js/bonuses.js"></script>
   <script defer src="js/traps.js"></script>
@@ -44,14 +45,15 @@
   <script defer src="js/combat-ui.js"></script>
   <script defer src="js/audio.js"></script>
   <script defer src="js/shortcuts.js"></script>
+  <script defer src="js/v16-motion.js"></script>
   <script defer src="js/game.js"></script>
 </head>
 <body>
   <div class="glow glow-a" aria-hidden="true"></div><div class="glow glow-b" aria-hidden="true"></div>
   <div id="app" class="shell">
     <header class="masthead">
-      <div class="identity"><span class="emblem" aria-hidden="true">✦</span><div><small>RPG · VERSION 15.19</small><h1>BELLYMON</h1></div></div>
-      <div class="masthead-controls"><button type="button" id="openGuideBtn" class="btn subdued guide-open-btn" aria-controls="guideScreen">📖 Guide</button><button id="audioSettingsBtn" type="button" class="btn subdued audio-toggle" aria-haspopup="dialog" aria-controls="audioOverlay" aria-label="Réglages des musiques et effets sonores">🎵 Son</button>
+      <div class="identity"><span class="emblem" aria-hidden="true">✦</span><div><small>RPG · VERSION 16.2</small><h1>BELLYMON</h1></div></div>
+      <div class="masthead-controls"><button type="button" id="openGuideBtn" class="btn subdued guide-open-btn" aria-controls="guideScreen">📖 Guide</button><button id="audioSettingsBtn" type="button" class="btn subdued audio-toggle" aria-haspopup="dialog" aria-controls="audioOverlay" aria-label="Ouvrir les paramètres de BELLYMON">⚙️ Paramètres</button>
       <div class="header-actions" id="gameHeaderActions" hidden>
         <button type="button" id="manualSaveBtn" class="btn subdued">💾 Sauver</button>
         <button type="button" id="menuBtn" class="btn subdued">⌂ Mes parties</button>
@@ -213,8 +215,7 @@
               </div>
             </section>
             <section id="paneHopital" class="game-tab-pane hospital-pane" role="tabpanel" aria-labelledby="tabHopital" hidden>
-              <div class="tab-panel-heading"><div><span class="overline">🏥 SOINS ET CONVALESCENCE</span><h3>Hôpital de la tour</h3></div><span id="hospitalOccupancy" class="pill">0 / 3 LITS</span></div>
-              <p class="compact-footnote">Trois lits maximum. Le soin dure jusqu’à 18 secondes selon les PV manquants (18 s pour une waifu KO). L’énergie revient à 100 après chaque combat.</p>
+              <div class="tab-panel-heading"><h3>🏥 Hôpital de la tour</h3><span id="hospitalOccupancy" class="pill">0 / 3 LITS</span></div>
               <div id="hospitalLocked" class="hospital-locked" hidden>🔒 Retourne à l’étage 1 pour accéder à l’hôpital.<button id="hospitalReturn" class="btn primary" type="button">🏰 Retourner à l’étage 1</button></div>
               <div id="hospitalWorking" class="hospital-working">
                 <div id="hospitalBeds" class="hospital-beds" aria-label="Les trois lits de l'hôpital"></div>
@@ -237,7 +238,7 @@
         </div>
       </section>
     </main>
-    <footer class="footer"><span>BELLYMON · V15.19</span><span>Progression locale · export JSON</span></footer>
+    <footer class="footer"><span>BELLYMON · V16.2</span><span>Progression locale · export JSON</span></footer>
   </div>
 
   <div id="eventAnnouncement" class="event-announcement" hidden role="status" aria-live="polite" aria-label="Annonce d'événement" tabindex="-1">
@@ -274,6 +275,8 @@
     <section class="modal event-result-modal" role="dialog" aria-modal="true" aria-labelledby="eventResultTitle">
       <div id="eventResultIcon" class="result-icon" aria-hidden="true">🎁</div>
       <h2 id="eventResultTitle">Coffre ouvert</h2>
+      <div id="v16Showcase" hidden role="group" aria-label="Récompenses du coffre"></div>
+      <button type="button" id="v16RevealSkip" hidden>⏭ Passer l’animation</button>
       <p id="eventResultText">Contenu du coffre.</p>
       <img id="capturedPortrait" class="capture-preview" alt="Waifu capturée" hidden>
       <div id="resultLootItems" class="loot-items" aria-label="Récompenses obtenues" hidden></div>
@@ -339,12 +342,24 @@
   </div>
   <div id="audioOverlay" class="modal-overlay" hidden>
     <section class="modal audio-modal" role="dialog" aria-modal="true" aria-labelledby="audioTitle">
-      <div class="modal-topline"><div><span class="overline">AMBIANCE DE BELLYMON</span><h2 id="audioTitle">🎵 Sons et musiques</h2></div><button id="audioClose" class="close-cross" type="button" aria-label="Fermer les réglages audio">×</button></div>
-      <p class="audio-intro">Deux musiques originales : exploration et combat. Les réglages restent sur cet appareil.</p>
-      <div class="audio-setting"><label class="audio-switch"><input id="musicEnabled" type="checkbox" checked> <strong>🎶 Musique d'ambiance</strong></label><label for="musicVolume">Volume <output id="musicVolumeValue" for="musicVolume">35 %</output></label><input id="musicVolume" type="range" min="0" max="100" step="5" value="35"></div>
-      <div class="audio-setting"><label class="audio-switch"><input id="sfxEnabled" type="checkbox" checked> <strong>💥 Effets sonores</strong></label><label for="sfxVolume">Volume <output id="sfxVolumeValue" for="sfxVolume">55 %</output></label><input id="sfxVolume" type="range" min="0" max="100" step="5" value="55"></div>
-      <p class="audio-note">🔈 La musique tente de démarrer dès l’ouverture. Certains navigateurs ne l’autorisent qu’après le premier clic ou toucher, sans bouton particulier. Musique en pause quand l’onglet est masqué.</p>
-      <button id="audioPreviewBtn" type="button" class="btn subdued">▶ Tester les sons</button><button id="audioDoneBtn" type="button" class="btn primary">Terminé</button>
+      <div class="modal-topline"><div><span class="overline">PERSONNALISATION DE BELLYMON</span><h2 id="audioTitle">⚙️ Paramètres</h2></div><button id="audioClose" class="close-cross" type="button" aria-label="Fermer les paramètres">×</button></div>
+      <p class="audio-intro">Ajuste les sons et les animations selon tes préférences. Les choix restent enregistrés sur cet appareil.</p>
+      <div class="audio-setting audio-master-setting"><label for="masterVolume"><strong>🔊 Volume général</strong><output id="masterVolumeValue" for="masterVolume">30 %</output></label><input id="masterVolume" type="range" min="0" max="100" step="5" value="30" aria-label="Régler les trois volumes en même temps"></div>
+      <div class="audio-setting"><label class="audio-switch"><input id="musicEnabled" type="checkbox" checked> <strong>🎶 Musique d'ambiance</strong></label><label for="musicVolume">🏰 Exploration <output id="musicVolumeValue" for="musicVolume">30 %</output></label><input id="musicVolume" type="range" min="0" max="100" step="5" value="30"><label for="combatVolume">⚔️ Combat <output id="combatVolumeValue" for="combatVolume">30 %</output></label><input id="combatVolume" type="range" min="0" max="100" step="5" value="30"></div>
+      <div class="audio-setting"><label class="audio-switch"><input id="sfxEnabled" type="checkbox" checked> <strong>💥 Effets sonores</strong></label><label for="sfxVolume">Volume <output id="sfxVolumeValue" for="sfxVolume">30 %</output></label><input id="sfxVolume" type="range" min="0" max="100" step="5" value="30"></div>
+      <div class="audio-setting v16-settings-animations" aria-label="Préférences des animations">
+        <h3>🎞️ Animations et effets visuels</h3>
+        <div class="v16-setting-row">
+          <div><strong>Effets visuels</strong><small>Active ou désactive les animations décoratives du jeu.</small></div>
+          <button type="button" id="v16MotionToggle" class="btn subdued v16-motion-toggle" aria-pressed="true">🎞️ Effets : ON</button>
+        </div>
+        <div class="v16-setting-row">
+          <div><strong>Passer automatiquement les animations</strong><small>Révèle immédiatement les coffres, pièges et résultats animés, sans cliquer sur « Passer l’animation ».</small></div>
+          <button type="button" id="v16AutoSkipToggle" class="btn subdued v16-auto-skip-toggle" aria-pressed="false">⏭ Auto : OFF</button>
+        </div>
+      </div>
+      <p class="audio-note">🔈 Selon le navigateur, la musique démarre après le premier clic. Elle se met en pause lorsque l’onglet est masqué.</p>
+      <button id="audioPreviewBtn" type="button" class="btn subdued">▶ Tester le son</button><button id="audioDoneBtn" type="button" class="btn primary">Terminé</button>
     </section>
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>

@@ -57,6 +57,7 @@
   const AUTO = window.BellymonAuto;
   const COMBAT_UI = window.BellymonCombatUI;
   const AUDIO = window.BellymonAudio;
+  const MOTION = window.BellymonMotion;
   const HOSPITAL = window.BellymonHospital;
   const SHOP = window.BellymonShop;
   const SHORTCUTS = window.BellymonShortcuts;
@@ -167,6 +168,7 @@
 
   function showToast(message){
     const el=$('toast');el.textContent=message;el.hidden=false;
+    MOTION?.flash('toast','v16-toast-arrive',520);
     clearTimeout(STATE.toastTimer);STATE.toastTimer=setTimeout(()=>el.hidden=true,3400);
   }
   function showWarning(text){const el=$('storageWarning');el.textContent=text;el.hidden=false;}
@@ -366,7 +368,12 @@
         copy.updatedAt=nowISO();copy.data.lastSavedAt=copy.updatedAt;
         await saveSlot(copy);changed=true;
       }
-      if(changed){if(STATE.screen==='play')renderGame();else renderSaveList();}
+      if(changed){
+        if(STATE.screen==='play'){
+          renderGame();
+          if(STATE.activeTab==='hopital')MOTION?.sparkle('hospitalWorking','SOINS TERMINÉS !','💚');
+        }else renderSaveList();
+      }
     }catch(err){console.error('Soins hospitaliers :',err);}
     finally{STATE.healBusy=false;}
     for(const node of document.querySelectorAll('[data-injury-until]')){
@@ -623,15 +630,23 @@
   }
   function paintAudioSettings(){
     const config=AUDIO.getSettings();
+    const volumes=[config.musicVolume,config.combatVolume,config.sfxVolume];
+    const unified=volumes.every(v=>v===volumes[0]);
+    const masterValue=unified?volumes[0]:Math.round((volumes.reduce((sum,v)=>sum+v,0)/volumes.length)/5)*5;
+    $('masterVolume').value=masterValue;
+    $('masterVolumeValue').textContent=unified?`${masterValue} %`:'Personnalisé';
     $('musicEnabled').checked=config.music;
     $('sfxEnabled').checked=config.sfx;
     $('musicVolume').value=config.musicVolume;
+    $('combatVolume').value=config.combatVolume;
     $('sfxVolume').value=config.sfxVolume;
     $('musicVolume').disabled=!config.music;
+    $('combatVolume').disabled=!config.music;
     $('sfxVolume').disabled=!config.sfx;
     $('musicVolumeValue').textContent=`${config.musicVolume} %`;
+    $('combatVolumeValue').textContent=`${config.combatVolume} %`;
     $('sfxVolumeValue').textContent=`${config.sfxVolume} %`;
-    $('audioSettingsBtn').textContent=(config.music||config.sfx)?'🎵 Son':'🔇 Son';
+    $('audioSettingsBtn').textContent='⚙️ Paramètres';
   }
   function openAudioSettings(){paintAudioSettings();$('audioOverlay').hidden=false;$('audioClose').focus();}
   function closeAudioSettings(){$('audioOverlay').hidden=true;$('audioSettingsBtn').focus();}
@@ -738,6 +753,10 @@
     for(const node of document.querySelectorAll('[data-hospital-ready]')){
       const secs=Math.max(0,Math.ceil((Number(node.dataset.hospitalReady)-Date.now())/1000));
       node.textContent=`⏳ ${secs} s restantes`;
+      const duration=Number(node.dataset.hospitalDuration);
+      const remaining=Math.max(0,Number(node.dataset.hospitalReady)-Date.now());
+      const bar=node.parentElement?.querySelector('.v16-heal-progress-fill');
+      if(bar && duration>0)bar.style.width=`${Math.min(100,Math.max(0,100*(duration-remaining)/duration))}%`;
     }
   }
   // Boutique : les six anciennes classes, les combats et les récompenses restent inchangés.
@@ -785,6 +804,8 @@
       updated.updatedAt=nowISO();updated.data.lastSavedAt=updated.updatedAt;
       await saveSlot(updated);
       AUDIO.playEffect('ui');renderGame();
+      MOTION?.flash('shopOffers','v16-shop-success',1050);
+      MOTION?.sparkle('shopWorking',result.item.name+' achetée !','🧪');
       showToast(`🧪 ${result.item.name} achetée pour ${result.price} ${foodType==='small'?'steaks':'gigots'} !`);
     }catch(err){console.error('Boutique (achat) :',err);showToast('⚠ Achat impossible : '+err.message);}
     finally{STATE.shopBusy=false;const current=STATE.slots.get(STATE.currentId);if(current&&STATE.activeTab==='boutique')renderShop(current);}
@@ -799,6 +820,8 @@
       await saveSlot(updated);
       AUDIO.playEffect('heal');renderGame();
       const hero=updated.data.waifus.find(w=>w.id===heroId);
+      MOTION?.flash('detailPortrait','v16-food-bounce',750);
+      MOTION?.sparkle('waifuDetailOverlay',`+${result.healed} PV`,'💚');
       showToast(`💚 ${heroName(hero)} : +${result.healed} PV (${result.after}/${result.maxHp}) !`);
     }catch(err){console.error('Potion (soin) :',err);showToast('⚠ Potion inutilisable : '+err.message);}
     finally{STATE.shopBusy=false;refreshFeedForm();}
@@ -824,14 +847,17 @@
         const photo=mkEl('img');photo.src=heroPortrait(hero);photo.alt=heroName(hero);
         const labels=mkEl('div');labels.append(mkEl('b','',heroName(hero)),makeHpBar(hero));
         const timer=mkEl('span','hospital-timer');timer.dataset.hospitalReady=String(bed.readyAt);
-        labels.append(timer);info.append(photo,labels);card.append(info);
-      }else card.append(mkEl('p','hospital-empty','Lit disponible'));
+        timer.dataset.hospitalDuration=String(HOSPITAL.healDurationMs(hero));
+        const progress=mkEl('div','v16-heal-progress');
+        const fill=mkEl('div','v16-heal-progress-fill');progress.append(fill);
+        labels.append(timer,progress);info.append(photo,labels);card.append(info);
+      }else card.append(mkEl('p','hospital-empty','Libre'));
       beds.append(card);
     }
     const patients=$('hospitalPatients');patients.replaceChildren();
     const damaged=rankedHeroes(data.waifus.filter(hero=>hero.hp<hero.maxHp &&
       !data.hospital.slots.some(b=>b.heroId===hero.id)));
-    if(!damaged.length)patients.append(mkEl('p','hospital-empty','Toutes les waifus non hospitalisées sont en pleine santé.'));
+    if(!damaged.length)patients.append(mkEl('p','hospital-empty hospital-no-patients','✅ Aucun soin nécessaire'));
     for(const hero of damaged){
       const row=mkEl('div','hospital-patient');
       const photo=mkEl('img');photo.src=heroPortrait(hero);photo.alt=heroName(hero);
@@ -853,6 +879,8 @@
       AUDIO.playEffect('heal');
       const hero=slot.data.waifus.find(h=>h.id===heroId);
       const seconds=(HOSPITAL.healDurationMs(hero)/1000).toLocaleString('fr-FR',{maximumFractionDigits:1});
+      MOTION?.flash('hospitalBeds','v16-pop',850);
+      MOTION?.sparkle('hospitalWorking',`Soins commencés · ${seconds} s`,'💚');
       showToast(`🏥 Soins commencés : ${seconds} secondes.`);
     }
   }
@@ -1145,12 +1173,12 @@
       setEventIcon(opened?(trapped?'💀':'🎁'):'🎁',opened?(trapped?'Piège découvert':'Coffre ouvert'):'Coffre mystérieux');
       $('eventFrame').setAttribute('aria-label',opened?(trapped?'Coffre piégé révélé':'Coffre ouvert'):'Coffre mystérieux');
       $('eventWaitingTitle').textContent=opened?(trapped?'Piège !':'Coffre ouvert'):'Un coffre !';
-      $('eventWaitingMessage').textContent=opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' · 2 étages.':'Piège découvert.'):event.reward?rewardLine(event.reward):'Le coffre a été ouvert.'):'Son contenu est inconnu...';
+      $('eventWaitingMessage').textContent=opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' · 2 prochains étages.':'Piège découvert.'):event.reward?rewardLine(event.reward):'Le coffre a été ouvert.'):'Son contenu est inconnu...';
       $('sideSituation').textContent=opened?(trapped?'Un piège était caché dans ce coffre.':'Un coffre a été ouvert.'):'Impossible de savoir ce que contient ce coffre.';
       $('sideSituationChip').textContent=opened?(trapped?'☠️ Piège révélé':'🎁 Coffre ouvert'):'🎁 Coffre mystérieux';
       $('actionContext').textContent=opened?'Événement terminé':'Ouverture automatique';
       setDesktopJournal(opened?(trapped?'☠️ Coffre piégé !':'🎁 Coffre découvert'):'🎁 Coffre trouvé',
-        opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' sur toutes tes waifus, pendant 2 étages.':'Ce coffre contenait un piège.')
+        opened?(trapped?(event.trapType?TRAPS.TYPES[event.trapType].description+' sur toutes tes waifus, pendant les 2 prochains étages.':'Ce coffre contenait un piège.')
           :event.reward?rewardLine(event.reward):'Le coffre a été ouvert.')
           :'Le coffre s’ouvre automatiquement après l’annonce.');
       
@@ -1169,6 +1197,17 @@
     STATE.announcementCallback=null;
     if(wasVisible && typeof next==='function')next();
   }
+  // Un avertissement sonore uniquement quand l'adversaire rencontré est
+  // de rang égal ou supérieur à la waifu qui va normalement le combattre.
+  // Un choix purement sonore : ne change ni l'adversaire, ni les statistiques.
+  function shouldPlayEncounterSting(slot){
+    const data=slot?.data, enemy=data?.tower?.event?.enemy;
+    if(!enemy || data?.tower?.event?.type!=='combat')return false;
+    const active=data.waifus.find(hero=>hero.id===data.activeWaifuId);
+    const fighter=heroAvailable(active,data.tower)?active:
+      rankedHeroes(data.waifus.filter(hero=>heroAvailable(hero,data.tower)))[0];
+    return !!fighter && RANKS.indexOf(enemy.rank)>=RANKS.indexOf(fighter.rank);
+  }
   function announceEvent(icon,title,subtitle,callback=null){
     closeAnnouncement();
     $('announcementIcon').textContent=icon;
@@ -1178,8 +1217,8 @@
     $('eventAnnouncement').hidden=false;
     $('eventAnnouncement').focus();
     STATE.announcementTimer=setTimeout(closeAnnouncement,EVENT_ANNOUNCEMENT_MS);
-    if(title==='COMBAT')AUDIO.playEffect('encounter');
-    else if(title==='PIÈGE')AUDIO.playEffect('trap');
+    if(title==='COMBAT' && shouldPlayEncounterSting(STATE.slots.get(STATE.currentId)))AUDIO.playEffect('encounter');
+    // Le rire du piège se joue exclusivement lorsque sa roulette s'arrête.
   }
   const BONUS_NAMES={force:'Force',rapidite:'Rapidité',constitution:'Constitution'};
   const BONUS_ICONS={force:'💪',rapidite:'⚡',constitution:'🛡️'};
@@ -1210,14 +1249,18 @@
     }
     grid.hidden=!items.length;
   }
-  function displayResult(icon,title,description,reward=null){
+  function displayResult(icon,title,description,reward=null,reelsOnly=false){
+    MOTION?.cancelResult();
     $('capturedPortrait').hidden=true;
     $('capturedPortrait').removeAttribute('src');
     $('eventResultIcon').textContent=icon;
+    // V16.1.1 : pas de 🎁 décoratif au-dessus des butins : le titre / la
+    // présentation animée suffisent. Les symboles des pièges et captures restent.
+    $('eventResultIcon').hidden=(icon==='🎁');
     $('eventResultTitle').textContent=title;
     $('eventResultText').textContent=description;
     $('eventResultClose').textContent=reward?'RÉCUPÉRER ✓':'OK';
-    if(reward)renderRewardItems(reward);
+    if(reward && !reelsOnly)renderRewardItems(reward);
     else {$('resultLootItems').replaceChildren();$('resultLootItems').hidden=true;}
     $('eventResultOverlay').hidden=false;
     $('eventResultClose').focus();
@@ -1228,7 +1271,8 @@
     const event=slot.data.tower.event;
     if(event?.type==='trap' && event.state==='opened' && event.trapType && !event.trapAcknowledged){
       const def=TRAPS.TYPES[event.trapType];
-      displayResult('☠️','COFFRE PIÉGÉ !',`${def.icon} ${def.description} sur toutes tes waifus pendant 2 étages (celui-ci inclus).`);
+      displayResult('☠️','COFFRE PIÉGÉ !',`${def.icon} ${def.description} sur toutes tes waifus pendant les 2 prochains étages.`);
+      MOTION?.playResult({kind:'trap',trapType:event.trapType,auto:slot.data.autoCombat});
       return;
     }
     if(event?.state==='captured' && !event.captureAcknowledged){
@@ -1239,18 +1283,20 @@
         $('capturedPortrait').src=heroPortrait(captured);
         $('capturedPortrait').alt=`Waifu capturée : ${classMap.get(captured.classId).name}`;
         $('capturedPortrait').hidden=false;
+        MOTION?.playResult({kind:'capture',auto:slot.data.autoCombat});
       }
       return;
     }
     if(event?.reward && !event.rewardAcknowledged &&
       (event.type==='combat'?event.state==='won':event.state==='opened')){
       displayResult('🎁',event.type==='combat'?'BUTIN DE VICTOIRE':'COFFRE OUVERT',
-        'Récompenses ajoutées à ta partie !',event.reward);
+        event.type==='combat'?'Récompenses ajoutées à ta partie !':'',event.reward,event.type==='chest');
+      MOTION?.playResult({kind:event.type==='combat'?'victory':'chest',reward:event.reward,auto:slot.data.autoCombat});
     }
   }
   async function closeEventResult(){
     const overlay=$('eventResultOverlay');
-    if(overlay.hidden)return;
+    if(overlay.hidden || MOTION?.isBusy())return;
     const slot=STATE.slots.get(STATE.currentId);
     const event=slot?.data.tower.event;
     if(event?.type==='trap' && event.state==='opened' && event.trapType && !event.trapAcknowledged){
@@ -1274,6 +1320,7 @@
       if(!ok)return;
     }
     overlay.hidden=true;
+    MOTION?.cancelResult();
     const next=$('continueBtn').hidden?$('advanceBtn'):$('continueBtn');
     if(!next.hidden)next.focus();
   }
@@ -1543,6 +1590,7 @@
     if(blocking.some(id=>!$(id).hidden))return;
     const resultOverlay=$('eventResultOverlay');
     if(!resultOverlay.hidden){
+      if(MOTION?.isBusy())return; // AUTO attend la fin de la roulette, sans sauter son résultat.
       if(!STATE.autoRewardSeenAt)STATE.autoRewardSeenAt=Date.now();
       if(Date.now()-STATE.autoRewardSeenAt<AUTO_REWARD_PAUSE_MS)return;
       STATE.autoTowerBusy=true;
@@ -1598,6 +1646,17 @@
     });
     if(started)AUDIO.playEffect('start');
   }
+  // V16.1.5 : uniquement de l'ambiance. Aucun impact sur la force, les PV
+  // ou les probabilités. Les combats expéditifs ne déclenchent pas la fanfare.
+  function victorySoundFor(combat,hero){
+    const turns=Math.max(0,Number(combat?.turn)||0);
+    const knocked=Array.isArray(combat?.knockedOutIds)?combat.knockedOutIds.length:0;
+    const remaining=Number(hero?.hp)||0;
+    const maximum=Math.max(1,Number(hero?.maxHp)||1);
+    const danger=remaining/maximum<=.25;
+    return (turns>=7 || knocked>=2 || (turns>=4 && (knocked>=1||danger)))
+      ?'victory':'victoryBrief';
+  }
   function takeCombatAction(action,automated=false){queueCombatAction(action,automated);}
   async function resolveCombatAction(action,aiAction){
     const slot=STATE.slots.get(STATE.currentId);
@@ -1613,7 +1672,9 @@
         enemyAction:aiAction,trapPenalties:TRAPS.penalties(data.tower.activeTraps,data.tower.floor)});
       feedback={playerLost:Math.max(0,hero.hp-result.player.hp),enemyLost:Math.max(0,event.enemy.hp-result.enemy.hp),
         playerHeal:Math.max(0,result.player.hp-hero.hp),enemyHeal:Math.max(0,result.enemy.hp-event.enemy.hp),
-        ...combatMissFeedback(result.details)};
+        ...combatMissFeedback(result.details),
+        playerVisualAction:result.details?.player?.action||null,
+        enemyVisualAction:result.details?.enemy?.action||null};
       hero.hp=result.player.hp;hero.energy=result.player.energy;
       event.enemy.hp=result.enemy.hp;event.enemy.energy=result.enemy.energy;
       data.tower.combat.effects=result.effects;
@@ -1668,9 +1729,18 @@
       if(action==='idle')AUDIO.playEffect('miss');
       if(feedback?.playerLost>0 || feedback?.enemyLost>0)AUDIO.playEffect('hit');
       if((STATE.slots.get(STATE.currentId)?.data.tower.combat?.lastMessage||'').includes('CRITIQUE'))AUDIO.playEffect('crit');
-      if(outcome==='won')AUDIO.playEffect('victory');
+      if(outcome==='won'){
+        const victorSlot=STATE.slots.get(STATE.currentId);
+        const victorCombat=victorSlot?.data.tower.combat;
+        const victorHero=victorSlot?.data.waifus.find(w=>w.id===victorSlot.data.activeWaifuId);
+        AUDIO.playEffect(victorySoundFor(victorCombat,victorHero));
+      }
       if(outcome==='lost')AUDIO.playEffect('defeat');
       playBattleFeedback(feedback);
+      const battleSlot=STATE.slots.get(STATE.currentId);
+      MOTION?.battle({playerAction:feedback?.playerVisualAction,enemyAction:feedback?.enemyVisualAction,
+        playerClass:battleSlot?.data.waifus.find(w=>w.id===battleSlot.data.activeWaifuId)?.classId,
+        enemyClass:battleSlot?.data.tower.event?.enemy?.classId,auto:battleSlot?.data.autoCombat});
     }
     if(ok && outcome==='lost'){
       displayResult('💀','DÉFAITE','Les 3 combattantes autorisées ont été mises KO, ou aucun relais n’est disponible. Retour à l’étage 1. Les blessures persistent : utilise l’hôpital pour soigner tes waifus.');
@@ -1756,6 +1826,7 @@
       if(feedback?.playerLost>0)AUDIO.playEffect('hit');
       if(outcome==='lost')AUDIO.playEffect('defeat');
       playBattleFeedback(feedback);
+      MOTION?.captureAttempt(outcome==='captured');
     }
     if(ok && outcome==='lost')displayResult('💀','DÉFAITE',
       'Les 3 combattantes autorisées sont KO, ou aucun relais n’est disponible. Retour à l’étage 1 : tes waifus restent blessées et doivent être soignées à l’hôpital.');
@@ -1897,7 +1968,7 @@
         current.rewardAcknowledged=false;
         REWARDS.grant(data,reward);
       }
-      appendTowerHistory(data.tower,trapped?'Piège : '+TRAPS.TYPES[trapType].description+' (2 étages).':'Coffre ouvert : '+rewardLine(reward));
+      appendTowerHistory(data.tower,trapped?'Piège : '+TRAPS.TYPES[trapType].description+' (2 prochains étages).':'Coffre ouvert : '+rewardLine(reward));
     });
     if(!okay){
       // Rare échec d’écriture : conserver une possibilité de réessayer sans perdre le coffre.
@@ -1907,7 +1978,7 @@
     }
     // La fenêtre de résultat est ouverte par le rendu APRÈS la sauvegarde.
     // Ni double annonce ni seconde interaction : le piège est révélé ici.
-    AUDIO.playEffect(trapped?'trap':'chest');
+    // V16.1.4 : les sons de coffre/piège sont joués au résultat final de la roulette.
   }
   async function finishCurrentEvent(){
     const slot=STATE.slots.get(STATE.currentId);
@@ -1918,7 +1989,7 @@
     const floor=slot.data.tower.floor;
     const ok=await commitTower(tower=>{
       tower.floor+=1;
-      TRAPS.advance(tower); // expiration en entrant dans le 3e étage.
+      TRAPS.advance(tower); // expiration après les deux étages qui suivent le coffre piégé.
       tower.record=Math.max(tower.record,tower.floor);
       tower.room='rest';tower.event=null;tower.combat=null;
       appendTowerHistory(tower,`Étage ${floor} terminé. Étage ${tower.floor} atteint.`);
@@ -1950,6 +2021,7 @@
     $('playingPlayer').textContent=data.profile.pseudo;
     $('floorLabel').textContent=String(data.tower.floor);
     $('sideFloor').textContent=String(data.tower.floor);
+    MOTION?.floorChanged(slot.id,data.tower.floor);
     $('sideRecord').textContent=String(data.tower.record);
     const traps=TRAPS.normalize(data.tower.activeTraps,data.tower.floor);
     const status=$('activeTrapsLine');
@@ -1958,7 +2030,7 @@
     for(const entry of traps){
       const t=TRAPS.TYPES[entry.type];
       const chip=mkEl('span','trap-status-chip',`${t.icon} ${t.description} · ${TRAPS.remaining(entry,data.tower.floor)} ét.`);
-      chip.title=`${t.description}. Toutes les waifus. Fin à l’étage ${entry.expiresAtFloor}.`;
+      chip.title=`${t.description}. Toutes les waifus. ${entry.startsAtFloor!==undefined && data.tower.floor<entry.startsAtFloor?'Début à l’étage '+entry.startsAtFloor+'. ':''}Dernier étage affecté : ${entry.expiresAtFloor-1}.`;
       status.append(chip);
     }
     $('heroCardName').textContent=heroName(hero);
@@ -1979,7 +2051,9 @@
     }
     const bonusSignature=`${slot.id}|${data.bonuses.force}|${data.bonuses.rapidite}|${data.bonuses.constitution}`;
     if(STATE.lastBonusesSignature!==bonusSignature){
-      renderBonuses(slot);STATE.lastBonusesSignature=bonusSignature;
+      renderBonuses(slot);
+      MOTION?.bonusesUpdated(slot.id,data.bonuses);
+      STATE.lastBonusesSignature=bonusSignature;
     }
     openTab(STATE.activeTab);
     renderRelayPicker();
@@ -2172,6 +2246,10 @@
       renderGame();
       const {plan}=result;
       AUDIO.playEffect(plan.evolves?'evolution':'feed');
+      // Après chaque repas, évolution comprise : un rot différent du précédent.
+      // Le petit décalage laisse entendre le son d'évolution/du nourrissage.
+      setTimeout(()=>AUDIO.playEffect('burp'),plan.evolves?430:100);
+      MOTION?.feed({evolves:plan.evolves,rank:plan.rankAfter});
       const foodName=request.type==='small'?'steak':'gigot';
       const taken=plan.consumed?`${plan.consumed} ${foodName}${plan.consumed>1?'s':''} utilisé${plan.consumed>1?'s':''}`:'Aucun aliment nécessaire';
       const returned=plan.returned?` · ${plan.returned} rendu${plan.returned>1?'s':''}`:'';
@@ -2387,8 +2465,15 @@
     $('audioClose').addEventListener('click',closeAudioSettings);
     $('audioDoneBtn').addEventListener('click',closeAudioSettings);
     $('audioOverlay').addEventListener('click',e=>{if(e.target===$('audioOverlay'))closeAudioSettings();});
-    $('audioPreviewBtn').addEventListener('click',()=>{AUDIO.unlock();AUDIO.playEffect('evolution');});
-    for(const [input,key] of [['musicEnabled','music'],['sfxEnabled','sfx'],['musicVolume','musicVolume'],['sfxVolume','sfxVolume']]){
+    $('audioPreviewBtn').addEventListener('click',()=>{AUDIO.unlock();AUDIO.playEffect('burp');});
+    // Le volume général égalise les 3 pistes d'un seul geste. Les réglages
+    // individuels restent libres, sans être multipliés par un volume maître.
+    $('masterVolume').addEventListener('input',e=>{
+      const volume=Number(e.target.value);
+      AUDIO.update({musicVolume:volume,combatVolume:volume,sfxVolume:volume});
+      paintAudioSettings();
+    });
+    for(const [input,key] of [['musicEnabled','music'],['sfxEnabled','sfx'],['musicVolume','musicVolume'],['combatVolume','combatVolume'],['sfxVolume','sfxVolume']]){
       $(input).addEventListener(input.endsWith('Enabled')?'change':'input',e=>{
         AUDIO.update({[key]:input.endsWith('Enabled')?e.target.checked:Number(e.target.value)});
         paintAudioSettings();

@@ -44,5 +44,5 @@ const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
 eq(guide.includes("skill:'Flèche perforante'"),true,'Guide archer updated');
 eq(guide.includes("skill:'Frappe dévastatrice'"),true,'Guide sword updated');
 eq(combat.includes('Punition frénétique')||combat.includes('Flèche du cataclysme'),false,'obsolete names removed from combat');
-eq(html.includes('BELLYMON · V15.16'),true,'version updated');
+eq(html.includes('BELLYMON · V16.0 LAB'),true,'version updated');
 console.log('BELLYMON V15.16 : '+n+' vérifications des sorts échangés réussies.');

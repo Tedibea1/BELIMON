@@ -1,0 +1,102 @@
+BELLYMON V16.1.2 — VERSION TEST LOCALE (LAB)
+======================================
+
+Cette édition expérimentale est destinée aux essais avant publication.
+Elle reprend BELLYMON V15.19 avec la collection complète d'illustrations,
+les musiques, les styles CSS, les scripts et les sauvegardes compatibles.
+
+IMPORTANT : cette version N'A PAS ÉTÉ PUBLIÉE SUR GITHUB.
+La version publique reste inchangée. Aucune règle de gameplay n'a été modifiée.
+
+COMMENT LANCER LE JEU
+--------------------
+1. Décompresse entièrement BELLYMON_V16_1_1_TEST.zip.
+2. Ouvre le dossier BELLYMON_V16_1_1_TEST.
+3. Double-clique sur index.html, avec un navigateur récent (Chrome ou Edge).
+4. Si ton navigateur bloque les sauvegardes lors d'une ouverture en file://,
+   tu peux lancer le jeu depuis le dossier en utilisant Python :
+        python -m http.server 8000
+   Puis ouvrir http://localhost:8000 dans le navigateur.
+   Il ne faut pas de connexion Internet pour les illustrations ou les sons.
+
+À TESTER EN PRIORITÉ
+--------------------
+🎰 COFFRES : un rouleau révèle la nourriture et sa quantité (icône seule).
+   Si un bonus permanent est présent, un deuxième rouleau apparaît ensuite.
+   Le gain est tiré et sauvegardé AVANT l'animation. Aucun récapitulatif en bas
+   et aucune probabilité modifiée.
+
+☠️ PIÈGES : une roue à quatre cases (Force, Rapidité, Constitution, Toutes les
+   stats) s'arrête sur le piège véritablement attribué et enregistré.
+   Le coffre reste indiscernable avant son ouverture. Les pénalités
+   et leur durée de deux étages restent exactement celles de la V15.19.
+
+⏭ PASSER : dans les révélations, le bouton « Passer l'animation » affiche
+   directement le résultat, sans nouveau tirage et sans perte de récompense.
+
+🤖 AUTO : les roulettes sont plus rapides et AUTO attend la fin de la
+   révélation avant de fermer le résultat et de continuer l'ascension.
+
+🎞️ EFFETS : un bouton dans l'en-tête active/désactive les animations.
+   Le choix est mémorisé localement. Les préférences système « mouvements
+   réduits » sont également respectées.
+
+AUTRES EFFETS DÉCORATIFS
+------------------------
+• Menus et onglets : apparitions fluides et transitions légères.
+• Tour : compteur d'étage animé et signal aux paliers importants.
+• Collection : survol des cartes, légers reflets et mise en valeur de l'active.
+• Boutique : animation de validation après un achat réussi.
+• Hôpital : barre de convalescence visuelle et effets début/fin de soin.
+• Nourrissage : réaction du portrait et effet renforcé lors de l'évolution.
+• Bonus permanents : animation lors d'un niveau supplémentaire.
+• Combat : retours visuels légers en complément des impacts déjà présents.
+• Capture : anneau magique sur la tentative, révélation après réussite.
+• Fenêtres de résultats : mise en scène de la victoire et du butin.
+
+SÉCURITÉ DES PARTIES
+-------------------
+Le jeu stocke ses parties dans le navigateur. Les parties de la version
+publique GitHub ne s'importent PAS automatiquement dans l'origine locale.
+Tu peux tester avec une nouvelle sauvegarde dans V16. Pour retrouver une
+ancienne partie, exporte son fichier JSON depuis le site public puis importe
+ce JSON dans la V16. Garde une copie de sécurité avant toute manipulation.
+
+Aucune partie n'est envoyée sur GitHub par cette V16. Aucun fichier source
+n'a été envoyé dans la branche publique lors de sa fabrication.
+
+VALIDATION ET LIMITES
+--------------------
+Les vérifications locales couvrent les 1 ou 2 rouleaux de récompenses,
+les quatre cases de la roue, « Passer », AUTO, les options d'accessibilité,
+ainsi que des tests de moteurs existants. Les scripts passent les contrôles
+syntaxiques. Le rendu a également été contrôlé dans Chromium sur PC et mobile
+avec une page de test embarquée : affichage, défilement, deuxième rouleau,
+absence de récapitulatif, et un vrai coffre obtenu dans le gameplay.
+
+Tests à lancer avec Node.js, si tu souhaites les exécuter :
+    node tests/tests/v16_motion.test.js
+    node tests/tests/rewards.test.js
+    node tests/tests/v14_7_force_steal.test.js
+    node tests/tests/v15_10_special_coefficients.test.js
+    node tests/tests/v15_4_skills.test.js
+
+N'hésite pas à signaler un effet trop lent, trop voyant, illisible ou un
+comportement inattendu pour qu'il soit ajusté AVANT une éventuelle publication.
+
+
+V16.1.2 — ROULEAUX DE COFFRE PLUS SOBRES
+-------------------------------------
+Un rouleau central affiche uniquement l'icône de nourriture et sa quantité.
+Si le coffre contient aussi un bonus de collection, un deuxième rouleau
+apparaît après l'arrêt du premier pour révéler la récompense supplémentaire.
+Aucune case « Aucun », aucun libellé redondant et aucune seconde liste de butin.
+Le reste de la V16 est inchangé.
+
+V16.1.2 — FENÊTRE DE BUTIN PLUS COMPACTE
+-----------------------------------------
+Le grand emoji cadeau est supprimé en haut des fenêtres de butin de
+victoire et de coffre. Les symboles propres aux pièges et captures restent.
+Aucun changement des récompenses, du gameplay ou des sauvegardes.
+
+V16.1.2 : fenêtre de fiche recentrée même après nourrissage, 6 rots variés après chaque repas, bouton de test du volume déclenchant un rot aléatoire.

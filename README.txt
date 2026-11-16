@@ -1,3 +1,8 @@
+BELLYMON V16.0 — VERSION TEST PRIVÉE
+Voir README_V16_TEST.txt pour les nouveautés et les précautions.
+Aucune publication sur GitHub n’a été effectuée.
+
+--- Documentation historique ---
 BELLYMON V15.6 — coûts historiques et suppression de la récupération en combat.
 Voir NOTES_V15_6.md.
 
