@@ -47,22 +47,24 @@ eq(C.combatChances({rapidite:20}).dodge,10,'esquive RAP/2');
  eq(s.details.player.damage,30,'30 ×2 critique ×0.5 défense');
  eq(s.effects.enemy.bloodCurse.startTurn,2,'critique applique curse');
 }
-// Esquive : aucun malus posé si la cible évite l'attaque, aucune autre formule forcée.
+// V15.18 : Maudite applique le sang maudit même sur une esquive ; l’Envoûteuse exige toujours une touche.
 for(const id of ['maudite','envouteuse']){
  let s=start(ch(id,{rapidite:10,force:100}),ch('epeiste',{rapidite:100,force:1}));
  s=turn(s,1,'special','defend',()=>.01);
  eq(s.details.player.dodged,true,`${id} esquive adverse`);
  eq(s.details.player.damage,0,`${id} pas de dégâts si esquive`);
- eq(s.effects.enemy.bloodCurse,null,`${id} pas de curse sur esquive`);
+ if(id==='maudite')eq(s.effects.enemy.bloodCurse.startTurn,2,'Maudite malus inévitable sur esquive');
+ else eq(s.effects.enemy.bloodCurse,null,'Envoûteuse aucun sang maudit');
  eq(s.effects.enemy.powerLoss,null,`${id} pas de vol sur esquive`);
 }
-// Intangibilité du spectre bloque l'attaque et son malus.
+// Intangibilité du Spectre bloque les dégâts, mais pas la malédiction inévitable de la Maudite.
 for(const id of ['maudite','envouteuse']){
  let s=start(ch(id,{rapidite:100}),ch('spectre',{rapidite:1}));
  s.effects.enemy.intangible={startTurn:1,expiresTurn:2};
  s=turn(s,1,'special','defend');
  eq(s.details.player.dodged,true,`${id} bloqué par le Spectre`);
- eq(s.effects.enemy.bloodCurse,null,`${id} pas de curse sur intangible`);
+ if(id==='maudite')eq(s.effects.enemy.bloodCurse.startTurn,2,'Maudite malus inévitable sur intangible');
+ else eq(s.effects.enemy.bloodCurse,null,'Envoûteuse aucun sang maudit');
  eq(s.effects.enemy.powerLoss,null,`${id} pas de vol sur intangible`);
 }
 // Maudite peut punir une attaque qui rate, mais pas une défense, repos ou attaque du tour d'activation.

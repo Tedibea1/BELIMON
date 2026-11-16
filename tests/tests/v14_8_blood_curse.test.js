@@ -1,5 +1,5 @@
-// Régression V14.8 révisée en V15.4 : 10 % PV MAX par attaque tenté,
-// mais désormais appliqué par une attaque réussie, de T+1 à T+3.
+// Régression V14.8 actualisée en V15.18 : 10 % PV MAX par attaque tentée,
+// malus indépendant d'une attaque réussie, de T+1 à T+3.
 const assert=require('node:assert/strict');
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const context={window:{},console,Math,Date};vm.createContext(context);
