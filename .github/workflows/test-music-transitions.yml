@@ -1,0 +1,28 @@
+name: Test BELLYMON music transitions
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/test-music-transitions.yml"
+      - "js/audio.js"
+      - "js/game.js"
+      - "assets/audio/preparation.mp3"
+      - "tests/tests/music_transitions.test.cjs"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  music-regressions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: JavaScript syntax
+        run: |
+          node --check js/audio.js
+          node --check js/game.js
+      - name: Soundtrack transitions
+        run: node tests/tests/music_transitions.test.cjs
