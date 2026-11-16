@@ -1,4 +1,4 @@
-/* BELLYMON V12.0.11 — audio : démarrage automatique tenté dès le chargement.
+/* BELIMON V12.0.11 — audio : démarrage automatique tenté dès le chargement.
    Si le navigateur interdit l’autoplay, la lecture repart au premier geste ordinaire.
    Le son est hors ligne, les préférences restent indépendantes des sauvegardes.
 */
@@ -57,7 +57,7 @@
     sound.volume=Math.min(1,settings.sfxVolume/100*.85);
     try{sound.currentTime=0;}catch(_){}
     sound.play().catch(err=>{
-      if(err?.name!=='AbortError')console.warn('BELLYMON : jingle indisponible',err);
+      if(err?.name!=='AbortError')console.warn('BELIMON : jingle indisponible',err);
     });
   }
   let lastBurp=-1,activeBurp=null;
@@ -71,13 +71,13 @@
     sound.volume=Math.min(1,settings.sfxVolume/100*.85);
     try{sound.currentTime=0;}catch(_){}
     sound.play().catch(err=>{
-      if(err?.name!=='AbortError')console.warn('BELLYMON : lecture du rot indisponible',err);
+      if(err?.name!=='AbortError')console.warn('BELIMON : lecture du rot indisponible',err);
     });
   }
   for(const audio of Object.values(music)){
     audio.loop=true;audio.preload='none';audio.volume=0;
     audio.addEventListener('error',()=>{
-      if(audio.error)console.warn('BELLYMON audio : impossible de lire',audio.currentSrc||audio.src);
+      if(audio.error)console.warn('BELIMON audio : impossible de lire',audio.currentSrc||audio.src);
     });
   }
   function cancelFade(){if(fadeHandle){cancelAnimationFrame(fadeHandle);fadeHandle=0;}transition=null;}
@@ -189,7 +189,7 @@
         master.connect(limiter);limiter.connect(ctx.destination);
       }
       if(ctx?.state==='suspended')ctx.resume().catch(()=>{});
-    }catch(e){console.warn('BELLYMON : WebAudio indisponible',e);}
+    }catch(e){console.warn('BELIMON : WebAudio indisponible',e);}
     syncMusic();
   }
   function tone(freq,duration,delay=0,type='sine',strength=.12,ending=null){
@@ -236,16 +236,16 @@
   function playEffect(kind){
     if(!unlocked||hidden||!settings.sfx||!settings.sfxVolume)return;
     if(Object.hasOwn(resultSounds,kind)){
-      try{playResultSound(kind);}catch(err){console.warn('BELLYMON : effet MP3 indisponible',err);}
+      try{playResultSound(kind);}catch(err){console.warn('BELIMON : effet MP3 indisponible',err);}
       return;
     }
     if(kind==='burp'){
-      try{playRandomBurp();}catch(err){console.warn('BELLYMON : rot indisponible',err);}
+      try{playRandomBurp();}catch(err){console.warn('BELIMON : rot indisponible',err);}
       return;
     }
     if(!effectDefs[kind])return;
     if(ctx?.state==='suspended')ctx.resume().catch(()=>{});
-    try{effectDefs[kind]();}catch(err){console.warn('BELLYMON : effet sonore indisponible',err);}
+    try{effectDefs[kind]();}catch(err){console.warn('BELIMON : effet sonore indisponible',err);}
   }
   function update(patch){
     if(typeof patch?.music==='boolean')settings.music=patch.music;

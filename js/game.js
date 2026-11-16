@@ -1,4 +1,4 @@
-/* BELLYMON — V12 (2026-11)
+/* BELIMON — V12 (2026-11)
    Parties multiples V1, interface responsive V1.1, tour infinie V2, combat V3.
    Deux salles/étage : repos puis événement ; tirage 60% combat,
    30% coffre, 10% coffre piégé caché jusqu'à l'ouverture.
@@ -2385,13 +2385,13 @@
   }
   function exportSlot(id){
     const slot=STATE.slots.get(id);if(!slot)return;
-    downloadJSON(slot,`BELLYMON_partie_${slot.id.slice(0,8)}.json`);
+    downloadJSON(slot,`BELIMON_partie_${slot.id.slice(0,8)}.json`);
     showToast('Sauvegarde JSON exportée.');
   }
   function exportAllSlots(){
     const slots=listSlots();if(!slots.length){showToast('Aucune partie à exporter.');return;}
     const archive={format:ARCHIVE_FORMAT,version:1,exportedAt:nowISO(),slots:slots.map(clone)};
-    downloadJSON(archive,`BELLYMON_TOUTES_PARTIES_${new Date().toISOString().slice(0,10)}.json`);
+    downloadJSON(archive,`BELIMON_TOUTES_PARTIES_${new Date().toISOString().slice(0,10)}.json`);
     showToast(`💾 ${slots.length} partie${slots.length>1?'s':''} exportée${slots.length>1?'s':''} !`);
   }
   function openConfirm(title,message,action){
@@ -2412,7 +2412,7 @@
     let originals;
     if(source?.format===ARCHIVE_FORMAT){
       if(source.version!==1 || !Array.isArray(source.slots) || !source.slots.length || source.slots.length>1000)
-        throw Error('Archive BELLYMON invalide.');
+        throw Error('Archive BELIMON invalide.');
       originals=source.slots;
     }else originals=[source];
     // Tous les éléments sont contrôlés AVANT la première importation.
@@ -2555,7 +2555,7 @@
     $('confirmOverlay').addEventListener('click',e=>{if(e.target===$('confirmOverlay'))closeConfirm();});
     window.addEventListener('storage',e=>{
       if(e.key&&(e.key.startsWith(LOCAL_PREFIX)||e.key===TOMBSTONE_KEY))
-        showWarning('Une autre fenêtre BELLYMON a modifié les sauvegardes. Actualise cette page avant de continuer pour éviter un conflit.');
+        showWarning('Une autre fenêtre BELIMON a modifié les sauvegardes. Actualise cette page avant de continuer pour éviter un conflit.');
     });
     document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;
       if(!$('eventAnnouncement').hidden)closeAnnouncement();

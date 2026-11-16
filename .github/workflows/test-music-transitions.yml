@@ -7,9 +7,12 @@ on:
       - ".github/workflows/test-music-transitions.yml"
       - "js/audio.js"
       - "js/game.js"
+      - "index.html"
+      - "README.md"
       - "assets/audio/preparation.mp3"
       - "assets/audio/sfx/combat_encounter.mp3"
       - "tests/tests/music_transitions.test.cjs"
+      - "tests/tests/branding.test.cjs"
   workflow_dispatch:
 
 permissions:
@@ -27,3 +30,5 @@ jobs:
           node --check js/game.js
       - name: Soundtrack transitions
         run: node tests/tests/music_transitions.test.cjs
+      - name: BELIMON branding and save migration compatibility
+        run: node tests/tests/branding.test.cjs
