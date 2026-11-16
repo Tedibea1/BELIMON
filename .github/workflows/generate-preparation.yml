@@ -24,6 +24,8 @@ jobs:
       - name: Install music dependencies
         run: |
           python -m pip install "numpy==2.3.5"
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
           ffmpeg -version | head -1
       - name: Generate the approved original MP3
         run: |
