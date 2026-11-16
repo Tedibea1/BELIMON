@@ -34,6 +34,7 @@
   let playing=null;
   const music={
     exploration:new Audio('assets/audio/exploration.mp3'),
+    preparation:new Audio('assets/audio/preparation.mp3'),
     combat:new Audio('assets/audio/combat.mp3')
   };
   // V16.1.3 : neuf vrais enregistrements sélectionnés par le joueur, hors connexion.
@@ -87,38 +88,40 @@
     playing=null;
   }
   function targetVolume(){return settings.music?(scene==='combat'?settings.combatVolume:settings.musicVolume)/100:0;}
+  // Fondu croisé sur 1,5 seconde entre exploration, préparation et combat.
+  // Chaque fondu part du volume ACTUEL des trois pistes : une interruption
+  // rapide ne doit ni couper la musique, ni laisser une piste orpheline audible.
   function syncMusic(){
     const desired=(hidden||!settings.music||!targetVolume())?null:music[scene];
     if(!desired){stopMusic();return;}
-    const volume=targetVolume();
     if(playing===desired){
-      cancelFade();desired.volume=volume;
+      // Les rendus répétés ne doivent jamais remettre le fondu à zéro.
+      if(!fadeHandle)desired.volume=targetVolume();
       if(desired.paused)desired.play().catch(()=>{ /* Autorisation différée au premier geste. */ });
       return;
     }
-    const previous=playing;
     cancelFade();
+    const initialVolumes=new Map(Object.values(music).map(track=>[track,track.volume]));
     playing=desired;
-    desired.volume=0;
-    // Le morceau reprend seulement si la fenêtre revient au premier plan.
     if(desired.ended)desired.currentTime=0;
     desired.play().catch(()=>{ /* Autorisation différée au premier geste. */ });
-    const start=performance.now(),fadeMs=480;
-    const fromVol=previous?.volume??0;
+    const startedAt=performance.now();
+    const fadeMs=1500;
     const step=now=>{
-      const t=Math.min(1,(now-start)/fadeMs);
-      desired.volume=Math.max(0,Math.min(1,volume*t));
-      if(previous && previous!==desired)previous.volume=fromVol*(1-t);
-      if(t<1){fadeHandle=requestAnimationFrame(step);}
-      else{
-        if(previous && previous!==desired){previous.pause();previous.volume=0;}
-        fadeHandle=0;
+      const progress=Math.min(1,Math.max(0,(now-startedAt)/fadeMs));
+      for(const track of Object.values(music)){
+        const from=initialVolumes.get(track)||0;
+        const to=track===desired?targetVolume():0;
+        track.volume=Math.max(0,Math.min(1,from+(to-from)*progress));
+        if(progress>=1 && track!==desired){track.pause();track.volume=0;}
       }
+      if(progress<1)fadeHandle=requestAnimationFrame(step);
+      else fadeHandle=0;
     };
     fadeHandle=requestAnimationFrame(step);
   }
   function setScene(name){
-    const wanted=name==='combat'?'combat':'exploration';
+    const wanted=['exploration','preparation','combat'].includes(name)?name:'exploration';
     if(scene===wanted)return;
     scene=wanted;
     // L'annonce de rencontre ne doit pas masquer la musique du duel.
@@ -233,7 +236,7 @@
     else if(!hidden && unlocked && ctx?.state==='suspended')ctx.resume().catch(()=>{});
   });
   window.BellymonAudio=Object.freeze({start,unlock,setScene,playEffect,update,getSettings,
-    state:()=>({unlocked,scene,playing:playing===music.combat?'combat':playing===music.exploration?'exploration':null,
+    state:()=>({unlocked,scene,playing:playing===music.combat?'combat':playing===music.preparation?'preparation':playing===music.exploration?'exploration':null,
       media:Object.fromEntries(Object.entries(music).map(([key,a])=>[key,{paused:a.paused,
         readyState:a.readyState,currentTime:a.currentTime,error:a.error?.code||null}])),settings:getSettings()})});
 })();
