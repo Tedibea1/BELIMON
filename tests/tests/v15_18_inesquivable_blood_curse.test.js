@@ -33,7 +33,7 @@ eq(C.COST.special,5,'coût 5 énergie inchangé');
 // 2. Une attaque qui touche inflige toujours des dégâts ×0,5 ET applique le malus.
 {
  let s=state(h('maudite',{force:80,rapidite:10}),h('epeiste',{force:0,rapidite:0}));
- s=act(s,1,'special','defend');
+ s=act(s,1,'special','light');
  eq(s.details.player.dodged,false,'touche sans esquive');
  eq(s.details.player.damage,40,'dégâts calculés à Force x0,5 (pas de coefficient modifié)');
  eq(s.effects.enemy.bloodCurse.startTurn,2,'malus également appliqué au toucher');
