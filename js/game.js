@@ -1197,17 +1197,6 @@
     STATE.announcementCallback=null;
     if(wasVisible && typeof next==='function')next();
   }
-  // Un avertissement sonore uniquement quand l'adversaire rencontré est
-  // de rang égal ou supérieur à la waifu qui va normalement le combattre.
-  // Un choix purement sonore : ne change ni l'adversaire, ni les statistiques.
-  function shouldPlayEncounterSting(slot){
-    const data=slot?.data, enemy=data?.tower?.event?.enemy;
-    if(!enemy || data?.tower?.event?.type!=='combat')return false;
-    const active=data.waifus.find(hero=>hero.id===data.activeWaifuId);
-    const fighter=heroAvailable(active,data.tower)?active:
-      rankedHeroes(data.waifus.filter(hero=>heroAvailable(hero,data.tower)))[0];
-    return !!fighter && RANKS.indexOf(enemy.rank)>=RANKS.indexOf(fighter.rank);
-  }
   function announceEvent(icon,title,subtitle,callback=null){
     closeAnnouncement();
     $('announcementIcon').textContent=icon;
@@ -1217,7 +1206,6 @@
     $('eventAnnouncement').hidden=false;
     $('eventAnnouncement').focus();
     STATE.announcementTimer=setTimeout(closeAnnouncement,EVENT_ANNOUNCEMENT_MS);
-    if(title==='COMBAT' && shouldPlayEncounterSting(STATE.slots.get(STATE.currentId)))AUDIO.playEffect('encounter');
     // Le rire du piège se joue exclusivement lorsque sa roulette s'arrête.
   }
   const BONUS_NAMES={force:'Force',rapidite:'Rapidité',constitution:'Constitution'};
