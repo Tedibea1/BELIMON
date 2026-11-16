@@ -91,8 +91,8 @@ eq(C.COST.special,5,'coût 5 énergie inchangé');
 {
  let s=state(h('maudite',{hp:1,maxHp:300,force:80,rapidite:0}),h('epeiste',{force:100,rapidite:200}));
  s=act(s,1,'special','light');
- eq(s.player.hp,0,'Maudite KO avant d'agir');
- eq(s.effects.enemy.bloodCurse,null,'pas de malus si le sort n'est pas lancé');
+ eq(s.player.hp,0,"Maudite KO avant d'agir");
+ eq(s.effects.enemy.bloodCurse,null,"pas de malus si le sort n'est pas lancé");
  eq(s.player.energy,100,'énergie inchangée si KO avant le lancement');
 }
 // 9. Les autres sorts restent esquivables ET leurs malus restent conditionnels au toucher.
