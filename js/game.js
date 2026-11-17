@@ -1029,7 +1029,7 @@
     if(onFirstFloorRest){
       const available=slot.data.waifus.some(h=>heroAvailable(h,tower));
       const funds=slot.data.food.small;
-      $('shortcutWallet').textContent=`🥩 ${funds.toLocaleString('fr-FR')} steaks disponibles · raccourcis payants en steaks`;
+      $('shortcutWallet').textContent=`🥩 ${funds.toLocaleString('fr-FR')} steaks disponibles · raccourcis payants en steaks${tower.record>1?` · ⚠️ Avancer gratuitement (ou AUTO) efface le record ${tower.record}`:''}`;
       for(const [kind,id] of [['reduced','shortcutReducedBtn'],['record','shortcutRecordBtn']]){
         const button=$(id),plan=SHORTCUTS.plan(tower.record,kind);
         const title=kind==='reduced'?'Reprendre à l’étage n−5':'Reprendre à l’étage n';
@@ -1929,6 +1929,14 @@
     const floor=slot.data.tower.floor;
     const event=chooseEvent(floor);
     const okay=await commitTower(tower=>{
+      // Avancer gratuitement depuis l'étage 1 démarre une NOUVELLE ascension.
+      // Le record historique est abandonné uniquement ici, dans la même
+      // transaction sauvegardée que l'événement, jamais lors d'un raccourci.
+      if(tower.floor===1 && tower.record>1){
+        const previousRecord=tower.record;
+        tower.record=1;
+        appendTowerHistory(tower,`Nouvelle ascension gratuite : ancien record ${previousRecord} abandonné.`);
+      }
       tower.room='event';tower.event=event;tower.combat=null;
       appendTowerHistory(tower,event.type==='combat'?`Étage ${floor} : waifu ennemie rencontrée.`:`Étage ${floor} : coffre découvert.`);
     });
