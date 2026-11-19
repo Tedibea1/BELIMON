@@ -19,6 +19,11 @@ on:
       - "js/shortcuts.js"
       - "tests/tests/shortcuts_linear.test.cjs"
       - "tests/tests/record_reset_on_free_advance.test.cjs"
+      - "js/auto.js"
+      - "js/combat.js"
+      - "js/v16-motion.js"
+      - "css/v16.css"
+      - "tests/tests/auto_x4.test.cjs"
   workflow_dispatch:
 
 permissions:
@@ -48,3 +53,9 @@ jobs:
         run: node tests/tests/shortcuts_linear.test.cjs
       - name: Reset old record only on free floor-one advance
         run: node tests/tests/record_reset_on_free_advance.test.cjs
+      - name: AUTO fixed x4 acceleration and timed magic
+        run: |
+          node --check js/auto.js
+          node --check js/combat.js
+          node --check js/v16-motion.js
+          node tests/tests/auto_x4.test.cjs

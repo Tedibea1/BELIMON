@@ -91,11 +91,13 @@
   const TURN_SECONDS = 15;
   const ENEMY_DECISION_MIN_MS = 1100; // L'IA réfléchit PENDANT le même tour que le joueur.
   const ENEMY_DECISION_SPAN_MS = 2000; // 1,1–3,1 s en manuel, toujours sous les 15 s.
-  const ENEMY_DECISION_AUTO_MIN_MS = 120;
-  const ENEMY_DECISION_AUTO_SPAN_MS = 260;
-  const AUTO_INTERVAL_MS = 850; // Un court délai laisse le temps de couper AUTO.
-  const AUTO_TOWER_INTERVAL_MS = 1450; // Transition volontairement lisible entre deux salles.
-  const AUTO_REWARD_PAUSE_MS = 1800; // Laisse les récompenses visibles avant continuation.
+  // AUTO toujours en ×4 ; vitesse normale inchangée lorsque AUTO est coupé.
+  const AUTO_SPEED = AUTO.SPEED;
+  const ENEMY_DECISION_AUTO_MIN_MS = Math.round(120/AUTO_SPEED);
+  const ENEMY_DECISION_AUTO_SPAN_MS = Math.round(260/AUTO_SPEED);
+  const AUTO_INTERVAL_MS = Math.round(850/AUTO_SPEED); // 213 ms entre décisions automatiques.
+  const AUTO_TOWER_INTERVAL_MS = Math.round(1450/AUTO_SPEED); // 363 ms entre transitions de salles.
+  const AUTO_REWARD_PAUSE_MS = Math.round(1800/AUTO_SPEED); // 450 ms pour lire les récompenses.
   const MAX_COMBAT_WAIFUS = 3; // 1 titulaire + 2 remplaçantes, même avec une grande collection.
   const HERO_CLASSES = Object.freeze([
     { id:'epeiste', name:'Épéiste', role:'DPS', icon:'⚔️', stats:{force:30,rapidite:10,constitution:20}, hp:120 },
@@ -983,7 +985,7 @@
       enemyMiss:!!(details?.player?.miss || details?.player?.dodged)
     };
   }
-  const FLOATING_TEXT_MS = 1800; // Durée réelle de chaque dégât, soin ou MISS, même pendant AUTO.
+  const FLOATING_TEXT_MS = 1800; // Durée normale ; divisée par quatre pour les impacts AUTO.
   function playBattleFeedback(feedback){
     if(!feedback || STATE.screen!=='play'||STATE.activeTab!=='tour'||document.hidden)return;
     const announce=(cardId,amount,heal=0,miss=false)=>{
@@ -1010,11 +1012,12 @@
         label.setAttribute('aria-hidden','true');
         card.append(label);labels.push(label);
       }
-      for(const label of labels)setTimeout(()=>label.remove(),FLOATING_TEXT_MS);
+      const impactSpeed=STATE.slots.get(STATE.currentId)?.data.autoCombat===true?AUTO_SPEED:1;
+      for(const label of labels)setTimeout(()=>label.remove(),Math.round(FLOATING_TEXT_MS/impactSpeed));
       card._impactTimer=setTimeout(()=>{
         card.classList.remove('impact-hit','impact-heal');
         card._impactTimer=null;
-      },850);
+      },Math.round(850/impactSpeed));
     };
     announce('playerCombatCard',feedback.playerLost,feedback.playerHeal||0,feedback.playerMiss);
     announce('enemyCombatCard',feedback.enemyLost,feedback.enemyHeal||0,feedback.enemyMiss);
@@ -1045,19 +1048,20 @@
     $('actionPanel').classList.remove('combat-mode');
     $('combatActionsGrid').hidden=true;
     const autoEnabled=slot.data.autoCombat===true;
+    document.body.classList.toggle('belimon-auto-x4',autoEnabled);
     const autoButton=$('combatAutoButton');
     autoButton.disabled=STATE.actionBusy || STATE.enemyThinking;
     autoButton.classList.toggle('is-auto',autoEnabled);
     autoButton.setAttribute('aria-pressed',String(autoEnabled));
-    $('combatAutoLabel').textContent=autoEnabled?'ON':'OFF';
-    autoButton.title=autoEnabled?'Désactiver AUTO (combat et ascension)':'Activer AUTO : combat et ascension, sans capture, achat ni changement de waifu';
+    $('combatAutoLabel').textContent=autoEnabled?'×4':'OFF';
+    autoButton.title=autoEnabled?'Désactiver AUTO ×4 (combat et ascension)':'Activer AUTO ×4 : combat et ascension, sans capture, achat ni changement de waifu';
     const towerAutoButton=$('towerAutoButton');
     towerAutoButton.hidden=(event?.type==='combat' && event.state==='fighting');
     towerAutoButton.disabled=STATE.actionBusy || STATE.enemyThinking || event?.state==='awaiting_switch';
     towerAutoButton.classList.toggle('is-auto',autoEnabled);
     towerAutoButton.setAttribute('aria-pressed',String(autoEnabled));
-    $('towerAutoLabel').textContent=autoEnabled?'ON':'OFF';
-    towerAutoButton.title=autoEnabled?'Désactiver l’ascension automatique':'Activer AUTO : avancer, combattre et continuer sans achats ni captures';
+    $('towerAutoLabel').textContent=autoEnabled?'×4':'OFF';
+    towerAutoButton.title=autoEnabled?'Désactiver AUTO ×4':'Activer AUTO ×4 : avancer, combattre et continuer sans achats ni captures';
     const hero=slot.data.waifus.find(h=>h.id===slot.data.activeWaifuId);
     const turn=(tower.combat?.turn??0)+1;
     const effect=COMBAT.normalizeEffects(tower.combat?.effects,turn).player;
@@ -1205,7 +1209,8 @@
     STATE.announcementCallback=callback;
     $('eventAnnouncement').hidden=false;
     $('eventAnnouncement').focus();
-    STATE.announcementTimer=setTimeout(closeAnnouncement,EVENT_ANNOUNCEMENT_MS);
+    STATE.announcementTimer=setTimeout(closeAnnouncement,STATE.slots.get(STATE.currentId)?.data.autoCombat===true
+      ?Math.round(EVENT_ANNOUNCEMENT_MS/AUTO_SPEED):EVENT_ANNOUNCEMENT_MS);
     // Le rire du piège se joue exclusivement lorsque sa roulette s'arrête.
   }
   const BONUS_NAMES={force:'Force',rapidite:'Rapidité',constitution:'Constitution'};
@@ -1504,7 +1509,8 @@
       try{
         await commitBattle(data=>{
           const hero=data.waifus.find(h=>h.id===data.activeWaifuId);
-          const tick=COMBAT.tickTimedEffects(data.tower.combat.effects,hero,data.tower.event.enemy,Date.now(),data.tower.combat.turn+1);
+          const tick=COMBAT.tickTimedEffects(data.tower.combat.effects,hero,data.tower.event.enemy,Date.now(),data.tower.combat.turn+1,
+            data.autoCombat===true?1000/AUTO_SPEED:1000);
           data.tower.combat.effects=tick.effects;
         });
       }finally{STATE.liveTickBusy=false;}
@@ -1542,7 +1548,17 @@
     if(!slot || STATE.screen!=='play' || STATE.actionBusy || STATE.enemyThinking ||
        slot.data.tower.event?.state==='awaiting_switch')return;
     const enabled=slot.data.autoCombat!==true;
-    const saved=await commitBattle(data=>{data.autoCombat=enabled;});
+    const saved=await commitBattle(data=>{
+      data.autoCombat=enabled;
+      // Changement de vitesse pendant un combat : repartir sur le bon
+      // délai pour les effets en secondes sans annuler leurs malus.
+      if(data.tower.event?.state==='fighting'){
+        for(const side of ['player','enemy'])for(const key of ['curse','siphon']){
+          const effect=data.tower.combat?.effects?.[side]?.[key];
+          if(effect)effect.nextTickAt=0;
+        }
+      }
+    });
     if(saved){
       STATE.turnClock=null;
       STATE.autoNextAt=0;
@@ -1550,7 +1566,7 @@
       STATE.autoRewardSeenAt=0;
       STATE.autoStallNotified=false;
       renderGame();
-      showToast(enabled?'🤖 AUTO activé : ascension et combats, sans capture ni achat.':'🤖 AUTO désactivé : commandes manuelles.');
+      showToast(enabled?'🤖 AUTO ×4 activé : ascension et combats accélérés, sans capture ni achat.':'🤖 AUTO désactivé : vitesse normale.');
     }
   }
 
@@ -2586,7 +2602,7 @@
     STATE.liveTicker=setInterval(()=>{
       liveCombatTick().catch(e=>console.error('Chrono combat :',e));
       liveAutoTowerTick().catch(e=>console.error('Ascension AUTO :',e));
-    },200);
+    },50);
     STATE.healTicker=setInterval(()=>refreshRecoveredHeroes().catch(e=>console.error('Convalescence :',e)),1000);
     await refreshRecoveredHeroes();
   }

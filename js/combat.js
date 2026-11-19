@@ -149,26 +149,28 @@
     }
     return false;
   }
-  function tickTimedEffects(effects,player,enemy,now=Date.now(),turn=1){
+  function tickTimedEffects(effects,player,enemy,now=Date.now(),turn=1,intervalMs=1000){
+    // En manuel : 1 s ; sous AUTO ×4 : 250 ms. Par défaut, ancien rythme.
+    const tickMs=Number.isFinite(intervalMs)&&intervalMs>=50&&intervalMs<=1000?intervalMs:1000;
     const updated=normalizeEffects(effects,turn);
     const changes={siphon:{player:0,enemy:0},curse:{player:0,enemy:0}};
     for(const side of ['player','enemy']){
       const fx=updated[side],target=side==='player'?player:enemy;
       if(fx.siphon){
-        if(!fx.siphon.nextTickAt)fx.siphon.nextTickAt=now+1000;
+        if(!fx.siphon.nextTickAt)fx.siphon.nextTickAt=now+tickMs;
         else if(now>=fx.siphon.nextTickAt){
           const before=target.energy;
           target.energy=Math.max(0,target.energy-3);
           changes.siphon[side]=before-target.energy;
-          fx.siphon.nextTickAt=now+1000;
+          fx.siphon.nextTickAt=now+tickMs;
         }
       }
       if(fx.curse && fx.curse.percent<50){
-        if(!fx.curse.nextTickAt)fx.curse.nextTickAt=now+1000;
+        if(!fx.curse.nextTickAt)fx.curse.nextTickAt=now+tickMs;
         else if(now>=fx.curse.nextTickAt){
           fx.curse.percent=Math.min(50,fx.curse.percent+2);
           changes.curse[side]=2;
-          fx.curse.nextTickAt=fx.curse.percent>=50?0:now+1000;
+          fx.curse.nextTickAt=fx.curse.percent>=50?0:now+tickMs;
         }
       }
     }

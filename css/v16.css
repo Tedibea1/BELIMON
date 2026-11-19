@@ -177,3 +177,9 @@
 #paneHopital .hospital-empty{font-size:14px;line-height:1.35;margin:16px 0;color:#cbd5e6}
 #paneHopital .hospital-bed .hospital-empty{margin:16px 0 0;color:#aebbd0}
 #paneHopital .hospital-no-patients{margin-top:6px}
+
+/* AUTO ×4 : animations de combat accélérées, musique séquentielle inchangée. */
+body.belimon-auto-x4 .hit-pop{animation-duration:.45s!important}
+body.belimon-auto-x4 .v16-battle-magic{animation-duration:.1625s!important}
+body.belimon-auto-x4 .v16-attack-swish{animation-duration:.12s!important}
+body.belimon-auto-x4 .impact-hit,body.belimon-auto-x4 .impact-heal{animation-duration:.2s!important}

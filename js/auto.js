@@ -45,5 +45,7 @@
   function deadlock(hero, enemy) {
     return !!hero && !!enemy && hero.energy === 0 && enemy.energy === 0;
   }
-  window.BellymonAuto = Object.freeze({chooseAction,deadlock});
+  // Un clic sur AUTO lance toujours le mode accéléré, sans réglage secondaire.
+  const SPEED=4;
+  window.BellymonAuto = Object.freeze({chooseAction,deadlock,SPEED});
 })();
