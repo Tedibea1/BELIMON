@@ -53,7 +53,7 @@ jobs:
         run: node tests/tests/shortcuts_linear.test.cjs
       - name: Reset old record only on free floor-one advance
         run: node tests/tests/record_reset_on_free_advance.test.cjs
-      - name: AUTO fixed x4 acceleration and timed magic
+      - name: AUTO x1 x2 x4 selection and timed magic
         run: |
           node --check js/auto.js
           node --check js/combat.js

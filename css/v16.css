@@ -178,7 +178,16 @@
 #paneHopital .hospital-bed .hospital-empty{margin:16px 0 0;color:#aebbd0}
 #paneHopital .hospital-no-patients{margin-top:6px}
 
-/* AUTO ×4 : animations de combat accélérées, musique séquentielle inchangée. */
+/* AUTO ×1/×2/×4 : vitesse réglable, musique séquentielle inchangée. */
+.auto-speed-picker{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px 11px;border:1px solid #594e77;border-radius:11px;background:#181c32;color:#e5d8fa;font-size:12px;font-weight:700}
+.auto-speed-picker select{background:#202841;color:#fff1de;border:1px solid #9e82b6;border-radius:7px;padding:7px 9px;font:inherit;cursor:pointer;max-width:100%}
+.auto-speed-picker select:focus-visible{outline:2px solid #f4bd69;outline-offset:2px}
+.auto-speed-picker select:disabled{opacity:.6;cursor:not-allowed}
+@media(max-width:530px){.auto-speed-picker{width:100%;justify-content:space-between}}
+body.belimon-auto-x2 .hit-pop{animation-duration:.9s!important}
+body.belimon-auto-x2 .v16-battle-magic{animation-duration:.325s!important}
+body.belimon-auto-x2 .v16-attack-swish{animation-duration:.24s!important}
+body.belimon-auto-x2 .impact-hit,body.belimon-auto-x2 .impact-heal{animation-duration:.4s!important}
 body.belimon-auto-x4 .hit-pop{animation-duration:.45s!important}
 body.belimon-auto-x4 .v16-battle-magic{animation-duration:.1625s!important}
 body.belimon-auto-x4 .v16-attack-swish{animation-duration:.12s!important}

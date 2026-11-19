@@ -1,71 +1,68 @@
-/* BELIMON: AUTO ×4 fixed, manual ×1, spells that tick per game second. */
+/* Tests de vitesse AUTO : ×1, ×2, ×4, choix persistant, effets chronométrés. */
 'use strict';
-const assert=require('node:assert/strict');
-const fs=require('node:fs');
-const vm=require('node:vm');
-const path=require('node:path');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'../..');
-const load=name=>fs.readFileSync(path.join(root,'js',name),'utf8');
-const sources={
- game:load('game.js'),motion:load('v16-motion.js'),auto:load('auto.js'),
- combat:load('combat.js'),css:fs.readFileSync(path.join(root,'css/v16.css'),'utf8')
-};
-const ctx={window:{},Math,Date,console};
-vm.createContext(ctx);
-for(const file of ['bonuses.js','traps.js','combat.js','auto.js'])
- vm.runInContext(load(file),ctx,{filename:file});
-const C=ctx.window.TDWCombat,A=ctx.window.BellymonAuto;
+const read=(name)=>fs.readFileSync(path.join(root,name),'utf8');
+const src={game:read('js/game.js'),auto:read('js/auto.js'),motion:read('js/v16-motion.js'),html:read('index.html'),css:read('css/v16.css')};
 let checks=0;
-const yes=(v,msg)=>{assert.ok(v,msg);checks++};
-const equal=(a,b,msg)=>{assert.equal(a,b,msg);checks++};
-equal(A.SPEED,4,'One fixed ×4 speed in the existing AUTO controller');
-yes(sources.game.includes('const AUTO_SPEED = AUTO.SPEED;'),'Game uses shared multiplier');
-for(const n of [120,260,850,1450,1800])
- yes(sources.game.includes('Math.round('+n+'/AUTO_SPEED)'),'Automatic timer scales '+n);
-yes(sources.game.includes('Math.round(EVENT_ANNOUNCEMENT_MS/AUTO_SPEED)'),'AUTO announcements accelerate');
-yes(sources.game.includes('data.autoCombat===true?1000/AUTO_SPEED:1000'),'Timed skills scale when AUTO is enabled');
-yes(sources.game.includes("},50);"),'Ticker resolution allows quarter-second magic ticks');
-yes(sources.game.includes("autoEnabled?'×4':'OFF'"),'AUTO buttons indicate ×4 without a selector');
-yes(sources.game.includes("document.body.classList.toggle('belimon-auto-x4',autoEnabled)"),'Visual acceleration toggles with AUTO');
-yes(sources.motion.includes('duration=auto?Math.round(850/autoSpeed)'),'AUTO reveal duration accelerated');
-yes(sources.motion.includes('(auto?autoSpeed:1)'),'AUTO reveal finish grace period accelerated');
-yes(sources.css.includes('body.belimon-auto-x4 .hit-pop'),'AUTO impacts accelerated');
-
-const hero=()=>({energy:100,hp:300,maxHp:300});
-const makeFx=()=>{
- const fx=C.normalizeEffects();
+const eq=(a,b,label)=>{assert.equal(a,b,label);checks++};
+const ok=(v,label)=>{assert.ok(v,label);checks++};
+function boot(previous=null){
+ const db=new Map(previous===null?[]:[['belimon-auto-speed',previous]]);
+ const storage={getItem:key=>db.get(key)??null,setItem:(key,val)=>db.set(key,val)};
+ const context={window:{},Math,Date,console,localStorage:storage};
+ vm.createContext(context);
+ for(const file of ['bonuses.js','traps.js','combat.js','auto.js'])vm.runInContext(read('js/'+file),context,{filename:file});
+ return {...context,db,C:context.window.TDWCombat,A:context.window.BellymonAuto};
+}
+let ctx=boot(),A=ctx.A;
+eq(A.getSpeed(),1,'Défaut sûr : ×1');
+eq(Array.from(A.SPEEDS).join(','),'1,2,4','Options exactement ×1 ×2 ×4');
+for(const speed of [1,2,4]){
+ eq(A.setSpeed(speed),speed,'Sélection de la vitesse '+speed);
+ eq(A.getSpeed(),speed,'Vitesse active '+speed);
+ eq(ctx.db.get('belimon-auto-speed'),String(speed),'Vitesse persistée '+speed);
+}
+eq(A.setSpeed(3),1,'Valeur non prise en charge => ×1');
+eq(boot('2').A.getSpeed(),2,'Préférence restaurée ×2');
+eq(boot('4').A.getSpeed(),4,'Préférence restaurée ×4');
+eq(boot('invalid').A.getSpeed(),1,'Ancienne valeur invalide ignorée');
+for(const [speed,wait,tower,tick] of [[1,850,1450,1000],[2,425,725,500],[4,213,363,250]]){
+ eq(Math.round(850/speed),wait,'Délai combat ×'+speed);
+ eq(Math.round(1450/speed),tower,'Délai exploration ×'+speed);
+ eq(1000/speed,tick,'Délai malédiction ×'+speed);
+}
+for(const fn of ['autoIntervalMs','autoTowerIntervalMs','autoRewardPauseMs','autoEnemyMinMs','autoEnemySpanMs'])
+ ok(src.game.includes('const '+fn+'=()=>Math.round('),'Calcul dynamique '+fn);
+ok(src.game.includes('AUTO.getSpeed()'),'Le jeu utilise la préférence');
+ok(src.game.includes('1000/autoSpeed():1000'),'Les sorts en manuel restent à ×1');
+ok(src.game.includes('changeAutoSpeed(event)'),'Gestionnaire de sélection présent');
+ok(src.game.includes("addEventListener('change',changeAutoSpeed)"),'Gestionnaire de sélection branché');
+ok(src.game.includes("document.body.classList.toggle('belimon-auto-x2'"),'Animations ×2');
+ok(src.game.includes("document.body.classList.toggle('belimon-auto-x4'"),'Animations ×4');
+ok(src.game.includes("autoEnabled?'×'+autoSpeed():'OFF'"),'Boutons AUTO indiquent la vitesse');
+ok(src.html.includes('id="autoSpeedSelect"'),'Sélecteur visible dans la tour');
+for(const speed of [1,2,4])ok(src.html.includes('<option value="'+speed+'"'),'Option '+speed);
+ok(src.css.includes('body.belimon-auto-x2 .hit-pop'),'CSS ×2');
+ok(src.css.includes('body.belimon-auto-x4 .hit-pop'),'CSS ×4');
+ok(src.motion.includes('getSpeed?.()||1'),'Animations suivent le choix');
+ok(!src.game.includes('AUTO_SPEED'),'Aucun ancien ×4 forcé dans le contrôleur');
+ok(!src.auto.includes('const SPEED=4'),'Plus de ×4 constant');
+ok(src.game.includes('if(!resultOverlay.hidden){'),'Récompenses restent affichées');
+ok(src.game.includes('if(MOTION?.isBusy())return;'),'Roulette non coupée');
+const h=()=>({energy:100,maxHp:300,hp:300});
+for(const speed of [1,2,4]){
+ let player=h(),enemy=h(),fx=ctx.C.normalizeEffects(),ms=1000/speed;
  fx.player.curse={expiresTurn:6,percent:0,nextTickAt:0};
  fx.player.siphon={expiresTurn:6,nextTickAt:0};
- return fx;
-};
-let p=hero(),e=hero(),fx=makeFx();
-let first=C.tickTimedEffects(fx,p,e,1000,1,250);
-equal(first.effects.player.curse.nextTickAt,1250,'AUTO curse first pulse in 250ms');
-equal(first.effects.player.siphon.nextTickAt,1250,'AUTO siphon first pulse in 250ms');
-equal(p.energy,100,'No immediate lost energy when applying clock');
-equal(first.effects.player.curse.percent,0,'No immediate curse loss');
-let before=C.tickTimedEffects(first.effects,p,e,1249,1,250);
-equal(before.effects.player.curse.percent,0,'No early pulse');
-equal(p.energy,100,'No early siphon');
-let second=C.tickTimedEffects(before.effects,p,e,1250,1,250);
-equal(second.effects.player.curse.percent,2,'Curse one +2% pulse at 250ms');
-equal(p.energy,97,'Siphon one -3 energy pulse at 250ms');
-equal(second.effects.player.curse.nextTickAt,1500,'AUTO pulse repeats at 250ms');
-let third=C.tickTimedEffects(second.effects,p,e,1500,1,250);
-equal(third.effects.player.curse.percent,4,'Second curse pulse +2%, not quadruple damage');
-equal(p.energy,94,'Second siphon pulse -3');
-p=hero();fx=makeFx();
-first=C.tickTimedEffects(fx,p,e,1000,1);
-equal(first.effects.player.curse.nextTickAt,2000,'Manual curse remains 1 second');
-equal(first.effects.player.siphon.nextTickAt,2000,'Manual siphon remains 1 second');
-second=C.tickTimedEffects(first.effects,p,e,1250,1);
-equal(second.effects.player.curse.percent,0,'Manual curse does not tick early');
-equal(p.energy,100,'Manual siphon does not tick early');
-third=C.tickTimedEffects(second.effects,p,e,2000,1);
-equal(third.effects.player.curse.percent,2,'Manual curse still ticks after 1 second');
-equal(p.energy,97,'Manual siphon still ticks after 1 second');
-yes(sources.game.includes('if(effect)effect.nextTickAt=0;'),'Switching AUTO resets deadlines without deleting spells');
-yes(sources.game.includes('if(!resultOverlay.hidden){'),'Rewards still have a displayed result');
-yes(sources.game.includes('if(MOTION?.isBusy())return;'),'AUTO never skips ongoing reveal');
-yes(sources.game.includes('if((ev.reward && !ev.rewardAcknowledged)'), 'AUTO waits for reward acknowledgement');
-console.log('PASS '+checks+' checks: AUTO ×4, unchanged manual, accelerated animations, preserved rewards and timed magic.');
+ const at0=ctx.C.tickTimedEffects(fx,player,enemy,1000,1,ms);
+ eq(at0.effects.player.curse.nextTickAt,1000+ms,'Malédiction planifiée ×'+speed);
+ eq(at0.effects.player.siphon.nextTickAt,1000+ms,'Absorption planifiée ×'+speed);
+ const before=ctx.C.tickTimedEffects(at0.effects,player,enemy,1000+ms-1,1,ms);
+ eq(before.effects.player.curse.percent,0,'Pas de malus prématuré ×'+speed);
+ eq(player.energy,100,'Pas de siphon prématuré ×'+speed);
+ const after=ctx.C.tickTimedEffects(before.effects,player,enemy,1000+ms,1,ms);
+ eq(after.effects.player.curse.percent,2,'−2 % par tic ×'+speed);
+ eq(player.energy,97,'−3 énergie par tic ×'+speed);
+}
+console.log('PASS '+checks+' contrôles : vitesses ×1/×2/×4, préférences, UI, timers et magie.');

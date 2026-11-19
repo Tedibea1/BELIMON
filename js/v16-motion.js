@@ -221,7 +221,7 @@
     overlay.classList.toggle('v16-chest',isChest);
     const animate=ready();
     const token=++resultToken;
-    const autoSpeed=window.BellymonAuto?.SPEED||4;
+    const autoSpeed=window.BellymonAuto?.getSpeed?.()||1;
     const duration=auto?Math.round(850/autoSpeed):kind==='trap'?2850:isChest?2450:1150;
     // Sans animation, le coffre reste lisible grâce à ses vrais rouleaux
     // immédiatement arrêtés : on ne fait jamais réapparaître le récapitulatif.
@@ -336,10 +336,10 @@
       const v=document.createElement('div');v.className='v16-battle-magic';
       v.textContent=(playerAction==='special'?classEffects[playerClass]||'✨':'')+' '+(enemyAction==='special'?classEffects[enemyClass]||'✨':'');
       v.setAttribute('aria-hidden','true');area.append(v);
-      setTimeout(()=>v.remove(),auto?Math.round(350/(window.BellymonAuto?.SPEED||4)):680);
+      setTimeout(()=>v.remove(),auto?Math.round(350/(window.BellymonAuto?.getSpeed?.()||1)):680);
     }
-    if(playerAction==='heavy')flash('activePortrait','v16-attack-swish',auto?Math.round(470/(window.BellymonAuto?.SPEED||4)):470);
-    if(enemyAction==='heavy')flash('eventEnemyPortrait','v16-attack-swish',auto?Math.round(470/(window.BellymonAuto?.SPEED||4)):470);
+    if(playerAction==='heavy')flash('activePortrait','v16-attack-swish',auto?Math.round(470/(window.BellymonAuto?.getSpeed?.()||1)):470);
+    if(enemyAction==='heavy')flash('eventEnemyPortrait','v16-attack-swish',auto?Math.round(470/(window.BellymonAuto?.getSpeed?.()||1)):470);
   }
   function captureAttempt(success) {
     if(!ready())return;

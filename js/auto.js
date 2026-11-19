@@ -45,7 +45,17 @@
   function deadlock(hero, enemy) {
     return !!hero && !!enemy && hero.energy === 0 && enemy.energy === 0;
   }
-  // Un clic sur AUTO lance toujours le mode accéléré, sans réglage secondaire.
-  const SPEED=4;
-  window.BellymonAuto = Object.freeze({chooseAction,deadlock,SPEED});
+  // Vitesse AUTO personnelle, non inscrite dans les sauvegardes de jeu.
+  const SPEEDS=Object.freeze([1,2,4]);
+  const SPEED_KEY='belimon-auto-speed';
+  const normalizeSpeed=value=>SPEEDS.includes(Number(value))?Number(value):1;
+  let speed=1;
+  try{speed=normalizeSpeed(localStorage.getItem(SPEED_KEY));}catch(_){}
+  function getSpeed(){return speed;}
+  function setSpeed(value){
+    speed=normalizeSpeed(value);
+    try{localStorage.setItem(SPEED_KEY,String(speed));}catch(_){}
+    return speed;
+  }
+  window.BellymonAuto=Object.freeze({chooseAction,deadlock,SPEEDS,normalizeSpeed,getSpeed,setSpeed});
 })();

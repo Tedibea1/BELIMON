@@ -91,13 +91,13 @@
   const TURN_SECONDS = 15;
   const ENEMY_DECISION_MIN_MS = 1100; // L'IA réfléchit PENDANT le même tour que le joueur.
   const ENEMY_DECISION_SPAN_MS = 2000; // 1,1–3,1 s en manuel, toujours sous les 15 s.
-  // AUTO toujours en ×4 ; vitesse normale inchangée lorsque AUTO est coupé.
-  const AUTO_SPEED = AUTO.SPEED;
-  const ENEMY_DECISION_AUTO_MIN_MS = Math.round(120/AUTO_SPEED);
-  const ENEMY_DECISION_AUTO_SPAN_MS = Math.round(260/AUTO_SPEED);
-  const AUTO_INTERVAL_MS = Math.round(850/AUTO_SPEED); // 213 ms entre décisions automatiques.
-  const AUTO_TOWER_INTERVAL_MS = Math.round(1450/AUTO_SPEED); // 363 ms entre transitions de salles.
-  const AUTO_REWARD_PAUSE_MS = Math.round(1800/AUTO_SPEED); // 450 ms pour lire les récompenses.
+  // Les délais sont calculés à partir de la vitesse choisie (×1, ×2, ×4).
+  const autoSpeed=()=>AUTO.getSpeed();
+  const autoIntervalMs=()=>Math.round(850/autoSpeed());
+  const autoTowerIntervalMs=()=>Math.round(1450/autoSpeed());
+  const autoRewardPauseMs=()=>Math.round(1800/autoSpeed());
+  const autoEnemyMinMs=()=>Math.round(120/autoSpeed());
+  const autoEnemySpanMs=()=>Math.round(260/autoSpeed());
   const MAX_COMBAT_WAIFUS = 3; // 1 titulaire + 2 remplaçantes, même avec une grande collection.
   const HERO_CLASSES = Object.freeze([
     { id:'epeiste', name:'Épéiste', role:'DPS', icon:'⚔️', stats:{force:30,rapidite:10,constitution:20}, hp:120 },
@@ -1012,7 +1012,7 @@
         label.setAttribute('aria-hidden','true');
         card.append(label);labels.push(label);
       }
-      const impactSpeed=STATE.slots.get(STATE.currentId)?.data.autoCombat===true?AUTO_SPEED:1;
+      const impactSpeed=STATE.slots.get(STATE.currentId)?.data.autoCombat===true?autoSpeed():1;
       for(const label of labels)setTimeout(()=>label.remove(),Math.round(FLOATING_TEXT_MS/impactSpeed));
       card._impactTimer=setTimeout(()=>{
         card.classList.remove('impact-hit','impact-heal');
@@ -1048,20 +1048,23 @@
     $('actionPanel').classList.remove('combat-mode');
     $('combatActionsGrid').hidden=true;
     const autoEnabled=slot.data.autoCombat===true;
-    document.body.classList.toggle('belimon-auto-x4',autoEnabled);
+    document.body.classList.toggle('belimon-auto-x2',autoEnabled&&autoSpeed()===2);
+    document.body.classList.toggle('belimon-auto-x4',autoEnabled&&autoSpeed()===4);
+    $('autoSpeedSelect').value=String(autoSpeed());
+    $('autoSpeedSelect').disabled=STATE.actionBusy||STATE.enemyThinking;
     const autoButton=$('combatAutoButton');
     autoButton.disabled=STATE.actionBusy || STATE.enemyThinking;
     autoButton.classList.toggle('is-auto',autoEnabled);
     autoButton.setAttribute('aria-pressed',String(autoEnabled));
-    $('combatAutoLabel').textContent=autoEnabled?'×4':'OFF';
-    autoButton.title=autoEnabled?'Désactiver AUTO ×4 (combat et ascension)':'Activer AUTO ×4 : combat et ascension, sans capture, achat ni changement de waifu';
+    $('combatAutoLabel').textContent=autoEnabled?'×'+autoSpeed():'OFF';
+    autoButton.title=autoEnabled?'Désactiver AUTO (combat et ascension)':'Activer AUTO ×'+autoSpeed()+' : combat et ascension, sans capture, achat ni changement de waifu';
     const towerAutoButton=$('towerAutoButton');
     towerAutoButton.hidden=(event?.type==='combat' && event.state==='fighting');
     towerAutoButton.disabled=STATE.actionBusy || STATE.enemyThinking || event?.state==='awaiting_switch';
     towerAutoButton.classList.toggle('is-auto',autoEnabled);
     towerAutoButton.setAttribute('aria-pressed',String(autoEnabled));
-    $('towerAutoLabel').textContent=autoEnabled?'×4':'OFF';
-    towerAutoButton.title=autoEnabled?'Désactiver AUTO ×4':'Activer AUTO ×4 : avancer, combattre et continuer sans achats ni captures';
+    $('towerAutoLabel').textContent=autoEnabled?'×'+autoSpeed():'OFF';
+    towerAutoButton.title=autoEnabled?'Désactiver AUTO':'Activer AUTO ×'+autoSpeed()+' : avancer, combattre et continuer sans achats ni captures';
     const hero=slot.data.waifus.find(h=>h.id===slot.data.activeWaifuId);
     const turn=(tower.combat?.turn??0)+1;
     const effect=COMBAT.normalizeEffects(tower.combat?.effects,turn).player;
@@ -1210,7 +1213,7 @@
     $('eventAnnouncement').hidden=false;
     $('eventAnnouncement').focus();
     STATE.announcementTimer=setTimeout(closeAnnouncement,STATE.slots.get(STATE.currentId)?.data.autoCombat===true
-      ?Math.round(EVENT_ANNOUNCEMENT_MS/AUTO_SPEED):EVENT_ANNOUNCEMENT_MS);
+      ?Math.round(EVENT_ANNOUNCEMENT_MS/autoSpeed()):EVENT_ANNOUNCEMENT_MS);
     // Le rire du piège se joue exclusivement lorsque sa roulette s'arrête.
   }
   const BONUS_NAMES={force:'Force',rapidite:'Rapidité',constitution:'Constitution'};
@@ -1372,7 +1375,7 @@
     if(STATE.turnClock?.key===key)return;
     const now=Date.now();
     const thinkMs=auto
-      ?ENEMY_DECISION_AUTO_MIN_MS+Math.floor(Math.random()*ENEMY_DECISION_AUTO_SPAN_MS)
+      ?autoEnemyMinMs()+Math.floor(Math.random()*autoEnemySpanMs())
       :ENEMY_DECISION_MIN_MS+Math.floor(Math.random()*ENEMY_DECISION_SPAN_MS);
     STATE.turnClock={key,remainingMs:TURN_SECONDS*1000,deadline:now+TURN_SECONDS*1000,
       enemyRemainingMs:thinkMs,enemyDecisionAt:now+thinkMs,enemyAction:null,playerAction:null,resolving:false};
@@ -1510,7 +1513,7 @@
         await commitBattle(data=>{
           const hero=data.waifus.find(h=>h.id===data.activeWaifuId);
           const tick=COMBAT.tickTimedEffects(data.tower.combat.effects,hero,data.tower.event.enemy,Date.now(),data.tower.combat.turn+1,
-            data.autoCombat===true?1000/AUTO_SPEED:1000);
+            data.autoCombat===true?1000/autoSpeed():1000);
           data.tower.combat.effects=tick.effects;
         });
       }finally{STATE.liveTickBusy=false;}
@@ -1521,9 +1524,9 @@
       const enemy=slot.data.tower.event.enemy;
       // À 0 EN, AUTO se défend ; la fatigue réciproque évite les impasses.
       STATE.autoStallNotified=false;
-      if(!STATE.autoNextAt)STATE.autoNextAt=Date.now()+AUTO_INTERVAL_MS;
+      if(!STATE.autoNextAt)STATE.autoNextAt=Date.now()+autoIntervalMs();
       if(Date.now()>=STATE.autoNextAt){
-        STATE.autoNextAt=Date.now()+AUTO_INTERVAL_MS;
+        STATE.autoNextAt=Date.now()+autoIntervalMs();
         const move=AUTO.chooseAction(hero,enemy,slot.data.tower.combat.turn+1,slot.data.tower.combat.effects,Math.random);
         if(move)await takeCombatAction(move,true);
       }
@@ -1539,6 +1542,22 @@
       }
       await resolveQueuedTurn();
     }
+  }
+
+  // Réglage local, sans nouvelle sauvegarde pendant un tour de combat.
+  function changeAutoSpeed(event){
+    const selected=AUTO.setSpeed(event.target.value);
+    STATE.autoNextAt=0;
+    STATE.autoTowerNextAt=Date.now()+autoTowerIntervalMs();
+    STATE.autoRewardSeenAt=0;
+    const slot=STATE.slots.get(STATE.currentId);
+    if(slot?.data.autoCombat===true && STATE.turnClock &&
+       STATE.turnClock.playerAction===null && STATE.turnClock.enemyAction===null &&
+       !STATE.turnClock.resolving && !STATE.actionBusy && !STATE.enemyThinking){
+      STATE.turnClock=null;
+    }
+    if(slot)renderTower(slot);
+    showToast('🤖 Vitesse AUTO réglée sur ×'+selected+'.');
   }
 
   // AUTO est un mode unique pour le combat et la progression entre les salles.
@@ -1562,11 +1581,11 @@
     if(saved){
       STATE.turnClock=null;
       STATE.autoNextAt=0;
-      STATE.autoTowerNextAt=Date.now()+AUTO_TOWER_INTERVAL_MS;
+      STATE.autoTowerNextAt=Date.now()+autoTowerIntervalMs();
       STATE.autoRewardSeenAt=0;
       STATE.autoStallNotified=false;
       renderGame();
-      showToast(enabled?'🤖 AUTO ×4 activé : ascension et combats accélérés, sans capture ni achat.':'🤖 AUTO désactivé : vitesse normale.');
+      showToast(enabled?'🤖 AUTO ×'+autoSpeed()+' activé : ascension et combats, sans capture ni achat.':'🤖 AUTO désactivé : vitesse normale.');
     }
   }
 
@@ -1596,10 +1615,10 @@
     if(!resultOverlay.hidden){
       if(MOTION?.isBusy())return; // AUTO attend la fin de la roulette, sans sauter son résultat.
       if(!STATE.autoRewardSeenAt)STATE.autoRewardSeenAt=Date.now();
-      if(Date.now()-STATE.autoRewardSeenAt<AUTO_REWARD_PAUSE_MS)return;
+      if(Date.now()-STATE.autoRewardSeenAt<autoRewardPauseMs())return;
       STATE.autoTowerBusy=true;
       try{await closeEventResult();}
-      finally{STATE.autoTowerBusy=false;STATE.autoRewardSeenAt=0;STATE.autoTowerNextAt=Date.now()+AUTO_TOWER_INTERVAL_MS;}
+      finally{STATE.autoTowerBusy=false;STATE.autoRewardSeenAt=0;STATE.autoTowerNextAt=Date.now()+autoTowerIntervalMs();}
       return;
     }
     STATE.autoRewardSeenAt=0;
@@ -1633,7 +1652,7 @@
       }
     }finally{
       STATE.autoTowerBusy=false;
-      STATE.autoTowerNextAt=Date.now()+AUTO_TOWER_INTERVAL_MS;
+      STATE.autoTowerNextAt=Date.now()+autoTowerIntervalMs();
     }
   }
 
@@ -2501,6 +2520,7 @@
         (index+(e.key==='ArrowRight'?1:tabNames.length-1))%tabNames.length;
       openTab(tabNames[next]);$('tab'+tabNames[next][0].toUpperCase()+tabNames[next].slice(1)).focus();e.preventDefault();
     });
+    $('autoSpeedSelect').addEventListener('change',changeAutoSpeed);
     $('advanceBtn').addEventListener('click',advanceInTower);
     $('shortcutReducedBtn').addEventListener('click',()=>requestPaidResume('reduced'));
     $('shortcutRecordBtn').addEventListener('click',()=>requestPaidResume('record'));
@@ -2602,7 +2622,7 @@
     STATE.liveTicker=setInterval(()=>{
       liveCombatTick().catch(e=>console.error('Chrono combat :',e));
       liveAutoTowerTick().catch(e=>console.error('Ascension AUTO :',e));
-    },50);
+    },100);
     STATE.healTicker=setInterval(()=>refreshRecoveredHeroes().catch(e=>console.error('Convalescence :',e)),1000);
     await refreshRecoveredHeroes();
   }
