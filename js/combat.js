@@ -16,16 +16,16 @@
   });
   const SPECIALS=Object.freeze({
     epeiste:{name:'Frappe dévastatrice',description:'Force ×2 · frappe à l’épée pouvant infliger un critique.'},
-    bagarreuse:{name:'Absorption',description:'Force ×0,5 · retire 3 énergies par seconde pendant 4 tours (relançable, sans cumul).'},
-    archere_arcanique:{name:'Flèche perforante',description:'Force ×1,7 · −15 % Constitution ennemie jusqu’à la fin du combat.'},
-    occultiste:{name:'Malédiction abyssale',description:'Force ×1 · −2 % aux 3 stats par seconde active jusqu’à −50 %. Dure 5 tours ; relançable sans cooldown ni cumul.'},
+    bagarreuse:{name:'Absorption',description:'Force ×0,5 · malus inévitable à l’esquive (sauf Purification) : retire 3 énergies par seconde pendant 4 tours (relançable, sans cumul).'},
+    archere_arcanique:{name:'Flèche perforante',description:'Force ×1,7 · malus inévitable à l’esquive (sauf Purification) : −15 % Constitution ennemie jusqu’à la fin du combat.'},
+    occultiste:{name:'Malédiction abyssale',description:'Force ×1 · malus inévitable à l’esquive (sauf Purification) : −2 % aux 3 stats par seconde active jusqu’à −50 %. Dure 5 tours ; relançable sans cooldown ni cumul.'},
     pretresse:{name:'Bénédiction vitale',description:'Soigne 40 % des PV maximum, sans ressusciter.'},
     griffeuse:{name:'Griffes fatales',description:'Force ×1,5 · test de RAP façon Assassinat (100 % si RAP ≥ 2× celle de la cible, 50 % à RAP égale), puis esquive normale ; critique ×2 garanti si elle touche.'},
     vampire:{name:'Vampirisation',description:'Force ×1,5 · soigne 35 % des dégâts réellement infligés.'},
     spectre:{name:'Frappe spectrale',description:'Force ×1,3 · intangible pendant 2 tours (activation comprise) ; indisponible au tour suivant.'},
     nemesis:{name:'Miroir magique',description:'Renvoie 40 % des dégâts reçus pendant 5 tours (activation comprise), sans cumul.'},
     maudite:{name:'Malédiction du sang',description:'Force ×0,5 · malus impossible à esquiver (sauf Purification) : l’ennemi perd 10 % de ses PV max à chaque attaque offensive durant les 3 tours suivant le lancement, sans cumul.'},
-    envouteuse:{name:'Vol de puissance',description:'Force ×1,0 · si l’attaque touche, vole 20 % de la Force ennemie durant les 3 tours suivant le lancement, sans cumul.'},
+    envouteuse:{name:'Vol de puissance',description:'Force ×1,0 · malus inévitable à l’esquive (sauf Purification) : vole 20 % de la Force ennemie durant les 3 tours suivant le lancement, sans cumul.'},
     exorciste:{name:'Purification',description:'Dissipe les malus et protège des nouveaux malus pendant 5 tours (activation comprise).'}
   });
   const BONUSES=window.BellymonBonuses;
@@ -347,10 +347,11 @@
         attacker.hp=Math.max(0,attacker.hp-penalty);
         report.push(`🩸 Malédiction du sang : ${name} perd ${penalty} PV en attaquant.`);
       }
-      // Malédiction du sang est indépendante du coup physique : une esquive,
-      // un MISS ou l’intangibilité annule les dégâts ×0,5, pas le malus.
-      // Les autres compétences restent conditionnées à un coup réussi.
-      if(action==='special' && (attacker.classId==='maudite' || (!result.miss && !result.dodged))){
+      // Les cinq malus de sort sont indépendants de la frappe physique.
+      // MISS, esquive et intangibilité évitent les dégâts, jamais le statut ;
+      // seule Purification peut bloquer les malus. Les autres spéciales
+      // (attaques, soin, protections) conservent leur comportement.
+      if(action==='special'){
         switch(attacker.classId){
           case 'maudite':{
             if(isPurified(targetEffect,turn)){report.push('Malédiction du sang bloquée par Purification.');break;}

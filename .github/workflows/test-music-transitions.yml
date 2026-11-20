@@ -21,6 +21,10 @@ on:
       - "tests/tests/record_reset_on_free_advance.test.cjs"
       - "js/auto.js"
       - "js/combat.js"
+      - "js/guide.js"
+      - "tests/tests/unavoidable_special_debuffs.test.cjs"
+      - "tests/tests/v15_18_inesquivable_blood_curse.test.js"
+      - "tests/tests/v15_19_percent_steal.test.js"
       - "js/v16-motion.js"
       - "css/v16.css"
       - "tests/tests/auto_x4.test.cjs"
@@ -53,6 +57,13 @@ jobs:
         run: node tests/tests/shortcuts_linear.test.cjs
       - name: Reset old record only on free floor-one advance
         run: node tests/tests/record_reset_on_free_advance.test.cjs
+      - name: Magical debuffs through dodge, miss and intangibility
+        run: |
+          node --check js/combat.js
+          node --check js/guide.js
+          node tests/tests/unavoidable_special_debuffs.test.cjs
+          node tests/tests/v15_18_inesquivable_blood_curse.test.js
+          node tests/tests/v15_19_percent_steal.test.js
       - name: AUTO x1 x2 x4 selection and timed magic
         run: |
           node --check js/auto.js

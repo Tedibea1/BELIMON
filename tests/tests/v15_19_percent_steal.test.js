@@ -39,7 +39,8 @@ for(const force of [0,1,4,5,7,19,20,21,49,50,60,100,200,500,600]){
 {
  const dodge=turn(h('envouteuse',{force:40,rapidite:10}),h('epeiste',{force:100,rapidite:200}));
  eq(dodge.details.player.dodged,true,'enemy dodge');
- eq(dodge.effects.enemy.powerLoss,null,'no transfer on dodge');
+ eq(dodge.effects.enemy.powerLoss.amount,20,'20% transfer still applies on dodge');
+ eq(dodge.effects.player.powerGain.amount,20,'caster receives stolen Force despite dodge');
  const fx=C.normalizeEffects();fx.enemy.purification={startTurn:1,expiresTurn:5};
  const purified=turn(h('envouteuse',{force:40,rapidite:90}),h('epeiste',{force:100,rapidite:0}),'special','defend',1,fx);
  eq(purified.effects.player.powerGain,null,'Purification blocks transfer');
@@ -52,5 +53,5 @@ for(const force of [0,1,4,5,7,19,20,21,49,50,60,100,200,500,600]){
  eq(effects.sides.enemy.some(x=>x.label.includes('FOR −30')),true,'UI real loss');
 }
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-eq(html.includes('V16.1.6 LAB')&&html.includes('VERSION 16.1.6 TEST'),true,'version display');
+eq(html.includes('BELIMON · V16.2')&&html.includes('RPG · VERSION 16.2'),true,'version display');
 console.log('BELLYMON V15.19 : '+n+' contrôles réussis');

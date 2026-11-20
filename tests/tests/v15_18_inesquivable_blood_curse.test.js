@@ -95,19 +95,19 @@ eq(C.COST.special,5,'coût 5 énergie inchangé');
  eq(s.effects.enemy.bloodCurse,null,"pas de malus si le sort n'est pas lancé");
  eq(s.player.energy,100,'énergie inchangée si KO avant le lancement');
 }
-// 9. Les autres sorts restent esquivables ET leurs malus restent conditionnels au toucher.
+// 9. Les autres sorts infligent toujours zéro dégât après esquive, mais leurs malus magiques passent.
 {
  let s=state(h('envouteuse',{force:80,rapidite:10}),h('epeiste',{force:0,rapidite:200}));
  s=act(s,1,'special','defend');
  eq(s.details.player.dodged,true,'esquive du vol de force');
- eq(s.effects.enemy.powerLoss,null,'pas de vol de force après esquive');
+ eq(s.effects.enemy.powerLoss.amount,0,'vol de 0 Force appliqué même après esquive');
  s=state(h('archere_arcanique',{force:80,rapidite:10}),h('epeiste',{force:0,rapidite:200}));
  s=act(s,1,'special','defend');
  eq(s.details.player.dodged,true,'esquive de la flèche');
- eq(s.effects.enemy.swordCons,false,'pas de malus de Constitution après esquive');
+ eq(s.effects.enemy.swordCons,true,'malus de Constitution même après esquive');
 }
 const guide=fs.readFileSync(path.join(root,'js/guide.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8');
 yes(guide.includes('même si le coup est esquivé'),'Guide annonce la règle');
-yes(index.includes('BELLYMON · V16.0 LAB')&&index.includes('RPG · VERSION 16.0 TEST'),'version affichée');
+yes(index.includes('BELIMON · V16.2')&&index.includes('RPG · VERSION 16.2'),'version affichée');
 console.log('BELLYMON V15.18 : '+checks+' tests ciblés réussis.');
